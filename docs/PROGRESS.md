@@ -1,5 +1,22 @@
 # Development Progress Log
 
+## 2026-11-22 lead-architect Task T1.2 Gemini Adapter Implementation (status: done)
+- **What changed**:
+  - Implemented `GeminiAdapter` in `packages/core/src/adapters/gemini.ts` with `@google/genai`:
+    - Full streaming `generateContentStream` with `ChatChunk` mapping.
+    - System instructions via `config.systemInstruction`.
+    - Single and parallel function calling (`functionDeclarations` and `functionCalls` mapping).
+    - `functionResponse` role mapping for tool results.
+    - Token counting via `models.countTokens` with estimator fallback.
+    - `GeminiRateLimiter` (token/time interval) and exponential backoff retry with jitter on 429 `RESOURCE_EXHAUSTED`.
+  - Added unit test suite in `packages/core/src/__tests__/gemini-adapter.test.ts` (6 tests passing).
+- **Decisions made**:
+  - Encapsulated rate limiting and 429 backoff inside the adapter so higher-level agent loop logic remains clean.
+- **Tests run + results**:
+  - `pnpm run ci` passed cleanly (13/13 test files, 46/46 tests passed).
+- **Open issues / next step**:
+  - Next task: T1.3 Model Capability Probe (specifically testing qwen2.5-coder:7b tool calling).
+
 ## 2026-11-22 lead-architect Task T1.1 Ollama Adapter Implementation (status: done)
 - **What changed**:
   - Implemented `OllamaAdapter` in `packages/core/src/adapters/ollama.ts` implementing `ModelAdapter`:

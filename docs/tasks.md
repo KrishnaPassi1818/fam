@@ -31,7 +31,7 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
 
 - [x] **T1.1** · A · T0.2 · Ollama adapter: streaming `/api/chat`, `num_ctx`/`num_gpu`/`keep_alive`/`format` options, synthetic call IDs, usage stats, abort, model warm/unload, tool-call text fallback parser.
   AC: unit tests with a mocked server; `@live` test against real Ollama.
-- [ ] **T1.2** · A · T0.2 · Gemini adapter: `@google/genai`, `systemInstruction`, function calling (single and parallel), usage, 429 backoff plus rate limiter, model name from config.
+- [x] **T1.2** · A · T0.2 · Gemini adapter: `@google/genai`, `systemInstruction`, function calling (single and parallel), usage, 429 backoff plus rate limiter, model name from config.
   AC: mocked tests; `@live` test if a key is present.
 - [ ] **T1.3** · A · T1.1, T1.2 · Capability probe: detect and cache per-model caps (tools, parallel, json-format). **Specifically test qwen2.5-coder:7b tool calling and record the result.**
   AC: results written to `~/.harness/models.toml` and PROGRESS.md.
