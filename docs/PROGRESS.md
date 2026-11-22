@@ -1,5 +1,30 @@
 # Development Progress Log
 
+## 2026-11-22 lead-architect Tasks T0.5-T0.8 Prompt Analysis & Distillation (status: done)
+- **What changed**:
+  - Analyzed `docs/reference/prompt.md` (~119k tokens, 227 sections) and created `docs/reference/prompt-analysis.md`.
+  - Wrote stable harness prompt `prompts/core.md` (255 tokens / 300 token budget).
+  - Distilled and authored role prompts and model profiles:
+    - `prompts/roles/assistant.medium.md` (302 tokens / 600 budget)
+    - `prompts/roles/assistant.full.md` (671 tokens / 4000 budget)
+    - `prompts/roles/coder.medium.md` (276 tokens / 600 budget)
+    - `prompts/roles/coder.full.md` (395 tokens / 4000 budget)
+    - `prompts/roles/router.min.md` (77 tokens / 150 budget)
+    - `prompts/profiles/llama3.md` (45 tokens / 150 budget)
+    - `prompts/profiles/qwen.md` (51 tokens / 150 budget)
+    - `prompts/profiles/qwen-coder.md` (44 tokens / 150 budget)
+    - `prompts/profiles/gemini.md` (44 tokens / 150 budget)
+  - Implemented prompt validator in `packages/core/src/prompts/validator.ts` and CLI linter `scripts/check-prompts.ts` (`pnpm prompts:check`).
+  - Added vitest unit test in `packages/core/src/__tests__/prompts.test.ts`.
+- **Decisions made**:
+  - Replaced vendor identity with neutral role framing: "You are the assistant inside a local CLI harness."
+  - Enforced frontmatter token budgets and zero tolerance for banned vendor identity strings.
+- **Tests run + results**:
+  - `pnpm prompts:check` passed with all 10 prompt files within budget and free of banned strings.
+  - `pnpm run ci` passed cleanly (10/10 test files, 30/30 tests passed).
+- **Open issues / next step**:
+  - Next task: T0.9 ADR and Fake MCP Fixture Server.
+
 ## 2026-11-22 lead-architect Task T0.4 Config Loader Implementation (status: done)
 - **What changed**:
   - Created default TOML configuration files: `config/default.toml`, `config/models.toml`, `config/policy.toml`, `config/privacy.toml`, `config/servers.toml`.

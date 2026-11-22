@@ -14,13 +14,13 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
   AC: prints pass/warn/fail table, JSON output with `--json`. Record the actual report in PROGRESS.md. **Resolve the PRD open questions.**
 - [x] **T0.4** · A · T0.2 · Config loader: `~/.harness/` layout creation, TOML parse and zod validation, defaults from `config/*.toml`, env overrides.
   AC: missing files create defaults, invalid files give readable errors.
-- [ ] **T0.5** · E · none · **Analyze `docs/reference/prompt.md`**. Read the whole file. Produce `docs/reference/prompt-analysis.md` with (a) estimated total token count, (b) a section inventory table: `# | section title/summary | tokens | KEEP/ADAPT/DROP | reason`, (c) a list of behavioral rules worth keeping grouped by theme (tone, formatting, ambiguity handling, honesty, safety, tool etiquette, injection handling, search/citation, code conventions), (d) a list of vendor-specific items that must be dropped (identity, product features, tool names/syntax, model names, cutoff claims), (e) notes on anything that conflicts with `core.md` rules.
+- [x] **T0.5** · E · none · **Analyze `docs/reference/prompt.md`**. Read the whole file. Produce `docs/reference/prompt-analysis.md` with (a) estimated total token count, (b) a section inventory table: `# | section title/summary | tokens | KEEP/ADAPT/DROP | reason`, (c) a list of behavioral rules worth keeping grouped by theme (tone, formatting, ambiguity handling, honesty, safety, tool etiquette, injection handling, search/citation, code conventions), (d) a list of vendor-specific items that must be dropped (identity, product features, tool names/syntax, model names, cutoff claims), (e) notes on anything that conflicts with `core.md` rules.
   AC: every section of the file appears in the inventory. No verbatim copy of more than a short phrase.
-- [ ] **T0.6** · E · T0.5 · Write `prompts/core.md` (harness rules: tool protocol, untrusted-data rule, parallel-call guidance, ask-vs-act, safety), ≤ 300 tokens, with a front-matter budget.
+- [x] **T0.6** · E · T0.5 · Write `prompts/core.md` (harness rules: tool protocol, untrusted-data rule, parallel-call guidance, ask-vs-act, safety), ≤ 300 tokens, with a front-matter budget.
   AC: token test passes.
-- [ ] **T0.7** · E · T0.5, T0.6 · Distill and write `prompts/roles/assistant.full.md` (≤ 4000 tok), `assistant.medium.md` (≤ 600), `coder.full.md`, `coder.medium.md` (≤ 600), `router.min.md` (≤ 150, rigid JSON output), plus model profiles `prompts/profiles/{llama3,qwen,qwen-coder,gemini}.md` (≤ 150 each).
+- [x] **T0.7** · E · T0.5, T0.6 · Distill and write `prompts/roles/assistant.full.md` (≤ 4000 tok), `assistant.medium.md` (≤ 600), `coder.full.md`, `coder.medium.md` (≤ 600), `router.min.md` (≤ 150, rigid JSON output), plus model profiles `prompts/profiles/{llama3,qwen,qwen-coder,gemini}.md` (≤ 150 each).
   AC: neutral identity only (test greps for vendor names), token budgets enforced by a test, rewritten in own words, most important rules first.
-- [ ] **T0.8** · E · T0.7 · Prompt budget test and linter script (`pnpm prompts:check`): counts tokens, checks front-matter, and greps for banned identity strings.
+- [x] **T0.8** · E · T0.7 · Prompt budget test and linter script (`pnpm prompts:check`): counts tokens, checks front-matter, and greps for banned identity strings.
   AC: runs in CI.
 - [ ] **T0.9** · A · T0.2 · ADR: freeze MCP tool-name conventions, alias rules, and annotation usage. Add fixtures for a fake MCP server used in tests.
   AC: `docs/DECISIONS.md` created, fixture server runs.
