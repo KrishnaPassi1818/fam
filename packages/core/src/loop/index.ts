@@ -24,6 +24,8 @@ export interface AgentLoopOptions {
   tracer?: Tracer;
   role?: 'assistant' | 'coder' | 'router';
   tier?: 'full' | 'medium' | 'min';
+  userGlobalPrompt?: string;
+  projectPrompt?: string;
   tools?: ToolDescriptor[];
   toolHandlers?: Record<string, ToolExecutionHandler>;
   maxSteps?: number;
@@ -87,6 +89,8 @@ export class AgentLoop {
   private readonly tracer?: Tracer;
   private readonly role: 'assistant' | 'coder' | 'router';
   private readonly tier?: 'full' | 'medium' | 'min';
+  private readonly userGlobalPrompt?: string;
+  private readonly projectPrompt?: string;
   private readonly tools: ToolDescriptor[];
   private readonly toolHandlers: Record<string, ToolExecutionHandler>;
   private readonly maxSteps: number;
@@ -100,6 +104,8 @@ export class AgentLoop {
     this.tracer = options.tracer;
     this.role = options.role || 'assistant';
     this.tier = options.tier;
+    this.userGlobalPrompt = options.userGlobalPrompt;
+    this.projectPrompt = options.projectPrompt;
     this.tools = [...BUILTIN_TOOLS, ...(options.tools || [])];
     this.toolHandlers = { ...BUILTIN_TOOL_HANDLERS, ...(options.toolHandlers || {}) };
     this.maxSteps = options.maxSteps ?? 30;
@@ -152,6 +158,8 @@ export class AgentLoop {
           modelId: this.adapter.id,
           role: this.role,
           tier: this.tier,
+          userGlobalPrompt: this.userGlobalPrompt,
+          projectPrompt: this.projectPrompt,
           dynamicContext: {
             date: new Date().toISOString(),
             cwd: process.cwd(),

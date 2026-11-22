@@ -1,5 +1,24 @@
 # Development Progress Log
 
+## 2026-11-22 lead-architect Task T1.7 Ink CLI MVP Implementation (status: done)
+- **What changed**:
+  - Implemented the full terminal user interface in `packages/cli/src/ui/`:
+    - `StatusBar.tsx`: renders model name, active context usage vs max context, tier (`full|medium|min`), generation speed (`tok/s`), placement badge (`LOCAL|CLOUD`), and current working directory.
+    - `MessageView.tsx`: renders formatted message scrollback for user inputs, assistant outputs (with live streaming cursor `▌`), and system notifications.
+    - `ToolCallView.tsx`: renders collapsible tool call indicators with real-time `ink-spinner` while running, success gear `⚙` or failure cross `✖`, execution duration in milliseconds, and argument/result summaries.
+    - `adapter-factory.ts`: handles model adapter instantiations (`OllamaAdapter` / `GeminiAdapter`) respecting placement and `--local-only` privacy restrictions.
+    - `App.tsx`: main interactive Ink terminal application integrating streaming turns, keyboard navigation (Esc to cancel generation), and built-in slash command handlers (`/help`, `/system`, `/model <name>`, `/models`, `/role <role>`, `/clear`, `/exit`).
+  - Updated CLI runner in `packages/cli/src/bin/hx.ts`:
+    - Full Commander CLI options: `--model`, `--role`, `--system`, `--append-system`, `--system-file`, and `--local-only`.
+    - Supports both interactive multi-turn session mode and one-shot non-interactive prompt execution.
+  - Added unit test suite in `packages/cli/src/__tests__/ui.test.tsx` (8 tests passing) using `ink-testing-library`.
+- **Decisions made**:
+  - Configured TSX support with `jsx: "react-jsx"` in `@hx/cli` to keep other packages clean.
+- **Tests run + results**:
+  - `pnpm run ci` passed cleanly (18/18 test files, 69/69 tests passing, eslint and cargo check clean).
+- **Open issues / next step**:
+  - Next task: T1.8 Benchmark script `pnpm bench:models` in Lanes A/D.
+
 ## 2026-11-22 lead-architect Task T1.6 Tracer Implementation (status: done)
 - **What changed**:
   - Implemented `Tracer` in `packages/core/src/trace/index.ts`:
