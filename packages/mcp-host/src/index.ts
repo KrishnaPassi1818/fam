@@ -1,3 +1,5 @@
-import { VERSION } from '@hx/shared';
-
-export const MCP_HOST_VERSION = VERSION;
+export * from './types.js';
+export * from './utils.js';
+export * from './connection.js';
+export * from './registry.js';
+export * from './host.js';

@@ -50,11 +50,11 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
 
 ## Phase 2: MCP host and `fs` server
 
-- [ ] **T2.1** · F · T0.9 · MCP host: stdio transport via the official SDK, server config (`servers.toml`), lifecycle (lazy start, restart with backoff, shutdown), tool listing and `list_changed`.
+- [x] **T2.1** · F · T0.9 · MCP host: stdio transport via the official SDK, server config (`servers.toml`), lifecycle (lazy start, restart with backoff, shutdown), tool listing and `list_changed`.
   AC: integration test against the fixture server.
-- [ ] **T2.2** · F · T2.1 · Streamable HTTP transport and auth headers from env.
+- [x] **T2.2** · F · T2.1 · Streamable HTTP transport and auth headers from env.
   AC: test against a local HTTP fixture.
-- [ ] **T2.3** · F · T2.1 · Registry bridge: namespacing, aliasing, annotations to flags, `tools.toml` overrides (tier, timeout, category, short description), resource and prompt listing, `resource_read` meta-tool.
+- [x] **T2.3** · F · T2.1 · Registry bridge: namespacing, aliasing, annotations to flags, `tools.toml` overrides (tier, timeout, category, short description), resource and prompt listing, `resource_read` meta-tool.
   AC: tests for alias collisions and overrides.
 - [ ] **T2.4** · B · T0.9 · Rust `fs` server skeleton (rmcp, stdio): `list_dir`, `file_info`, `read_file(path,start,end)`, root confinement and symlink-escape rejection.
   AC: cargo tests, MCP stdio integration test.

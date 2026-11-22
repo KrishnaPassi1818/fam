@@ -1,5 +1,32 @@
 # Development Progress Log
 
+## 2026-11-22 lead-architect Tasks T2.1, T2.2, T2.3 MCP Host & Registry Bridge (status: done)
+- **What changed**:
+  - Implemented `McpConnection` in `packages/mcp-host/src/connection.ts`:
+    - Official `@modelcontextprotocol/sdk` integration with both `StdioClientTransport` and `SSEClientTransport`.
+    - Lifecycle management: lazy connection on first tool invocation, graceful disconnection, and automatic reconnection with exponential backoff on unexpected process/socket drop.
+    - Real-time `notifications/tools/list_changed` listener using `ToolListChangedNotificationSchema` to dynamically refresh tool registries.
+    - Environment variable expansion (`${VAR}` and `$VAR`) for transport headers (e.g. Bearer auth) and connection URLs.
+  - Implemented `McpRegistryBridge` in `packages/mcp-host/src/registry.ts`:
+    - Strict namespacing `<server>.<tool>` and small-model safe alias sanitization `[a-zA-Z0-9_]{1,64}`.
+    - Disambiguation suffixing on alias collisions (e.g. `srv_sub_tool_2`).
+    - Tool tier resolution (read-only -> Tier 0, destructive -> Tier 2, general -> Tier 1).
+    - `tools.toml` overrides support for customizing `tier`, `timeoutMs`, `category`, and `description`.
+    - `getModelDescriptors(useAliasAsName)` method allowing small models to receive dots-free aliases as function names.
+  - Implemented `McpHost` in `packages/mcp-host/src/host.ts`:
+    - Multi-server manager loading configs (`stdio` and `http`).
+    - Lazy server start with transparent on-demand tool execution and routing.
+  - Added full test suite (16 tests across 4 suites) in `packages/mcp-host/src/__tests__/`:
+    - `stdio-host.test.ts`: verified lazy launch, tool execution (`add`, `echo`), error handling against stdio fixture.
+    - `http-host.test.ts`: verified HTTP/SSE transport with authorized Bearer tokens via env expansion.
+    - `registry.test.ts`: verified namespacing, alias collisions, and tool overrides.
+- **Decisions made**:
+  - Used official `@modelcontextprotocol/sdk` v1.32.2 for rock-solid protocol compliance.
+- **Tests run + results**:
+  - `pnpm test` and `pnpm run ci` passed cleanly (21/21 test files, 78/78 tests passing).
+- **Open issues / next step**:
+  - Next task: T2.4 Rust `fs` server skeleton in Lane B (`servers/fs`).
+
 ## 2026-11-22 lead-architect Phase 1 Exit Gate Verification (status: done)
 - **What changed**:
   - Authored automated Phase 1 exit gate verification in `scripts/demo-p1.ts` and runner `scripts/demo-p1.sh`.
