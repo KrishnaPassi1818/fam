@@ -10,6 +10,7 @@ import {
   ModelError,
   estimateMessageTokens,
 } from '@hx/shared';
+import { PrivacyGate } from '../privacy/index.js';
 
 export interface GeminiAdapterOptions {
   apiKey?: string;
@@ -17,6 +18,7 @@ export interface GeminiAdapterOptions {
   caps?: Partial<ModelCaps>;
   requestsPerMinute?: number;
   maxRetries?: number;
+  privacyGate?: PrivacyGate;
 }
 
 export class GeminiRateLimiter {
@@ -53,6 +55,7 @@ export class GeminiAdapter implements ModelAdapter {
   private readonly modelName: string;
   private readonly rateLimiter: GeminiRateLimiter;
   private readonly maxRetries: number;
+  private readonly privacyGate?: PrivacyGate;
   private callCounter = 0;
 
   constructor(options: GeminiAdapterOptions) {
@@ -62,6 +65,7 @@ export class GeminiAdapter implements ModelAdapter {
     this.id = `gemini:${options.model}`;
     this.rateLimiter = new GeminiRateLimiter(options.requestsPerMinute || 15);
     this.maxRetries = options.maxRetries ?? 3;
+    this.privacyGate = options.privacyGate;
 
     this.caps = {
       tools: options.caps?.tools ?? true,
@@ -166,6 +170,10 @@ export class GeminiAdapter implements ModelAdapter {
   }
 
   async *chat(req: ChatRequest, signal?: AbortSignal): AsyncIterable<ChatChunk> {
+    if (this.privacyGate) {
+      this.privacyGate.enforce(req.messages);
+    }
+
     await this.rateLimiter.acquire(signal);
 
     const { systemInstruction, contents } = this.convertMessages(req.messages);

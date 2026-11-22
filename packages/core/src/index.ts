@@ -9,5 +9,7 @@ export * from './trace/index.js';
 export * from './tools/validator.js';
 export * from './tools/permission.js';
 export * from './tools/executor.js';
+export * from './backup/index.js';
+export * from './privacy/index.js';
 
 

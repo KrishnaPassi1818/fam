@@ -3,6 +3,7 @@ import { render } from 'ink-testing-library';
 import { StatusBar } from '../ui/components/StatusBar.js';
 import { MessageView } from '../ui/components/MessageView.js';
 import { ToolCallView } from '../ui/components/ToolCallView.js';
+import { ApprovalModal } from '../ui/components/ApprovalModal.js';
 
 describe('CLI UI Components', () => {
   describe('StatusBar', () => {
@@ -130,6 +131,81 @@ describe('CLI UI Components', () => {
       expect(frame).toContain('✖');
       expect(frame).toContain('bad_tool');
       expect(frame).toContain('Tool not found');
+    });
+  });
+
+  describe('ApprovalModal', () => {
+    it('renders tier 2 modal with tool name, path, and risk level', () => {
+      let decision: string | undefined;
+      const { lastFrame } = render(
+        <ApprovalModal
+          toolName="fs_write_file"
+          args={{ path: '/workspace/secret.txt', content: 'hello' }}
+          tier={2}
+          reason="Writing outside workspace"
+          onDecision={(d) => {
+            decision = d;
+          }}
+        />,
+      );
+
+      const frame = lastFrame();
+      expect(frame).toContain('PERMISSION REQUIRED');
+      expect(frame).toContain('Tier 2 (External Write / Overwrite)');
+      expect(frame).toContain('fs_write_file');
+      expect(frame).toContain('Writing outside workspace');
+      expect(frame).toContain('/workspace/secret.txt');
+      expect(frame).toContain('[y]');
+      expect(frame).toContain('allow once');
+    });
+
+    it('handles interactive keypresses y, a, n', () => {
+      let decision: string | undefined;
+      const { stdin } = render(
+        <ApprovalModal
+          toolName="run_command"
+          args={{ command: 'rm -rf /tmp/test' }}
+          tier={3}
+          onDecision={(d) => {
+            decision = d;
+          }}
+        />,
+      );
+
+      stdin.write('y');
+      expect(decision).toBe('allow_once');
+
+      stdin.write('a');
+      expect(decision).toBe('allow_session');
+
+      stdin.write('n');
+      expect(decision).toBe('deny');
+    });
+
+    it('renders tier 4 modal requiring typed confirmation', () => {
+      let decision: string | undefined;
+      const { lastFrame, stdin } = render(
+        <ApprovalModal
+          toolName="dangerous_wipe"
+          args={{ force: true }}
+          tier={4}
+          onDecision={(d) => {
+            decision = d;
+          }}
+        />,
+      );
+
+      const frame = lastFrame();
+      expect(frame).toContain('DANGER: This action is destructive and irreversible.');
+      expect(frame).toContain('CONFIRM');
+
+      // Typing wrong string doesn't allow
+      stdin.write('yes\r');
+      expect(decision).toBe('deny');
+
+      // Typing CONFIRM allows
+      stdin.write('CONFIRM\r');
+      expect(decision).toBe('allow_once');
     });
   });
 });
