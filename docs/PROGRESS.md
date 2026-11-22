@@ -1,5 +1,23 @@
 # Development Progress Log
 
+## 2026-11-22 lead-architect Phase 1 Exit Gate Verification (status: done)
+- **What changed**:
+  - Authored automated Phase 1 exit gate verification in `scripts/demo-p1.ts` and runner `scripts/demo-p1.sh`.
+  - Executed end-to-end vertical slice gate validation across all criteria in `plan.md` Section 3 (Phase 1):
+    1. Conversed with CPU model `qwen2.5:1.5b` (`placement = "cpu"`, `num_gpu = 0`) with live streaming response.
+    2. Conversed with Coder model `qwen2.5-coder:7b` generating syntactically valid TypeScript function.
+    3. Successfully performed tool-call round-trip on local GPU model `llama3.1:8b` (built-in `echo` tool invoked with arguments, executed, and result fed back to model for turn completion).
+    4. Verified structured trace recording: validated that `Tracer` wrote 8 events (`session_start`, `prompt`, `model_call`, `tool_call`, `tool_result`, `session_end`) to disk at `~/.harness/traces/gate_p1_<timestamp>/demo_run.jsonl`.
+    5. Verified Gemini model adapter with comprehensive mocked test suite (and conditional live test when `GEMINI_API_KEY` is present).
+    6. Verified `config/models.toml` matches measured capabilities and benchmarks.
+- **Phase 1 Exit Gate Verdict**:
+  - **ALL PHASE 1 ACCEPTANCE CRITERIA SATISFIED**. Phase 1 is formally COMPLETE and LOCKED.
+- **Tests run + results**:
+  - `scripts/demo-p1.sh` passed with exit code 0.
+  - `pnpm run ci` passed cleanly (18/18 test files, 69/69 tests passing, eslint clean, tsc -b clean, cargo check clean).
+- **Open issues / next step**:
+  - Phase 2: MCP Host and `fs` Server (Tasks T2.1–T2.6).
+
 ## 2026-11-22 lead-architect Task T1.8 Local Model Benchmark Results (status: done)
 - **What changed**:
   - Implemented automated benchmarking script in `scripts/bench-models.ts` (`pnpm bench:models`):

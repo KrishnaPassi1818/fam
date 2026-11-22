@@ -45,7 +45,7 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
   AC: manual demo plus snapshot tests for the render components.
 - [x] **T1.8** · A/D · T1.1 · Benchmark script `pnpm bench:models`: for each local model, measure load time, tokens/s, VRAM (nvidia-smi), and max stable `num_ctx` (stepwise 4096→8192→…) without OOM or CPU spill. Write `models.toml`.
   AC: results table in PROGRESS.md, `models.toml` reflects measured values.
-- [ ] **T1.9** · D · T1.7 · `scripts/demo-p1`.
+- [x] **T1.9** · D · T1.7 · `scripts/demo-p1`.
   AC: gate demo from plan.md passes.
 
 ## Phase 2: MCP host and `fs` server
