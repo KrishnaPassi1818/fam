@@ -1,5 +1,36 @@
 # Development Progress Log
 
+## 2026-11-22 lead-architect Task T0.2 Contracts Frozen v1 (status: done)
+- **What changed**:
+  - Implemented core message types and schemas (`SystemMessage`, `UserMessage`, `AssistantMessage`, `ToolMessage`, `Part`, `ToolCall`, `ToolResult`) in `packages/shared/src/types/message.ts`.
+  - Implemented tool schemas and descriptors (`ToolDescriptor`, `ToolAnnotations`, `ToolTier`) in `packages/shared/src/types/tool.ts`.
+  - Implemented model adapter interfaces and capabilities (`ModelAdapter`, `ModelCaps`, `ChatRequest`, `ChatChunk`, `ChatUsage`) in `packages/shared/src/types/adapter.ts`.
+  - Implemented Zod configuration schemas (`GeneralConfig`, `ModelProfile`, `ModelsConfig`, `PolicyRule`, `PrivacyConfig`, `ServersConfig`, `HxConfig`) in `packages/shared/src/types/config.ts`.
+  - Implemented typed error taxonomy (`HxError`, `ModelError`, `ToolValidationError`, `ToolExecError`, `PermissionDenied`, `PrivacyBlocked`, `BudgetExceeded`, `LoopDetected`) in `packages/shared/src/errors/index.ts`.
+  - Implemented structured logger with secret redaction (`redactSecrets`, `Logger`, `logger`) in `packages/shared/src/logger/index.ts`.
+  - Implemented token estimator (`estimateTokens`, `estimateMessageTokens`) in `packages/shared/src/tokens/index.ts`.
+  - Added unit test suites covering all shared modules (22 tests passing).
+  - Recorded ADR-002: "Contracts Frozen v1" in `docs/DECISIONS.md`.
+- **Decisions made**:
+  - All contracts frozen for v1 to enable independent parallel development across lanes.
+- **Tests run + results**:
+  - `pnpm run ci` passed cleanly (eslint, tsc -b, vitest 7/7 files, 22/22 tests, cargo check).
+- **Open issues / next step**:
+  - Next task: T0.3 `hx doctor` in Lane D.
+
+## 2026-11-22 lead-architect Task T0.1 Monorepo Scaffold (status: done)
+- **What changed**:
+  - Initialized pnpm monorepo workspace (`pnpm-workspace.yaml`, root `package.json`, `tsconfig.base.json`, `tsconfig.json`, `eslint.config.js`, `.prettierrc`, `vitest.config.ts`).
+  - Initialized Cargo workspace (`Cargo.toml`) with members `servers/fs` and `servers/sandbox`.
+  - Created package skeletons: `@hx/shared`, `@hx/core`, `@hx/mcp-host`, `@hx/cli`, `@hx/evals`, `hx-fs`, `hx-sandbox`.
+- **Decisions made**:
+  - Used strict ESM and TypeScript project references.
+  - Configured pnpm workspace build scripts and esbuild approvals.
+- **Tests run + results**:
+  - `pnpm install` and `cargo check` verified.
+- **Open issues / next step**:
+  - T0.2 Shared contracts.
+
 ## 2026-11-22 lead-architect Repository Inspection and Phase 0 Kickoff (status: done)
 - **What changed**:
   - Inspected host environment: Linux Omarchy (Kernel 7.2.15, Arch-based), AMD Ryzen 7 7435HS (16 vCPUs), 24GB RAM, NVIDIA RTX 4050 Laptop GPU (6GB VRAM, CUDA 13.4, Driver 615.78.08).

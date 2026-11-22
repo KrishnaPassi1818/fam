@@ -6,9 +6,9 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
 
 ## Phase 0: Foundations and prompt analysis
 
-- [ ] **T0.1** · A · none · Monorepo scaffold: pnpm workspace, tsconfig base (strict, ESM), eslint, prettier, vitest, cargo workspace, CI script (`pnpm ci` = lint+typecheck+test+cargo check).
+- [x] **T0.1** · A · none · Monorepo scaffold: pnpm workspace, tsconfig base (strict, ESM), eslint, prettier, vitest, cargo workspace, CI script (`pnpm ci` = lint+typecheck+test+cargo check).
   AC: `pnpm ci` passes on a clean checkout.
-- [ ] **T0.2** · A · T0.1 · `packages/shared` contracts: Message, ToolCall, ToolResult, ToolDescriptor, ModelAdapter, ChatRequest/Chunk, Config schemas (zod), error classes, logger, token-count util.
+- [x] **T0.2** · A · T0.1 · `packages/shared` contracts: Message, ToolCall, ToolResult, ToolDescriptor, ModelAdapter, ChatRequest/Chunk, Config schemas (zod), error classes, logger, token-count util.
   AC: types exported, unit tests for schema parsing, ADR "contracts frozen v1".
 - [ ] **T0.3** · D · T0.1 · `hx doctor`: detect OS/shell, Node, Rust, Ollama (version, pulled models), GPU/VRAM via `nvidia-smi`, `soffice`, git, `GEMINI_API_KEY`.
   AC: prints pass/warn/fail table, JSON output with `--json`. Record the actual report in PROGRESS.md. **Resolve the PRD open questions.**
