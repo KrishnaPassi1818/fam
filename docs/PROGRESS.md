@@ -1,5 +1,29 @@
 # Development Progress Log
 
+## 2026-11-22 lead-architect Task T1.8 Local Model Benchmark Results (status: done)
+- **What changed**:
+  - Implemented automated benchmarking script in `scripts/bench-models.ts` (`pnpm bench:models`):
+    - Measures clean cold load duration after explicit `/api/generate` unload (`keep_alive: 0`).
+    - Evaluates generation tokens/sec and prompt evaluation tokens/sec across context sizes (4096 and 8192).
+    - Queries `nvidia-smi` and Ollama `/api/ps` to track exact VRAM allocations (`size_vram` vs `size`) and detect CPU layer spills.
+  - Executed benchmark on local NVIDIA RTX 4050 Laptop GPU (6GB VRAM, AMD Ryzen 7 7435HS):
+    | Model | Placement | Context (`num_ctx`) | Cold Load | Generation (t/s) | Prompt Eval (t/s) | VRAM Used | CPU Spill | Status |
+    |---|---|---|---|---|---|---|---|---|
+    | `qwen2.5:1.5b` | CPU | 4096 | 1.30s | 36.8 t/s | 360.8 t/s | 0 MB | No (100% CPU) | PASS |
+    | `llama3.1:8b` | GPU | 4096 | 3.58s | 20.2 t/s | 114.9 t/s | 3913 MB | ⚠️ Partial (27/33 layers on GPU) | PASS |
+    | `llama3.1:8b` | GPU | 8192 | 3.12s | 18.4 t/s | 99.7 t/s | 4011 MB | ⚠️ Partial (27/33 layers on GPU) | PASS |
+    | `qwen2.5-coder:7b` | GPU | 4096 | 3.58s | 26.2 t/s | 356.5 t/s | 4005 MB | ⚠️ Partial (26/28 layers on GPU) | PASS |
+    | `qwen2.5-coder:7b` | GPU | 8192 | 2.50s | 24.3 t/s | 310.4 t/s | 4073 MB | ⚠️ Partial (26/28 layers on GPU) | PASS |
+- **Decisions made & Hardware Insights**:
+  - With ~700MB host system display VRAM allocated out of 6141MB total, ~5.4GB is available for Ollama.
+  - At 8192 context, both 8B/7B models use ~4.0GB VRAM on GPU while placing a few top layers into system RAM (24GB total RAM available), yielding stable, smooth execution (18.4–24.3 t/s) with zero out-of-memory errors.
+  - CPU router `qwen2.5:1.5b` executes at a very fast 36.8 t/s generation and 360.8 t/s prompt evaluation without using any GPU VRAM.
+  - Verified `config/models.toml` parameters match the measured capabilities and stable context limits.
+- **Tests run + results**:
+  - `pnpm bench:models` completed cleanly with all test runs passing.
+- **Open issues / next step**:
+  - Next task: T1.9 Phase 1 Exit Gate demo (`scripts/demo-p1.sh`).
+
 ## 2026-11-22 lead-architect Task T1.7 Ink CLI MVP Implementation (status: done)
 - **What changed**:
   - Implemented the full terminal user interface in `packages/cli/src/ui/`:
