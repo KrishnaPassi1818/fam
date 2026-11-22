@@ -1,0 +1,73 @@
+# Hardware profile models configuration (Ryzen 7 7435HS + RTX 4050 6GB VRAM)
+
+[models."ollama:qwen2.5:1.5b"]
+provider = "ollama"
+model = "qwen2.5:1.5b"
+placement = "cpu"
+numCtx = 4096
+numGpu = 0
+keepAlive = "10m"
+temperature = 0.3
+[models."ollama:qwen2.5:1.5b".caps]
+tools = true
+parallelTools = false
+vision = false
+jsonSchemaFormat = true
+maxCtx = 4096
+
+[models."ollama:llama3.1:8b"]
+provider = "ollama"
+model = "llama3.1:8b"
+placement = "gpu"
+numCtx = 8192
+keepAlive = "10m"
+temperature = 0.7
+[models."ollama:llama3.1:8b".caps]
+tools = true
+parallelTools = false
+vision = false
+jsonSchemaFormat = true
+maxCtx = 8192
+
+[models."ollama:qwen2.5-coder:7b"]
+provider = "ollama"
+model = "qwen2.5-coder:7b"
+placement = "gpu"
+numCtx = 8192
+keepAlive = "10m"
+temperature = 0.2
+[models."ollama:qwen2.5-coder:7b".caps]
+tools = true
+parallelTools = false
+vision = false
+jsonSchemaFormat = true
+maxCtx = 8192
+
+[models."ollama:nomic-embed-text"]
+provider = "ollama"
+model = "nomic-embed-text"
+placement = "cpu"
+numCtx = 2048
+numGpu = 0
+keepAlive = "30m"
+temperature = 0.0
+[models."ollama:nomic-embed-text".caps]
+tools = false
+parallelTools = false
+vision = false
+jsonSchemaFormat = false
+maxCtx = 2048
+
+[models."gemini:gemini-2.5-flash"]
+provider = "gemini"
+model = "gemini-2.5-flash"
+placement = "api"
+numCtx = 1048576
+keepAlive = "0s"
+temperature = 0.7
+[models."gemini:gemini-2.5-flash".caps]
+tools = true
+parallelTools = true
+vision = true
+jsonSchemaFormat = true
+maxCtx = 1048576

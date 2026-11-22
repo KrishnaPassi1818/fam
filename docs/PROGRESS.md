@@ -1,5 +1,20 @@
 # Development Progress Log
 
+## 2026-11-22 lead-architect Task T0.4 Config Loader Implementation (status: done)
+- **What changed**:
+  - Created default TOML configuration files: `config/default.toml`, `config/models.toml`, `config/policy.toml`, `config/privacy.toml`, `config/servers.toml`.
+  - Implemented config loader in `packages/core/src/config/index.ts`:
+    - `ensureHarnessDirs`: auto-creates `~/.harness` subdirectories (`blobs`, `traces`, `sessions`, `backups`, `db`, `prompts`).
+    - `loadConfig`: loads and merges user config with bundled defaults, copies defaults if missing, validates with Zod, applies environment variable overrides (`HX_DEFAULT_MODEL`, `HX_DEFAULT_ROLE`, `HX_LOG_LEVEL`, `HX_FALLBACK_MODEL`, `HX_DATA_DIR`).
+    - Handled TOML syntax error reporting and schema validation issue formatting.
+  - Added unit test suite in `packages/core/src/__tests__/config-loader.test.ts` (5 tests passing).
+- **Decisions made**:
+  - Integrated `smol-toml` as fast, spec-compliant TOML parser.
+- **Tests run + results**:
+  - `pnpm run ci` passed cleanly (9/9 test files, 29/29 tests passed, 0 eslint warnings).
+- **Open issues / next step**:
+  - Next tasks: T0.5-T0.8 Prompt Analysis & Distillation in Lane E.
+
 ## 2026-11-22 lead-architect Task T0.3 hx doctor and Environment Resolution (status: done)
 - **What changed**:
   - Implemented `runDoctor()` and `formatDoctorTable()` in `packages/cli/src/doctor/index.ts`.

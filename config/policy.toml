@@ -1,0 +1,25 @@
+# Policy rules and permission tiers
+
+[policy]
+allow = []
+deny = []
+commandPrefixAllowlist = [
+  "git status",
+  "git diff",
+  "git log",
+  "pnpm test",
+  "npm test",
+  "cargo test",
+  "pnpm lint",
+  "cargo check"
+]
+
+[policy.toolTierOverrides]
+"fs.read_file" = 0
+"fs.list_dir" = 0
+"fs.grep" = 0
+"fs.glob" = 0
+"fs.apply_edit" = 1
+"fs.write_file" = 1
+"fs.trash" = 2
+"sandbox.run_command" = 3

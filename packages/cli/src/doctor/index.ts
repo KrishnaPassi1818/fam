@@ -41,7 +41,7 @@ export async function checkOllama(): Promise<{
       models,
       details: `Connected. Available models (${models.length}): ${models.join(', ')}`,
     };
-  } catch (_err) {
+  } catch {
     const cliVer = runCmd('ollama --version');
     if (cliVer) {
       return {

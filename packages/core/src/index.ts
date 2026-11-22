@@ -1,3 +1,1 @@
-import { VERSION } from '@hx/shared';
-
-export const CORE_VERSION = VERSION;
+export * from './config/index.js';

@@ -1,0 +1,16 @@
+# Privacy configuration
+
+[privacy]
+failClosed = true
+localOnlyPaths = [
+  "**/.env*",
+  "**/secrets/**",
+  "**/*.pem",
+  "**/*.key"
+]
+secretRegexes = [
+  "(?:AIza[0-9A-Za-z_-]{35})",
+  "(?:sk-[a-zA-Z0-9]{48})",
+  "(?:ghp_[0-9a-zA-Z]{36})",
+  "(?:[a-zA-Z0-9_-]*:[a-zA-Z0-9_-]+@[a-zA-Z0-9.-]+)"
+]

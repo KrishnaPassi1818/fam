@@ -12,7 +12,7 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
   AC: types exported, unit tests for schema parsing, ADR "contracts frozen v1".
 - [x] **T0.3** · D · T0.1 · `hx doctor`: detect OS/shell, Node, Rust, Ollama (version, pulled models), GPU/VRAM via `nvidia-smi`, `soffice`, git, `GEMINI_API_KEY`.
   AC: prints pass/warn/fail table, JSON output with `--json`. Record the actual report in PROGRESS.md. **Resolve the PRD open questions.**
-- [ ] **T0.4** · A · T0.2 · Config loader: `~/.harness/` layout creation, TOML parse and zod validation, defaults from `config/*.toml`, env overrides.
+- [x] **T0.4** · A · T0.2 · Config loader: `~/.harness/` layout creation, TOML parse and zod validation, defaults from `config/*.toml`, env overrides.
   AC: missing files create defaults, invalid files give readable errors.
 - [ ] **T0.5** · E · none · **Analyze `docs/reference/prompt.md`**. Read the whole file. Produce `docs/reference/prompt-analysis.md` with (a) estimated total token count, (b) a section inventory table: `# | section title/summary | tokens | KEEP/ADAPT/DROP | reason`, (c) a list of behavioral rules worth keeping grouped by theme (tone, formatting, ambiguity handling, honesty, safety, tool etiquette, injection handling, search/citation, code conventions), (d) a list of vendor-specific items that must be dropped (identity, product features, tool names/syntax, model names, cutoff claims), (e) notes on anything that conflicts with `core.md` rules.
   AC: every section of the file appears in the inventory. No verbatim copy of more than a short phrase.

@@ -1,0 +1,10 @@
+# Default general configuration for hx
+
+[general]
+defaultModel = "ollama:llama3.1:8b"
+defaultRole = "assistant"
+fallbackModel = "gemini:gemini-2.5-flash"
+logLevel = "info"
+dataDir = "~/.harness"
+maxSteps = 30
+maxWallTimeMs = 300000

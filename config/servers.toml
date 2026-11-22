@@ -1,0 +1,29 @@
+# MCP servers configuration
+
+[servers.fs]
+transport = "stdio"
+command = "target/debug/hx-fs"
+args = []
+autoStart = true
+enabled = true
+
+[servers.sandbox]
+transport = "stdio"
+command = "target/debug/hx-sandbox"
+args = []
+autoStart = false
+enabled = true
+
+[servers.office]
+transport = "stdio"
+command = "node"
+args = ["servers/office/dist/index.js"]
+autoStart = false
+enabled = true
+
+[servers.web]
+transport = "stdio"
+command = "node"
+args = ["servers/web/dist/index.js"]
+autoStart = false
+enabled = true
