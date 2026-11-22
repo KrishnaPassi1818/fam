@@ -12,5 +12,12 @@ export * from './tools/executor.js';
 export * from './backup/index.js';
 export * from './privacy/index.js';
 export * from './context/index.js';
+export * from './router/index.js';
+export * from './router/fixtures.js';
+export * from './tools/embedding.js';
+export * from './tools/retriever.js';
+export * from './tools/meta/find-tools.js';
+export * from './models/scheduler.js';
+
 
 

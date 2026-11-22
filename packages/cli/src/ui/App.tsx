@@ -230,7 +230,7 @@ export const App: FC<AppProps> = ({
   );
 
   // Handle slash commands
-  const handleSlashCommand = (cmdText: string) => {
+  const handleSlashCommand = async (cmdText: string) => {
     const parts = cmdText.trim().split(/\s+/);
     const cmd = parts[0]?.toLowerCase();
     const arg = parts.slice(1).join(' ');

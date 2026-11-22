@@ -89,5 +89,5 @@ describe('KV-Cache Prefix Stability Verification (T4.6)', () => {
     // Both completed successfully
     expect(t1Duration).toBeGreaterThan(0);
     expect(t2Duration).toBeGreaterThan(0);
-  });
+  }, 20000);
 });

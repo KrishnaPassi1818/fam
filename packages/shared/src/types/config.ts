@@ -84,11 +84,36 @@ export const ServersConfigSchema = z.object({
 });
 export type ServersConfig = z.infer<typeof ServersConfigSchema>;
 
+export const IntentSchema = z.enum(['coding', 'office', 'web', 'system', 'general']);
+export type Intent = z.infer<typeof IntentSchema>;
+
+export const PrivacyLevelSchema = z.enum(['normal', 'local_only']);
+export type PrivacyLevel = z.infer<typeof PrivacyLevelSchema>;
+
+export const RoutingRuleSchema = z.object({
+  intent: IntentSchema.optional(),
+  minComplexity: z.number().optional(),
+  maxComplexity: z.number().optional(),
+  privacy: PrivacyLevelSchema.optional(),
+  chain: z.array(z.string()),
+});
+export type RoutingRule = z.infer<typeof RoutingRuleSchema>;
+
+export const RoutingConfigSchema = z.object({
+  defaultChain: z.array(z.string()).default(['ollama:llama3.1:8b', 'gemini:gemini-2.5-flash']),
+  rules: z.array(RoutingRuleSchema).default([]),
+});
+export type RoutingConfig = z.infer<typeof RoutingConfigSchema>;
+
 export const HxConfigSchema = z.object({
   general: GeneralConfigSchema.default({}),
   models: ModelsConfigSchema.default({ models: {} }),
   policy: PolicyRuleSchema.default({}),
   privacy: PrivacyConfigSchema.default({}),
   servers: ServersConfigSchema.default({ servers: {} }),
+  routing: RoutingConfigSchema.default({
+    defaultChain: ['ollama:llama3.1:8b', 'gemini:gemini-2.5-flash'],
+    rules: [],
+  }),
 });
 export type HxConfig = z.infer<typeof HxConfigSchema>;

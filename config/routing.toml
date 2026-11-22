@@ -1,0 +1,47 @@
+# Routing Policy Configuration
+[routing]
+default_chain = ["ollama:llama3.1:8b", "gemini:gemini-2.5-flash"]
+
+# Small-to-medium coding requests -> qwen2.5-coder:7b
+[[routing.rules]]
+intent = "coding"
+max_complexity = 3
+privacy = "normal"
+chain = ["ollama:qwen2.5-coder:7b", "gemini:gemini-2.5-flash"]
+
+# Complex coding / architectural tasks -> gemini escalation
+[[routing.rules]]
+intent = "coding"
+min_complexity = 4
+privacy = "normal"
+chain = ["gemini:gemini-2.5-flash", "ollama:qwen2.5-coder:7b"]
+
+# Office documents -> llama3.1:8b
+[[routing.rules]]
+intent = "office"
+privacy = "normal"
+chain = ["ollama:llama3.1:8b", "gemini:gemini-2.5-flash"]
+
+# Web research -> Gemini (or llama3.1 fallback)
+[[routing.rules]]
+intent = "web"
+privacy = "normal"
+chain = ["gemini:gemini-2.5-flash", "ollama:llama3.1:8b"]
+
+# System commands -> llama3.1:8b local
+[[routing.rules]]
+intent = "system"
+privacy = "normal"
+chain = ["ollama:llama3.1:8b"]
+
+# Simple general conversation -> llama3.1:8b
+[[routing.rules]]
+intent = "general"
+max_complexity = 2
+privacy = "normal"
+chain = ["ollama:llama3.1:8b"]
+
+# Local-only privacy rule: NEVER ROUTE TO GEMINI OR CLOUD
+[[routing.rules]]
+privacy = "local_only"
+chain = ["ollama:llama3.1:8b", "ollama:qwen2.5-coder:7b"]

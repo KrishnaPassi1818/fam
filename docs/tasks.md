@@ -107,19 +107,19 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
 
 ## Phase 5: Router and tool retrieval
 
-- [ ] **T5.1** · A · T1.1 · Rules fast path and the 1.5b router (JSON schema output per architecture 4.6) with a confidence threshold.
+- [x] **T5.1** · A · T1.1 · Rules fast path and the 1.5b router (JSON schema output per architecture 4.6) with a confidence threshold.
   AC: 50-prompt labeled set ≥ 90% intent accuracy; latency < 800 ms CPU.
-- [ ] **T5.2** · A · T5.1 · Routing policy loader (`routing.toml`) and the model-chain resolver, including `local_only` rules and the `--model` override.
+- [x] **T5.2** · A · T5.1 · Routing policy loader (`routing.toml`) and the model-chain resolver, including `local_only` rules and the `--model` override.
   AC: policy tests.
-- [ ] **T5.3** · A · T2.3 · Tool embeddings via `nomic-embed-text` (cached, invalidated on description change), top-K retrieval, category boost, sticky and core sets.
+- [x] **T5.3** · A · T2.3 · Tool embeddings via `nomic-embed-text` (cached, invalidated on description change), top-K retrieval, category boost, sticky and core sets.
   AC: retrieval@6 ≥ 90% on the labeled prompts.
-- [ ] **T5.4** · A · T5.3 · `find_tools` meta-tool and hot-swap of tools mid-run.
+- [x] **T5.4** · A · T5.3 · `find_tools` meta-tool and hot-swap of tools mid-run.
   AC: scripted run where the needed tool isn't initially loaded and is found.
-- [ ] **T5.5** · A · T5.3 · Description shortening for small models (`short_description` use, override file).
+- [x] **T5.5** · A · T5.3 · Description shortening for small models (`short_description` use, override file).
   AC: token savings reported.
-- [ ] **T5.6** · A · T5.2 · Local model scheduler/lock: serialize local calls, group by model, unload policy, Gemini bypass.
+- [x] **T5.6** · A · T5.2 · Local model scheduler/lock: serialize local calls, group by model, unload policy, Gemini bypass.
   AC: mixed-task test counts swaps.
-- [ ] **T5.7** · E · T5.4 · 40-prompt tool-selection eval with ≥ 40 registered tools (use fixture tools).
+- [x] **T5.7** · E · T5.4 · 40-prompt tool-selection eval with ≥ 40 registered tools (use fixture tools).
   AC: ≥ 85% on llama3.1.
 
 ## Phase 6: Memory

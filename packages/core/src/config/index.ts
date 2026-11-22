@@ -24,6 +24,7 @@ export function ensureHarnessDirs(dataDir: string): void {
     path.join(resolved, 'backups'),
     path.join(resolved, 'db'),
     path.join(resolved, 'prompts'),
+    path.join(resolved, 'cache'),
   ];
   for (const d of dirs) {
     if (!fs.existsSync(d)) {
@@ -61,7 +62,7 @@ export function loadConfig(options: LoadConfigOptions = {}): HxConfig {
     ? resolvePath(options.configDir)
     : path.resolve(process.cwd(), 'config');
 
-  const files = ['default.toml', 'models.toml', 'policy.toml', 'privacy.toml', 'servers.toml'];
+  const files = ['default.toml', 'models.toml', 'policy.toml', 'privacy.toml', 'servers.toml', 'routing.toml'];
   const merged: Record<string, unknown> = {};
 
   for (const file of files) {
@@ -92,6 +93,25 @@ export function loadConfig(options: LoadConfigOptions = {}): HxConfig {
     }
   }
 
+  // Normalize routing section if present
+  let routingConfig: Record<string, unknown> = {};
+  if (merged['routing'] && typeof merged['routing'] === 'object') {
+    const r = merged['routing'] as Record<string, unknown>;
+    const defaultChain = (r['default_chain'] || r['defaultChain']) as string[] | undefined;
+    const rawRules = (r['rules'] || []) as Record<string, unknown>[];
+    const rules = rawRules.map((rule) => ({
+      intent: rule['intent'],
+      minComplexity: rule['min_complexity'] ?? rule['minComplexity'],
+      maxComplexity: rule['max_complexity'] ?? rule['maxComplexity'],
+      privacy: rule['privacy'],
+      chain: rule['chain'] ?? [],
+    }));
+    routingConfig = {
+      defaultChain: defaultChain || ['ollama:llama3.1:8b', 'gemini:gemini-2.5-flash'],
+      rules,
+    };
+  }
+
   // Handle section mappings if files structure directly under [general], [policy], etc.
   const configCandidate: Record<string, unknown> = {
     general: merged['general'] || {},
@@ -99,6 +119,7 @@ export function loadConfig(options: LoadConfigOptions = {}): HxConfig {
     policy: merged['policy'] || {},
     privacy: merged['privacy'] || {},
     servers: merged['servers'] ? { servers: merged['servers'] } : { servers: {} },
+    routing: Object.keys(routingConfig).length > 0 ? routingConfig : undefined,
   };
 
   // Environment overrides
