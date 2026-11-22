@@ -1,0 +1,7 @@
+packages:
+  - 'packages/*'
+  - 'servers/office'
+  - 'servers/web'
+
+allowBuilds:
+  esbuild: true

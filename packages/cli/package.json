@@ -1,0 +1,23 @@
+{
+  "name": "@hx/cli",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "hx": "./dist/bin/hx.js"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@hx/core": "workspace:*",
+    "@hx/shared": "workspace:*",
+    "commander": "^13.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}
