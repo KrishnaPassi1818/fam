@@ -1,5 +1,57 @@
 # Development Progress Log
 
+## 2026-11-22 lead-architect Phase 6 Exit Gate Verification: Memory System, Vector Store, Working Memory, Persistence (status: done)
+- **What changed**:
+  - Implemented SQLite Database & Migrations (`packages/core/src/memory/db.ts`):
+    - Persistent SQLite database at `~/.harness/db/memory.sqlite` with migration versioning.
+    - Full schema implementation per `memory.md` §3: `memory`, `sessions`, and virtual vector tables.
+    - Native `sqlite-vec` extension support (`vec0` virtual table) with automatic pure-JS Float32Array blob + cosine fallback.
+  - Implemented `MemoryService` (`packages/core/src/memory/service.ts`):
+    - Project scope hashing: `project:<hash>` derived from working directory SHA-256.
+    - Write path (`remember`):
+      - Automatic privacy gate checks marking credentials and keys as `local_only`.
+      - Text embedding via `EmbeddingService`.
+      - Near-duplicate detection: bumps `use_count` and updates recency on equivalent statements.
+      - Contradiction & update handling: sets `superseded_by` on outdated memories and stores replacement.
+    - Read path (`retrieve`):
+      - Vector similarity retrieval across active non-superseded memories in scope (global + project).
+      - Multi-factor ranking: `0.6 * similarity + 0.2 * recency (30d half-life decay) + 0.2 * importance`.
+      - Relevance cutoff: drops scores < 0.35.
+      - Strict 400-token budget cap for dynamic prompt layer injection.
+      - Non-negotiable privacy guarantee: `local_only` memories are completely purged from prompts sent to Gemini API.
+    - Prompt formatting: renders clean `## Relevant memory` bullet lists for Layer 6 dynamic context.
+  - Implemented Working Memory Subsystem (`packages/core/src/memory/working.ts`):
+    - `TodoManager`: manages task checklist (`add`, `done`, `list`, `clear`), formatted for prompt Layer 6.
+    - `Scratchpad`: key-value scratchpad (`set`, `get`, `append`) bounded to strict 2 KB capacity limit.
+    - `SessionPersistence`: persists session state (`todos`, `scratch`, `summary`, `messages`) to `~/.harness/sessions/<id>.json`.
+    - `history_search`: searches past session transcripts for past decisions and context.
+  - Implemented Memory Extraction (`packages/core/src/memory/extractor.ts`):
+    - Small model extraction on CPU (`qwen2.5:1.5b`) extracting <= 5 candidate memories at session end or on `/compact`.
+  - Implemented Built-in Memory Tools (`packages/core/src/memory/tools.ts`):
+    - `core.remember`, `core.todo`, `core.scratch`, `core.history_search` descriptors and handlers.
+  - Implemented CLI & UI Memory Commands:
+    - CLI commands: `hx memory list`, `hx memory search <query>`, `hx memory forget <id>`, `hx memory wipe`.
+    - TUI slash commands: `/memory list|search|forget|export|import|wipe`.
+  - Authored comprehensive test suite:
+    - `packages/core/src/__tests__/memory.test.ts`: 13 test cases verifying SQLite migrations, write dedup/supersede, read scoring, 400-token cap, privacy isolation, working memory, and user controls.
+  - Authored and verified automated Phase 6 Exit Gate (`scripts/demo-p6.ts`, `scripts/demo-p6.sh`):
+    - Session 1 preference ("Always format dates in ISO 8601") retrieved in Session 2.
+    - Contradicting preference ("format dates as DD/MM/YYYY") successfully superseded old memory.
+    - 400-token budget cap strictly enforced (29 tokens, 6ms latency < 150ms).
+    - `local_only` sensitive memory purged from Gemini request and preserved for local Ollama.
+    - Todo checklist and 2 KB bounded scratchpad verified.
+    - Session persistence and history search verified.
+    - Memory export, wipe, and import verified.
+- **Phase 6 Exit Gate Verdict**:
+  - **ALL PHASE 6 ACCEPTANCE CRITERIA SATISFIED**. Phase 6 is formally COMPLETE and LOCKED.
+- **Tests run + results**:
+  - Full monorepo Vitest: 36/36 test files passed, 158/158 tests passed cleanly (1 skipped).
+  - TypeScript build: 5/5 packages compiled cleanly with zero errors.
+  - `scripts/demo-p6.sh`: exit code 0.
+- **Open issues / next step**:
+  - Phase 7: Office Server (Tasks T7.1–T7.10).
+
+
 ## 2026-11-22 lead-architect Phase 5 Exit Gate Verification: Router, Routing Policy, Tool Embeddings, Vector Retrieval, Scheduler (status: done)
 - **What changed**:
   - Implemented Rules Fast Path & Complexity Estimator (`packages/core/src/router/rules.ts`):

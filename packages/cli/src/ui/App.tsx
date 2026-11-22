@@ -8,6 +8,7 @@ import {
   PromptBuilder,
   ContextManager,
   BackupService,
+  MemoryService,
 } from '@hx/core';
 import type { Message, ModelAdapter, HxConfig, ModelProfile } from '@hx/shared';
 import { StatusBar } from './components/StatusBar.js';
@@ -248,6 +249,7 @@ export const App: FC<AppProps> = ({
               '  /context      - Component token breakdown and budget\n' +
               '  /compact      - Compress conversation history to fit budget\n' +
               '  /undo         - Restore last pre-write change set\n' +
+              '  /memory       - List/search/forget long-term memory\n' +
               '  /system       - Inspect active system prompt and layers\n' +
               '  /model <name> - Switch active model (e.g. /model llama3.1:8b)\n' +
               '  /models       - List configured models and placement\n' +
@@ -330,6 +332,45 @@ export const App: FC<AppProps> = ({
               content: `Undo failed: ${err instanceof Error ? err.message : String(err)}`,
             },
           ]);
+        }
+        break;
+      }
+
+      case '/memory': {
+        const mem = new MemoryService();
+        const subParts = arg.split(/\s+/);
+        const sub = subParts[0]?.toLowerCase();
+        const subArg = subParts.slice(1).join(' ');
+
+        if (sub === 'list' || !sub) {
+          const list = mem.list();
+          const content = list.length === 0
+            ? 'No stored memories.'
+            : 'Stored Memories:\n' + list.map((m) => `- [${m.id}] (${m.kind}, ${m.scope}, ${m.privacy}): ${m.text}`).join('\n');
+          setMessages((prev) => [...prev, { id: `mem_${Date.now()}`, role: 'system', content }]);
+        } else if (sub === 'search') {
+          const results = await mem.retrieve(subArg);
+          const content = results.length === 0
+            ? `No memories matched "${subArg}".`
+            : `Search Results for "${subArg}":\n` + results.map((r) => `- (score: ${r.finalScore.toFixed(3)}) ${r.memory.text}`).join('\n');
+          setMessages((prev) => [...prev, { id: `mem_${Date.now()}`, role: 'system', content }]);
+        } else if (sub === 'forget') {
+          const ok = mem.forget(subArg);
+          const content = ok ? `Deleted memory ${subArg}.` : `Memory ${subArg} not found.`;
+          setMessages((prev) => [...prev, { id: `mem_${Date.now()}`, role: 'system', content }]);
+        } else if (sub === 'export') {
+          const json = mem.export();
+          setMessages((prev) => [...prev, { id: `mem_${Date.now()}`, role: 'system', content: `Memory Export:\n${json}` }]);
+        } else if (sub === 'import') {
+          try {
+            const count = mem.import(subArg);
+            setMessages((prev) => [...prev, { id: `mem_${Date.now()}`, role: 'system', content: `Imported ${count} memories.` }]);
+          } catch (err) {
+            setMessages((prev) => [...prev, { id: `mem_${Date.now()}`, role: 'system', content: `Import failed: ${err}` }]);
+          }
+        } else if (sub === 'wipe') {
+          mem.wipe();
+          setMessages((prev) => [...prev, { id: `mem_${Date.now()}`, role: 'system', content: 'Wiped all memories.' }]);
         }
         break;
       }

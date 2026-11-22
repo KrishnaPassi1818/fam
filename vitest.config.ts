@@ -6,5 +6,10 @@ export default defineConfig({
     environment: 'node',
     include: ['**/*.test.{ts,tsx}'],
     exclude: ['**/node_modules/**', '**/dist/**', '**/target/**'],
+    server: {
+      deps: {
+        external: ['node:sqlite', 'sqlite-vec'],
+      },
+    },
   },
 });

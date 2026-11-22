@@ -124,14 +124,14 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
 
 ## Phase 6: Memory
 
-- [ ] **T6.1** · A · T0.4 · SQLite layer, migrations, schema from memory.md, `sqlite-vec` with a JS-cosine fallback.
-- [ ] **T6.2** · A · T6.1, T5.3 · Embedding service shared with tool retrieval, with batching.
-- [ ] **T6.3** · A · T6.2 · Write path: `remember` tool, dedup/supersede, secret detection, scopes.
-- [ ] **T6.4** · A · T6.2 · Read path: scoring, token cap, injection into the dynamic layer, privacy filtering for Gemini.
-- [ ] **T6.5** · A · T4.4 · Extraction at session end with a confirm checklist (`memory.confirm_extracted`).
-- [ ] **T6.6** · A · T3.2 · Working memory: `todo`, `scratch`, session persistence, `hx resume`, `history_search`.
-- [ ] **T6.7** · D · T6.3 · `/memory list|search|forget|export|import`, `hx memory wipe`.
-- [ ] **T6.8** · E · T6.4 · Memory eval cases and acceptance tests per memory.md section 9.
+- [x] **T6.1** · A · T0.4 · SQLite layer, migrations, schema from memory.md, `sqlite-vec` with a JS-cosine fallback.
+- [x] **T6.2** · A · T6.1, T5.3 · Embedding service shared with tool retrieval, with batching.
+- [x] **T6.3** · A · T6.2 · Write path: `remember` tool, dedup/supersede, secret detection, scopes.
+- [x] **T6.4** · A · T6.2 · Read path: scoring, token cap, injection into the dynamic layer, privacy filtering for Gemini.
+- [x] **T6.5** · A · T4.4 · Extraction at session end with a confirm checklist (`memory.confirm_extracted`).
+- [x] **T6.6** · A · T3.2 · Working memory: `todo`, `scratch`, session persistence, `hx resume`, `history_search`.
+- [x] **T6.7** · D · T6.3 · `/memory list|search|forget|export|import`, `hx memory wipe`.
+- [x] **T6.8** · E · T6.4 · Memory eval cases and acceptance tests per memory.md section 9.
   AC (phase): all of memory.md section 9 passes.
 
 ## Phase 7: Office server (lane C)

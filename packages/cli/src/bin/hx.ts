@@ -4,7 +4,7 @@ import React from 'react';
 import { render } from 'ink';
 import { Command } from 'commander';
 import { VERSION } from '@hx/shared';
-import { loadConfig, Tracer } from '@hx/core';
+import { loadConfig, Tracer, MemoryService } from '@hx/core';
 import { runDoctor, formatDoctorTable } from '../doctor/index.js';
 import { listServers, testServer, saveServerConfig, removeServerConfig } from '../mcp/index.js';
 import { loadAllTasks, EvalRunner, saveEvalReport, formatMarkdownReport } from '@hx/evals';
@@ -240,6 +240,82 @@ mcpCmd
       }
     } catch (err) {
       process.stderr.write(`Failed to remove MCP server: ${err}\n`);
+      process.exit(1);
+    }
+  });
+
+const memoryCmd = program.command('memory').description('Inspect and manage persistent long-term memory');
+
+memoryCmd
+  .command('list')
+  .description('List stored memories')
+  .option('--project', 'Show only current project memories')
+  .action((options: { project?: boolean }) => {
+    try {
+      const memService = new MemoryService();
+      const items = memService.list(options.project ? { scope: memService.getProjectScope() } : {});
+      if (items.length === 0) {
+        process.stdout.write('No memories found.\n');
+        return;
+      }
+      for (const item of items) {
+        process.stdout.write(`- [${item.id}] (${item.kind}, ${item.scope}, ${item.privacy}): ${item.text}\n`);
+      }
+    } catch (err) {
+      process.stderr.write(`Failed to list memories: ${err}\n`);
+      process.exit(1);
+    }
+  });
+
+memoryCmd
+  .command('search <query>')
+  .description('Search stored memories using vector similarity')
+  .action(async (query: string) => {
+    try {
+      const memService = new MemoryService();
+      const results = await memService.retrieve(query, { limit: 10 });
+      if (results.length === 0) {
+        process.stdout.write(`No memories matched query "${query}".\n`);
+        return;
+      }
+      process.stdout.write(`Found ${results.length} relevant memories:\n`);
+      for (const r of results) {
+        process.stdout.write(`- (score: ${r.finalScore.toFixed(3)}) [${r.memory.id}]: ${r.memory.text}\n`);
+      }
+    } catch (err) {
+      process.stderr.write(`Failed to search memories: ${err}\n`);
+      process.exit(1);
+    }
+  });
+
+memoryCmd
+  .command('forget <id>')
+  .description('Delete a specific memory by its ID')
+  .action((id: string) => {
+    try {
+      const memService = new MemoryService();
+      const deleted = memService.forget(id);
+      if (deleted) {
+        process.stdout.write(`Deleted memory '${id}'.\n`);
+      } else {
+        process.stdout.write(`Memory '${id}' not found.\n`);
+      }
+    } catch (err) {
+      process.stderr.write(`Failed to delete memory: ${err}\n`);
+      process.exit(1);
+    }
+  });
+
+memoryCmd
+  .command('wipe')
+  .description('Wipe all stored memories and sessions from ~/.harness/db/memory.sqlite')
+  .action(() => {
+    try {
+      const memService = new MemoryService();
+      memService.wipe();
+      process.stdout.write('Wiped all memories and session records.\n');
+    } catch (err) {
+      process.stderr.write(`Failed to wipe memory: ${err}\n`);
       process.exit(1);
     }
   });
