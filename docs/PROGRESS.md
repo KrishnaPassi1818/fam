@@ -1,5 +1,21 @@
 # Development Progress Log
 
+## 2026-11-22 lead-architect Task T1.4 Prompt Builder Implementation (status: done)
+- **What changed**:
+  - Implemented `PromptBuilder` in `packages/core/src/prompts/builder.ts`:
+    - Strict assembly of Layers 1–6 (Core -> Profile -> Role -> User Global -> Project -> Dynamic context).
+    - Preserves byte-identical stable prefix (Layers 1-3) across turns for KV-cache reuse.
+    - Implemented drop order on budget overflow: dynamic hints -> project -> user -> profile -> role trimmed (Core is non-removable).
+    - Implemented `PromptApprovalStore` (`~/.harness/approvals.json`) with SHA-256 hash checks for repository `AGENTS.md` / `HARNESS.md` first-use approval.
+    - Model family and tier mapping (Gemini full 4k, Llama/Coder medium 600, Qwen min 150).
+  - Added unit test suite in `packages/core/src/__tests__/prompt-builder.test.ts` (5 tests passing).
+- **Decisions made**:
+  - Excluded `core.md` from `min` tier (router classification) so router strictly remains within 150 token budget.
+- **Tests run + results**:
+  - `pnpm run ci` passed cleanly (15/15 test files, 52/52 tests passed).
+- **Open issues / next step**:
+  - Next task: T1.5 Agent Loop v1 in Lane A.
+
 ## 2026-11-22 lead-architect Task T1.3 Model Capability Probe (status: done)
 - **What changed**:
   - Implemented model capability prober in `packages/core/src/adapters/probe.ts` (`probeModelCapabilities`).

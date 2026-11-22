@@ -35,7 +35,7 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
   AC: mocked tests; `@live` test if a key is present.
 - [x] **T1.3** · A · T1.1, T1.2 · Capability probe: detect and cache per-model caps (tools, parallel, json-format). **Specifically test qwen2.5-coder:7b tool calling and record the result.**
   AC: results written to `~/.harness/models.toml` and PROGRESS.md.
-- [ ] **T1.4** · A · T0.7, T0.4 · Prompt builder: layers 1–6, model-tier mapping, budget enforcement and drop order, project-file hash approval store, `/system` data.
+- [x] **T1.4** · A · T0.7, T0.4 · Prompt builder: layers 1–6, model-tier mapping, budget enforcement and drop order, project-file hash approval store, `/system` data.
   AC: tests for ordering, budget trimming, prefix stability across turns (byte-identical stable layers).
 - [ ] **T1.5** · A · T1.1, T1.4 · Agent loop v1: message history, sequential tool calls, limits (steps/tokens/time), loop detector, abort; built-in tools `echo`, `current_time`.
   AC: loop tests with a scripted fake adapter covering limit, abort, and repeat detection.

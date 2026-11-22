@@ -13,7 +13,6 @@ describe('probeModelCapabilities', () => {
         jsonSchemaFormat: true,
         maxCtx: 4096,
       },
-      // eslint-disable-next-line @typescript-eslint/require-await
       async *chat(req: ChatRequest): AsyncIterable<ChatChunk> {
         if (req.tools && req.messages[0]?.content.includes('echo_tool function')) {
           yield {

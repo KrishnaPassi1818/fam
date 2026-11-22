@@ -146,9 +146,12 @@ export class PromptBuilder {
   public build(options: BuildPromptOptions, cwd = process.cwd()): BuiltPromptResult {
     const { family, tier, budget } = this.resolveModelDetails(options.modelId, options.tier);
 
-    // Layer 1: Core rules (non-removable)
-    const corePath = path.join(this.promptsDir, 'core.md');
-    const coreBody = this.readPromptBody(corePath);
+    // Layer 1: Core rules (non-removable for interactive roles; omitted for router/min classification)
+    let coreBody = '';
+    if (tier !== 'min' && options.role !== 'router') {
+      const corePath = path.join(this.promptsDir, 'core.md');
+      coreBody = this.readPromptBody(corePath);
+    }
 
     // Layer 2: Model profile
     const profilePath = path.join(this.promptsDir, 'profiles', `${family}.md`);
