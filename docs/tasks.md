@@ -10,7 +10,7 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
   AC: `pnpm ci` passes on a clean checkout.
 - [x] **T0.2** · A · T0.1 · `packages/shared` contracts: Message, ToolCall, ToolResult, ToolDescriptor, ModelAdapter, ChatRequest/Chunk, Config schemas (zod), error classes, logger, token-count util.
   AC: types exported, unit tests for schema parsing, ADR "contracts frozen v1".
-- [ ] **T0.3** · D · T0.1 · `hx doctor`: detect OS/shell, Node, Rust, Ollama (version, pulled models), GPU/VRAM via `nvidia-smi`, `soffice`, git, `GEMINI_API_KEY`.
+- [x] **T0.3** · D · T0.1 · `hx doctor`: detect OS/shell, Node, Rust, Ollama (version, pulled models), GPU/VRAM via `nvidia-smi`, `soffice`, git, `GEMINI_API_KEY`.
   AC: prints pass/warn/fail table, JSON output with `--json`. Record the actual report in PROGRESS.md. **Resolve the PRD open questions.**
 - [ ] **T0.4** · A · T0.2 · Config loader: `~/.harness/` layout creation, TOML parse and zod validation, defaults from `config/*.toml`, env overrides.
   AC: missing files create defaults, invalid files give readable errors.

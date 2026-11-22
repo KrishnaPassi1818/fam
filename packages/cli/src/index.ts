@@ -1,1 +1,1 @@
-export * from './bin/hx.js';
+export * from './doctor/index.js';

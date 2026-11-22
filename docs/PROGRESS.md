@@ -1,5 +1,44 @@
 # Development Progress Log
 
+## 2026-11-22 lead-architect Task T0.3 hx doctor and Environment Resolution (status: done)
+- **What changed**:
+  - Implemented `runDoctor()` and `formatDoctorTable()` in `packages/cli/src/doctor/index.ts`.
+  - Added CLI subcommand `hx doctor` with `--json` option in `packages/cli/src/bin/hx.ts`.
+  - Added unit tests in `packages/cli/src/__tests__/doctor.test.ts`.
+  - Executed `hx doctor` and verified full environment report.
+- **Doctor Report Output**:
+  ```
+  STATUS   | COMPONENT                | DETAILS
+  --------------------------------------------------------------------------------
+  [ PASS ] | Operating System         | Omarchy (x64, kernel 7.2.15-1-omarchy)
+  [ PASS ] | User Shell               | /usr/bin/bash
+  [ PASS ] | CPU & RAM                | AMD Ryzen 7 7435HS (16 cores), 23.1 GB RAM
+  [ PASS ] | Node.js                  | v22.23.4 (Node >= 20 required)
+  [ PASS ] | pnpm                     | v12.9.1
+  [ PASS ] | Rust & Cargo             | rustc 1.98.1 / cargo 1.98.1
+  [ PASS ] | NVIDIA GPU & VRAM        | NVIDIA GeForce RTX 4050 Laptop GPU | Driver: 615.78.08 | VRAM: 5166MiB free / 6141MiB total
+  [ PASS ] | Ollama Service           | Connected (nomic-embed-text, llama3.1:8b, qwen2.5:1.5b, qwen2.5-coder:7b)
+  [ PASS ] | Ollama Models            | All target models present
+  [ WARN ] | Gemini API Key           | GEMINI_API_KEY not set (cloud escalation/planning disabled)
+  [ PASS ] | LibreOffice (soffice)    | LibreOffice 26.8.1.1 680(Build:1)
+  [ PASS ] | Git                      | git version 2.56.0
+  [ PASS ] | Docker                   | Docker version 29.9.2, build a82e528901
+  --------------------------------------------------------------------------------
+  Verdict: All required dependencies are satisfied.
+  ```
+- **PRD Open Questions Resolved**:
+  - Host OS: Omarchy Linux (kernel 7.2.15, Arch-based).
+  - Shell: `/usr/bin/bash`.
+  - Ollama version: 0.40.7, service running on port 11434.
+  - LibreOffice installed: Yes (`LibreOffice 26.8.1.1`).
+  - Available Ollama models: `llama3.1:8b`, `qwen2.5:1.5b`, `qwen2.5-coder:7b`, `nomic-embed-text:latest`.
+  - Gemini model: `gemini-2.5-flash` configured as default fallback; key not currently in environment (mocking available for offline tests).
+- **Tests run + results**:
+  - `pnpm run ci` passed (eslint 0 warnings, tsc -b passed, vitest 8/8 files, 24/24 tests passed, cargo check passed).
+  - `hx doctor` passed in terminal table and JSON mode.
+- **Open issues / next step**:
+  - Next task: T0.4 Config loader in Lane A.
+
 ## 2026-11-22 lead-architect Task T0.2 Contracts Frozen v1 (status: done)
 - **What changed**:
   - Implemented core message types and schemas (`SystemMessage`, `UserMessage`, `AssistantMessage`, `ToolMessage`, `Part`, `ToolCall`, `ToolResult`) in `packages/shared/src/types/message.ts`.
