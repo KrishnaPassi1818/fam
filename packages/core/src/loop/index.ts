@@ -12,6 +12,7 @@ import { PromptBuilder, type BuildPromptOptions } from '../prompts/builder.js';
 import { Tracer } from '../trace/index.js';
 import { ToolExecutor, type ToolHandler } from '../tools/executor.js';
 import { PermissionGate, type PermissionCheckResult } from '../tools/permission.js';
+import { ContextManager } from '../context/index.js';
 
 export interface ToolExecutionHandler {
   (args: Record<string, unknown>, signal?: AbortSignal): Promise<{
@@ -24,6 +25,7 @@ export interface AgentLoopOptions {
   adapter: ModelAdapter;
   promptBuilder?: PromptBuilder;
   tracer?: Tracer;
+  contextManager?: ContextManager;
   role?: 'assistant' | 'coder' | 'router';
   tier?: 'full' | 'medium' | 'min';
   userGlobalPrompt?: string;
@@ -102,6 +104,7 @@ export class AgentLoop {
   private readonly tools: ToolDescriptor[];
   private readonly toolHandlers: Record<string, ToolExecutionHandler>;
   private readonly executor: ToolExecutor;
+  private readonly contextManager: ContextManager;
   private readonly descriptorMap: Map<string, ToolDescriptor>;
   private readonly handlerMap: Map<string, ToolHandler>;
   private readonly maxSteps: number;
@@ -113,12 +116,22 @@ export class AgentLoop {
     this.adapter = options.adapter;
     this.promptBuilder = options.promptBuilder || new PromptBuilder();
     this.tracer = options.tracer;
+    this.contextManager =
+      options.contextManager || new ContextManager({ modelId: this.adapter.id });
     this.role = options.role || 'assistant';
     this.tier = options.tier;
     this.userGlobalPrompt = options.userGlobalPrompt;
     this.projectPrompt = options.projectPrompt;
-    this.tools = [...BUILTIN_TOOLS, ...(options.tools || [])];
-    this.toolHandlers = { ...BUILTIN_TOOL_HANDLERS, ...(options.toolHandlers || {}) };
+
+    const blobTools = this.contextManager.getBlobStore().getTools();
+    const blobHandlers = this.contextManager.getBlobStore().getHandlers();
+
+    this.tools = [...BUILTIN_TOOLS, ...blobTools, ...(options.tools || [])];
+    this.toolHandlers = {
+      ...BUILTIN_TOOL_HANDLERS,
+      ...blobHandlers,
+      ...(options.toolHandlers || {}),
+    };
 
     this.descriptorMap = new Map();
     for (const t of this.tools) {
@@ -208,10 +221,25 @@ export class AgentLoop {
           throw new BudgetExceeded(totalTokensUsed, this.maxTokens);
         }
 
+        // Prepare context through 4-phase ladder
+        const prep = await this.contextManager.prepareContext(
+          builtPrompt.systemPrompt,
+          this.tools,
+          history.filter((m) => m.role !== 'system'),
+        );
+
+        if (prep.appliedStrategies.length > 0) {
+          this.tracer?.emit('compact', {
+            step,
+            appliedStrategies: prep.appliedStrategies,
+            historyTokens: prep.accounting.historyTokens,
+          });
+        }
+
         // Prepare request with system message at index 0 if not present
         const messagesToSend: Message[] = [
           { role: 'system', content: builtPrompt.systemPrompt },
-          ...history.filter((m) => m.role !== 'system'),
+          ...prep.messages,
         ];
 
         this.tracer?.emit('model_call', {

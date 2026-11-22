@@ -6,6 +6,8 @@ import {
   AgentLoop,
   Tracer,
   PromptBuilder,
+  ContextManager,
+  BackupService,
 } from '@hx/core';
 import type { Message, ModelAdapter, HxConfig, ModelProfile } from '@hx/shared';
 import { StatusBar } from './components/StatusBar.js';
@@ -243,6 +245,9 @@ export const App: FC<AppProps> = ({
             content:
               'Slash Commands:\n' +
               '  /help         - Show this help message\n' +
+              '  /context      - Component token breakdown and budget\n' +
+              '  /compact      - Compress conversation history to fit budget\n' +
+              '  /undo         - Restore last pre-write change set\n' +
               '  /system       - Inspect active system prompt and layers\n' +
               '  /model <name> - Switch active model (e.g. /model llama3.1:8b)\n' +
               '  /models       - List configured models and placement\n' +
@@ -252,6 +257,82 @@ export const App: FC<AppProps> = ({
           },
         ]);
         break;
+
+      case '/context': {
+        const cm = new ContextManager({ modelId: model });
+        const pb = new PromptBuilder();
+        const res = pb.build({
+          modelId: model,
+          role,
+          tier: tier as 'full' | 'medium' | 'min',
+          userGlobalPrompt: systemOverride,
+          projectPrompt: appendSystem,
+          dynamicContext: { cwd: process.cwd(), date: new Date().toISOString() },
+        });
+        const acc = cm.account(res.systemPrompt, [], historyRef.current);
+        const report =
+          `Context Breakdown:\n` +
+          `  - System Prompt: ${acc.systemTokens} tokens\n` +
+          `  - Tool Defs:     ${acc.toolsTokens} tokens\n` +
+          `  - History:       ${acc.historyTokens} tokens (${historyRef.current.length} messages)\n` +
+          `  - Work Reserve:  ${acc.budget.reserve} tokens\n` +
+          `  - Total Allocated: ${acc.totalTokens + acc.budget.reserve} / ${acc.budget.numCtx} tokens\n` +
+          `  - Status: ${acc.exceedsBudget ? 'OVER BUDGET' : 'OK'}`;
+        setMessages((prev) => [
+          ...prev,
+          { id: `ctx_${Date.now()}`, role: 'system', content: report },
+        ]);
+        break;
+      }
+
+      case '/compact': {
+        const cm = new ContextManager({ modelId: model });
+        const pb = new PromptBuilder();
+        const res = pb.build({
+          modelId: model,
+          role,
+          tier: tier as 'full' | 'medium' | 'min',
+          userGlobalPrompt: systemOverride,
+          projectPrompt: appendSystem,
+          dynamicContext: { cwd: process.cwd(), date: new Date().toISOString() },
+        });
+        const prep = await cm.prepareContext(res.systemPrompt, [], historyRef.current);
+        historyRef.current = prep.messages;
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `compact_${Date.now()}`,
+            role: 'system',
+            content: `Compacted conversation history: ${prep.appliedStrategies.join(', ') || 'already minimal'}. Tokens now: ${prep.accounting.historyTokens}.`,
+          },
+        ]);
+        break;
+      }
+
+      case '/undo': {
+        const bs = new BackupService();
+        try {
+          const undoRes = await bs.undo();
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: `undo_${Date.now()}`,
+              role: 'system',
+              content: `Undo successful: restored ${undoRes.restoredCount} file(s), removed ${undoRes.removedCount} newly created file(s).`,
+            },
+          ]);
+        } catch (err) {
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: `undo_err_${Date.now()}`,
+              role: 'system',
+              content: `Undo failed: ${err instanceof Error ? err.message : String(err)}`,
+            },
+          ]);
+        }
+        break;
+      }
 
       case '/system': {
         const pb = new PromptBuilder();

@@ -11,5 +11,6 @@ export * from './tools/permission.js';
 export * from './tools/executor.js';
 export * from './backup/index.js';
 export * from './privacy/index.js';
+export * from './context/index.js';
 
 

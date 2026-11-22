@@ -90,19 +90,19 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
 
 ## Phase 4: Context manager
 
-- [ ] **T4.1** · A · T1.5 · Token budgeter: per-model budget table, accounting by component, pre-send check that guarantees `prompt + reserve ≤ num_ctx`.
+- [x] **T4.1** · A · T1.5 · Token budgeter: per-model budget table, accounting by component, pre-send check that guarantees `prompt + reserve ≤ num_ctx`.
   AC: property tests (never exceeds).
-- [ ] **T4.2** · A · T3.2 · Blob store and offloading: large result → handle and summary (first/last lines and size), built-in `blob_read(handle,range)` and `blob_grep`.
+- [x] **T4.2** · A · T3.2 · Blob store and offloading: large result → handle and summary (first/last lines and size), built-in `blob_read(handle,range)` and `blob_grep`.
   AC: tests, and an e2e with a 1 MB grep result.
-- [ ] **T4.3** · A · T4.1 · Result stubbing and a history trimming policy.
+- [x] **T4.3** · A · T4.1 · Result stubbing and a history trimming policy.
   AC: tests for ordering and idempotence.
-- [ ] **T4.4** · A · T1.1 · Compactor using qwen2.5:1.5b (CPU, JSON schema output): facts, decisions, files, open items; keep the last 4 turns; `/compact`.
+- [x] **T4.4** · A · T1.1 · Compactor using qwen2.5:1.5b (CPU, JSON schema output): facts, decisions, files, open items; keep the last 4 turns; `/compact`.
   AC: fact-recall test over a scripted conversation.
-- [ ] **T4.5** · A · T4.1 · KV-prefix stability: ensure the stable prefix is byte-identical between turns; add a test and a measurement of `prompt_eval_count` reuse.
+- [x] **T4.5** · A · T4.1 · KV-prefix stability: ensure the stable prefix is byte-identical between turns; add a test and a measurement of `prompt_eval_count` reuse.
   AC: second turn's prompt eval is mostly cached (record numbers).
-- [ ] **T4.6** · D · T4.1 · `/context` view (component breakdown), status bar accuracy.
+- [x] **T4.6** · D · T4.1 · `/context` view (component breakdown), status bar accuracy.
   AC: manual check.
-- [ ] **T4.7** · A/E · T4.4 · 60-turn soak test.
+- [x] **T4.7** · A/E · T4.4 · 60-turn soak test.
   AC: phase gate.
 
 ## Phase 5: Router and tool retrieval
