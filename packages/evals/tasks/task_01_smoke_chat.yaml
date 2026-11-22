@@ -1,0 +1,10 @@
+id: task_01_smoke_chat
+suite: smoke
+description: Direct conversational query without tools
+prompt: "Reply with exactly the word PONG and nothing else."
+fixtures: {}
+checks:
+  - type: response_contains
+    substring: "PONG"
+  - type: no_errors
+timeoutMs: 15000

@@ -1,6 +1,12 @@
-import Ajv, { type ValidateFunction, type ErrorObject } from 'ajv';
-import addFormats from 'ajv-formats';
+import AjvModule, { type ValidateFunction, type ErrorObject } from 'ajv';
+import addFormatsModule from 'ajv-formats';
 import type { ToolDescriptor } from '@hx/shared';
+
+// ESM Interop
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const AjvClass: any = (AjvModule as any).default || AjvModule;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const addFormatsFn: any = (addFormatsModule as any).default || addFormatsModule;
 
 export interface ValidationSuccess {
   valid: true;
@@ -16,17 +22,18 @@ export interface ValidationFailure {
 export type ValidationResult = ValidationSuccess | ValidationFailure;
 
 export class ToolValidator {
-  private readonly ajv: Ajv;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private readonly ajv: any;
   private readonly validatorCache = new Map<string, ValidateFunction>();
 
   constructor() {
-    this.ajv = new Ajv({
+    this.ajv = new AjvClass({
       allErrors: true,
       coerceTypes: true, // AJV native coercion support
       useDefaults: true,
       strict: false,
     });
-    addFormats(this.ajv);
+    addFormatsFn(this.ajv);
   }
 
   public coerce(
@@ -103,12 +110,17 @@ export class ToolValidator {
     let validator = this.validatorCache.get(tool.name);
     if (!validator) {
       try {
-        validator = this.ajv.compile(tool.inputSchema);
-        this.validatorCache.set(tool.name, validator);
-      } catch (err) {
+        const compiled = this.ajv.compile(tool.inputSchema);
+        this.validatorCache.set(tool.name, compiled);
+        validator = compiled;
+      } catch {
         // Fallback for non-strict schemas
         return { valid: true, args: coercedArgs };
       }
+    }
+
+    if (!validator) {
+      return { valid: true, args: coercedArgs };
     }
 
     const valid = validator(coercedArgs);

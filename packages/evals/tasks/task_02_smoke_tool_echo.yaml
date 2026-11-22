@@ -1,0 +1,14 @@
+id: task_02_smoke_tool_echo
+suite: smoke
+description: Echo tool invocation with parameter passing
+prompt: "Call the echo tool with message 'hx-eval-echo-verified' and return its result."
+fixtures: {}
+expectedTools:
+  - echo
+checks:
+  - type: tool_called
+    tool: echo
+  - type: response_contains
+    substring: "hx-eval-echo-verified"
+  - type: no_errors
+timeoutMs: 20000

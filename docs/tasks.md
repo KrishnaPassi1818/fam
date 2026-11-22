@@ -71,21 +71,21 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
 
 ## Phase 3: Executor, permissions, approvals
 
-- [ ] **T3.1** · A · T2.3 · Validator: ajv against tool schemas, error formatter per design 3, repair loop (≤ 2 rounds), coercion of safe cases (`"5"`→5).
+- [x] **T3.1** · A · T2.3 · Validator: ajv against tool schemas, error formatter per design 3, repair loop (≤ 2 rounds), coercion of safe cases (`"5"`→5).
   AC: table-driven tests for common small-model mistakes.
-- [ ] **T3.2** · A · T3.1 · Executor: concurrency limiter, read-only parallel batch, serialized writes, path-conflict detection, per-tool timeout and abort, partial-failure results, result matching by `callId`.
+- [x] **T3.2** · A · T3.1 · Executor: concurrency limiter, read-only parallel batch, serialized writes, path-conflict detection, per-tool timeout and abort, partial-failure results, result matching by `callId`.
   AC: tests with fake tools that prove parallel timing (N×100 ms tools finish in ~100 ms) and serial write ordering.
-- [ ] **T3.3** · A · T3.2 · Permission gate: tiers per design 4, `policy.toml` (allow/deny globs, command-prefix allowlist), session grants, `PermissionDenied` results.
+- [x] **T3.3** · A · T3.2 · Permission gate: tiers per design 4, `policy.toml` (allow/deny globs, command-prefix allowlist), session grants, `PermissionDenied` results.
   AC: policy tests, including deny overrides allow.
-- [ ] **T3.4** · D · T3.3 · Approval UI: preview (diff/command/path), y/a/n/e keys, grouped parallel approvals, typed confirmation for tier 4.
+- [x] **T3.4** · D · T3.3 · Approval UI: preview (diff/command/path), y/a/n/e keys, grouped parallel approvals, typed confirmation for tier 4.
   AC: component tests plus manual demo.
-- [ ] **T3.5** · A · T3.3 · Undo/backup service: pre-write backups in `~/.harness/backups`, `/undo` restores the last change set.
+- [x] **T3.5** · A · T3.3 · Undo/backup service: pre-write backups in `~/.harness/backups`, `/undo` restores the last change set.
   AC: round-trip tests.
-- [ ] **T3.6** · A · T1.2 · Privacy gate v1: path globs (`privacy.toml`), secret detectors (regex+entropy), taint propagation from tool results, block/redact/ask, fail-closed.
+- [x] **T3.6** · A · T1.2 · Privacy gate v1: path globs (`privacy.toml`), secret detectors (regex+entropy), taint propagation from tool results, block/redact/ask, fail-closed.
   AC: test with mock Gemini adapter asserting that no tainted content is ever sent.
-- [ ] **T3.7** · A/D · T1.6 · Tracing complete (permission, route, escalate events); `hx replay <run>`; `hx trace stats`.
+- [x] **T3.7** · A/D · T1.6 · Tracing complete (permission, route, escalate events); `hx replay <run>`; `hx trace stats`.
   AC: replay renders a recorded trace.
-- [ ] **T3.8** · E · T3.2 · Eval framework scaffold: task format (YAML: prompt, fixtures, checks), runner (per model), report (JSON + markdown), the first 5 tasks.
+- [x] **T3.8** · E · T3.2 · Eval framework scaffold: task format (YAML: prompt, fixtures, checks), runner (per model), report (JSON + markdown), the first 5 tasks.
   AC: `hx eval` runs and reports.
 
 ## Phase 4: Context manager

@@ -19,6 +19,7 @@ describe('ToolValidator (T3.1)', () => {
       required: ['path'],
     },
     category: 'fs',
+    annotations: { readOnlyHint: true },
     tier: 0,
     timeoutMs: 10000,
   };
@@ -37,6 +38,7 @@ describe('ToolValidator (T3.1)', () => {
       required: ['pattern'],
     },
     category: 'fs',
+    annotations: { readOnlyHint: true },
     tier: 0,
     timeoutMs: 10000,
   };

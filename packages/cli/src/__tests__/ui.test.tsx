@@ -149,6 +149,7 @@ describe('CLI UI Components', () => {
         />,
       );
 
+      expect(decision).toBeUndefined();
       const frame = lastFrame();
       expect(frame).toContain('PERMISSION REQUIRED');
       expect(frame).toContain('Tier 2 (External Write / Overwrite)');

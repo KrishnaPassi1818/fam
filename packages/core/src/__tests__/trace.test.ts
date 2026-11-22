@@ -152,4 +152,43 @@ describe('Tracer', () => {
     expect(errEvent).toBeDefined();
     expect(errEvent?.data['error']).toContain('Connection reset by peer');
   });
+
+  it('locates trace file, computes stats, and renders replay lines', async () => {
+    const tracer = new Tracer({
+      traceDir: tmpDir,
+      sessionId: 'sess_replay',
+      runId: 'run_sample123',
+    });
+
+    tracer.emit('session_start', { model: 'llama3.1:8b', role: 'assistant' });
+    tracer.emit('model_call', { modelId: 'ollama:llama3.1:8b', messagesCount: 3 });
+    tracer.emit('tool_call', { step: 1, callId: 'c1', name: 'fs_grep', args: { pattern: 'TODO' } });
+    tracer.emit('tool_result', { step: 1, callId: 'c1', name: 'fs_grep', content: 'found 5 items', isError: false });
+    tracer.emit('error', { step: 2, error: 'Simulated warning' });
+    tracer.emit('session_end', { step: 2, totalTokens: 1500, durationMs: 450 });
+
+    // 1. findTraceFile
+    const found = Tracer.findTraceFile('run_sample123', tmpDir);
+    expect(found).toBe(tracer.filePath);
+
+    // 2. computeStats
+    const events = await Tracer.readTrace(tracer.filePath);
+    const stats = Tracer.computeStats(events);
+
+    expect(stats.runId).toBe('run_sample123');
+    expect(stats.steps).toBe(2);
+    expect(stats.totalTokens).toBe(1500);
+    expect(stats.modelsUsed).toContain('ollama:llama3.1:8b');
+    expect(stats.toolCallsCount).toBe(1);
+    expect(stats.toolsUsed['fs_grep']).toBe(1);
+    expect(stats.errorsCount).toBe(1);
+    expect(stats.eventsCount).toBe(6);
+
+    // 3. renderReplay
+    const replayLines = Tracer.renderReplay(events);
+    expect(replayLines.length).toBeGreaterThanOrEqual(6);
+    expect(replayLines[0]).toContain('TRACE REPLAY: run_sample123');
+    expect(replayLines.some((l) => l.includes('Tool Call: fs_grep'))).toBe(true);
+    expect(replayLines.some((l) => l.includes('Tool Result: fs_grep'))).toBe(true);
+  });
 });

@@ -119,14 +119,14 @@ export const ApprovalModal: React.FC<ApprovalModalProps> = ({
       )}
 
       {/* Target previews */}
-      {previewPath && (
+      {Boolean(previewPath) && (
         <Box gap={1}>
           <Text color="gray">Target Path:</Text>
           <Text color="white">{String(previewPath)}</Text>
         </Box>
       )}
 
-      {previewCmd && (
+      {Boolean(previewCmd) && (
         <Box gap={1}>
           <Text color="gray">Command:</Text>
           <Text color="yellow" bold>
@@ -135,7 +135,7 @@ export const ApprovalModal: React.FC<ApprovalModalProps> = ({
         </Box>
       )}
 
-      {previewDiff && (
+      {Boolean(previewDiff) && (
         <Box flexDirection="column" marginTop={1}>
           <Text color="gray">Content / Diff Preview:</Text>
           <Box paddingLeft={2}>

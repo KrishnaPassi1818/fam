@@ -61,8 +61,9 @@ export class GeminiAdapter implements ModelAdapter {
   constructor(options: GeminiAdapterOptions) {
     const key = options.apiKey || process.env['GEMINI_API_KEY'] || '';
     this.client = new GoogleGenAI({ apiKey: key });
-    this.modelName = options.model;
-    this.id = `gemini:${options.model}`;
+    const cleanModel = options.model.replace(/^gemini:/, '');
+    this.modelName = cleanModel;
+    this.id = `gemini:${cleanModel}`;
     this.rateLimiter = new GeminiRateLimiter(options.requestsPerMinute || 15);
     this.maxRetries = options.maxRetries ?? 3;
     this.privacyGate = options.privacyGate;

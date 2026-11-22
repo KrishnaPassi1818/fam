@@ -4,9 +4,11 @@ import React from 'react';
 import { render } from 'ink';
 import { Command } from 'commander';
 import { VERSION } from '@hx/shared';
-import { loadConfig } from '@hx/core';
+import { loadConfig, Tracer } from '@hx/core';
 import { runDoctor, formatDoctorTable } from '../doctor/index.js';
 import { listServers, testServer, saveServerConfig, removeServerConfig } from '../mcp/index.js';
+import { loadAllTasks, EvalRunner, saveEvalReport, formatMarkdownReport } from '@hx/evals';
+import { createAdapter } from '../ui/adapter-factory.js';
 import { App } from '../ui/App.js';
 
 const program = new Command();
@@ -31,6 +33,119 @@ program
       process.exit(report.allPassed ? 0 : 1);
     } catch (err) {
       process.stderr.write(`Doctor execution failed: ${err}\n`);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('replay <run>')
+  .description('Replay a past agent run step-by-step from trace logs')
+  .action(async (run: string) => {
+    try {
+      const traceFile = Tracer.findTraceFile(run);
+      if (!traceFile) {
+        process.stderr.write(`Error: Trace run '${run}' not found in ~/.harness/traces/\n`);
+        process.exit(1);
+      }
+      const events = await Tracer.readTrace(traceFile);
+      const lines = Tracer.renderReplay(events);
+      for (const line of lines) {
+        process.stdout.write(line + '\n');
+      }
+    } catch (err) {
+      process.stderr.write(`Failed to replay trace: ${err instanceof Error ? err.message : String(err)}\n`);
+      process.exit(1);
+    }
+  });
+
+const traceCmd = program.command('trace').description('Inspect and analyze execution traces');
+
+traceCmd
+  .command('stats <run>')
+  .description('Compute token, latency, and tool-use statistics from a trace run')
+  .option('--json', 'Output stats in JSON format')
+  .action(async (run: string, options: { json?: boolean }) => {
+    try {
+      const traceFile = Tracer.findTraceFile(run);
+      if (!traceFile) {
+        process.stderr.write(`Error: Trace run '${run}' not found in ~/.harness/traces/\n`);
+        process.exit(1);
+      }
+
+      const events = await Tracer.readTrace(traceFile);
+      const stats = Tracer.computeStats(events);
+
+      if (options.json) {
+        process.stdout.write(JSON.stringify(stats, null, 2) + '\n');
+      } else {
+        process.stdout.write(`Trace Statistics for Run: ${stats.runId}\n`);
+        process.stdout.write(`- Duration: ${stats.durationMs}ms\n`);
+        process.stdout.write(`- Total Steps: ${stats.steps}\n`);
+        process.stdout.write(`- Total Tokens: ${stats.totalTokens}\n`);
+        process.stdout.write(`- Models Used: ${stats.modelsUsed.join(', ') || 'none'}\n`);
+        process.stdout.write(`- Tool Calls: ${stats.toolCallsCount}\n`);
+        for (const [t, c] of Object.entries(stats.toolsUsed)) {
+          process.stdout.write(`  • ${t}: ${c}\n`);
+        }
+        process.stdout.write(`- Errors: ${stats.errorsCount}\n`);
+        process.stdout.write(`- Total Events: ${stats.eventsCount}\n`);
+      }
+    } catch (err) {
+      process.stderr.write(`Failed to compute trace stats: ${err instanceof Error ? err.message : String(err)}\n`);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('eval')
+  .description('Run evaluation suite against models and score performance')
+  .option('--suite <name>', 'Suite filter (e.g. smoke)', 'smoke')
+  .option('--task <id>', 'Run a specific task ID')
+  .option('--model <model>', 'Model to evaluate (e.g. llama3.1:8b)')
+  .option('--json', 'Output raw JSON report')
+  .action(async (options: {
+    suite?: string;
+    task?: string;
+    model?: string;
+    json?: boolean;
+  }) => {
+    try {
+      const config = loadConfig();
+      const modelId =
+        options.model ||
+        (program.opts()['model'] as string | undefined) ||
+        config.general.defaultModel ||
+        'llama3.1:8b';
+      const adapter = createAdapter({ modelId, config, localOnly: false });
+
+      let tasks = loadAllTasks();
+      if (options.suite) {
+        tasks = tasks.filter((t) => t.suite === options.suite);
+      }
+      if (options.task) {
+        tasks = tasks.filter((t) => t.id === options.task);
+      }
+
+      if (tasks.length === 0) {
+        process.stderr.write(`No eval tasks found matching criteria (suite: ${options.suite}, task: ${options.task})\n`);
+        process.exit(1);
+      }
+
+      process.stdout.write(`Running ${tasks.length} eval task(s) on model '${modelId}'...\n`);
+      const runner = new EvalRunner();
+      const report = await runner.runSuite(tasks, adapter);
+      const saved = saveEvalReport(report);
+
+      if (options.json) {
+        process.stdout.write(JSON.stringify(report, null, 2) + '\n');
+      } else {
+        process.stdout.write('\n' + formatMarkdownReport(report) + '\n');
+        process.stdout.write(`\nSaved scoreboard:\n- JSON: ${saved.jsonPath}\n- Markdown: ${saved.mdPath}\n`);
+      }
+
+      process.exit(report.scorePercent >= 100 ? 0 : 1);
+    } catch (err) {
+      process.stderr.write(`Eval execution failed: ${err instanceof Error ? err.message : String(err)}\n`);
       process.exit(1);
     }
   });

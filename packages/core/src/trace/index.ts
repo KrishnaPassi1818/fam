@@ -27,6 +27,18 @@ export interface TraceEvent {
   data: Record<string, unknown>;
 }
 
+export interface TraceStats {
+  runId: string;
+  durationMs: number;
+  totalTokens: number;
+  steps: number;
+  modelsUsed: string[];
+  toolCallsCount: number;
+  toolsUsed: Record<string, number>;
+  errorsCount: number;
+  eventsCount: number;
+}
+
 export interface TracerOptions {
   sessionId?: string;
   runId?: string;
@@ -96,5 +108,134 @@ export class Tracer {
     }
 
     return events;
+  }
+
+  public static findTraceFile(target: string, baseDir?: string): string | null {
+    if (fs.existsSync(target) && fs.statSync(target).isFile()) {
+      return target;
+    }
+    const root =
+      baseDir ||
+      process.env['HX_TRACES_DIR'] ||
+      path.join(os.homedir(), '.harness', 'traces');
+
+    if (!fs.existsSync(root)) return null;
+
+    const walk = (dir: string): string | null => {
+      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      for (const entry of entries) {
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          const res = walk(full);
+          if (res) return res;
+        } else if (entry.isFile() && entry.name.endsWith('.jsonl')) {
+          if (entry.name === `${target}.jsonl` || entry.name.includes(target) || full.includes(target)) {
+            return full;
+          }
+        }
+      }
+      return null;
+    };
+
+    return walk(root);
+  }
+
+  public static computeStats(events: TraceEvent[]): TraceStats {
+    let totalTokens = 0;
+    let errorsCount = 0;
+    let toolCallsCount = 0;
+    let maxStep = 0;
+    const models = new Set<string>();
+    const toolsUsed: Record<string, number> = {};
+
+    let startMs = 0;
+    let endMs = 0;
+
+    for (const ev of events) {
+      const ts = new Date(ev.timestamp).getTime();
+      if (!startMs || ts < startMs) startMs = ts;
+      if (ts > endMs) endMs = ts;
+
+      if (typeof ev.data['step'] === 'number') {
+        maxStep = Math.max(maxStep, ev.data['step']);
+      }
+      if (typeof ev.data['totalTokens'] === 'number') {
+        totalTokens = Math.max(totalTokens, ev.data['totalTokens']);
+      }
+      if (ev.type === 'model_call' && typeof ev.data['modelId'] === 'string') {
+        models.add(ev.data['modelId']);
+      }
+      if (ev.type === 'tool_call' && typeof ev.data['name'] === 'string') {
+        toolCallsCount++;
+        const name = ev.data['name'];
+        toolsUsed[name] = (toolsUsed[name] || 0) + 1;
+      }
+      if (ev.type === 'error') {
+        errorsCount++;
+      }
+    }
+
+    const runId = events[0]?.runId || 'unknown';
+    const durationMs = endMs > startMs ? endMs - startMs : 0;
+
+    return {
+      runId,
+      durationMs,
+      totalTokens,
+      steps: maxStep,
+      modelsUsed: Array.from(models),
+      toolCallsCount,
+      toolsUsed,
+      errorsCount,
+      eventsCount: events.length,
+    };
+  }
+
+  public static renderReplay(events: TraceEvent[]): string[] {
+    const lines: string[] = [];
+    lines.push(`=== TRACE REPLAY: ${events[0]?.runId || 'unknown'} (Session: ${events[0]?.sessionId || 'unknown'}) ===`);
+
+    for (const ev of events) {
+      const time = ev.timestamp.slice(11, 19);
+      switch (ev.type) {
+        case 'session_start':
+          lines.push(`[${time}] 🚀 Session started (model=${ev.data['model']}, role=${ev.data['role']})`);
+          break;
+        case 'prompt':
+          lines.push(
+            `[${time}] 📝 Prompt step ${ev.data['step']} (${ev.data['tokenCount']} tokens, layers: ${(ev.data['layersIncluded'] as string[])?.join(', ')})`,
+          );
+          break;
+        case 'model_call':
+          lines.push(`[${time}] 🤖 Model call (${ev.data['modelId']}, messages=${ev.data['messagesCount']})`);
+          break;
+        case 'tool_call':
+          lines.push(`[${time}] ⚙️  Tool Call: ${ev.data['name']} (id=${ev.data['callId']}) args=${JSON.stringify(ev.data['args'])}`);
+          break;
+        case 'tool_result':
+          lines.push(
+            `[${time}] 📥 Tool Result: ${ev.data['name']} (isError=${ev.data['isError']}) -> ${String(ev.data['content']).slice(0, 80)}`,
+          );
+          break;
+        case 'permission':
+          lines.push(`[${time}] 🛡️  Permission check: ${ev.data['tool']} -> ${ev.data['granted'] ? 'GRANTED' : 'DENIED'}`);
+          break;
+        case 'route':
+          lines.push(`[${time}] 🔀 Route: intent=${ev.data['intent']} -> target=${ev.data['target']}`);
+          break;
+        case 'escalate':
+          lines.push(`[${time}] ⬆️  Escalate: ${ev.data['from']} -> ${ev.data['to']} (reason: ${ev.data['reason']})`);
+          break;
+        case 'error':
+          lines.push(`[${time}] ❌ Error: ${ev.data['error']}`);
+          break;
+        case 'session_end':
+          lines.push(`[${time}] 🏁 Session completed in ${ev.data['durationMs']}ms, tokens=${ev.data['totalTokens']}`);
+          break;
+        default:
+          lines.push(`[${time}] [${ev.type}] ${JSON.stringify(ev.data)}`);
+      }
+    }
+    return lines;
   }
 }

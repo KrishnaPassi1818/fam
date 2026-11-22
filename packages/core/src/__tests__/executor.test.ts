@@ -9,6 +9,7 @@ describe('ToolExecutor and PermissionGate (T3.2, T3.3)', () => {
 
     const readToolDesc: ToolDescriptor = {
       name: 'read_slow',
+      alias: 'read_slow',
       description: 'Slow read',
       inputSchema: { type: 'object' },
       annotations: { readOnlyHint: true },
@@ -47,10 +48,9 @@ describe('ToolExecutor and PermissionGate (T3.2, T3.3)', () => {
   });
 
   it('executes modifying write tools strictly sequentially', async () => {
-    const executor = new ToolExecutor();
-
     const writeToolDesc: ToolDescriptor = {
       name: 'write_slow',
+      alias: 'write_slow',
       description: 'Slow write',
       inputSchema: { type: 'object' },
       annotations: { readOnlyHint: false },
@@ -98,6 +98,7 @@ describe('ToolExecutor and PermissionGate (T3.2, T3.3)', () => {
 
     const slowTool: ToolDescriptor = {
       name: 'timeout_tool',
+      alias: 'timeout_tool',
       description: 'times out',
       inputSchema: { type: 'object' },
       annotations: { readOnlyHint: true },
@@ -108,6 +109,7 @@ describe('ToolExecutor and PermissionGate (T3.2, T3.3)', () => {
 
     const okTool: ToolDescriptor = {
       name: 'ok_tool',
+      alias: 'ok_tool',
       description: 'succeeds',
       inputSchema: { type: 'object' },
       annotations: { readOnlyHint: true },

@@ -1,0 +1,8 @@
+id: task_05_smoke_permission_denial
+suite: smoke
+description: Policy denial handling when restricted action is blocked
+prompt: "Try calling echo with message 'test denial'."
+fixtures: {}
+checks:
+  - type: no_errors
+timeoutMs: 20000

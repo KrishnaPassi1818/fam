@@ -1,6 +1,54 @@
 # Development Progress Log
 
-## 2026-11-22 lead-architect Phase 2 Exit Gate Verification & hx-fs Server (status: done)
+## 2026-11-22 lead-architect Phase 3 Exit Gate Verification: Executor, Permissions, Approvals, Backups, Privacy, Evals (status: done)
+- **What changed**:
+  - Implemented `ToolValidator` (`packages/core/src/tools/validator.ts`):
+    - AJV schema validation with type coercion (`"true"`/`"false"` -> boolean, numeric strings -> numbers).
+    - Common model hallucination repair (`file`/`filename`/`dir` -> `path`, `regex`/`query` -> `pattern`).
+    - Actionable formatted error feedback with expected valid schemas.
+  - Implemented `ToolExecutor` (`packages/core/src/tools/executor.ts`):
+    - Concurrent parallel batching for read-only tools (concurrency limit = 8).
+    - Strictly serialized execution for mutating write tools with path-conflict detection.
+    - Per-tool timeout and cancellation via `AbortController`, partial failure isolation without crashing batch.
+    - Integrated directly into `AgentLoop` (`packages/core/src/loop/index.ts`).
+  - Implemented `PermissionGate` (`packages/core/src/tools/permission.ts`):
+    - Enforced Tiers 0-4 per Design §4 (Tier 0 read-only auto, Tier 1 workspace write auto with backup, Tier 2 external/destructive ask, Tier 3 shell ask, Tier 4 typed confirmation).
+    - Policy allow/deny globs, command-prefix allowlists (`git status`, `git diff`, `pnpm test`), and session grants.
+  - Implemented `ApprovalModal` UI (`packages/cli/src/ui/components/ApprovalModal.tsx`):
+    - Visual risk badge with color coding, path/command/diff previews, and interactive keys (`y`, `a`, `n`, `e`, `?`).
+    - Enforced typed `"CONFIRM"` requirement for Tier 4 destructive actions.
+  - Implemented `BackupService` (`packages/core/src/backup/index.ts`):
+    - Pre-write snapshotting to `~/.harness/backups/<changeSetId>/` with SHA-256 hashes and change manifests.
+    - `/undo` command restoring modified files and deleting newly created files byte-for-byte.
+  - Implemented `PrivacyGate` (`packages/core/src/privacy/index.ts`):
+    - Path glob detection for local-only files (`.env*`, `secrets/**`, `*.pem`, `*.key`, `.git/**`).
+    - Sensitive token regex matching (Google API keys, OpenAI keys, GitHub PATs, basic auth).
+    - Shannon entropy calculation (> 4.5 bit threshold) detecting random keys.
+    - Taint propagation from tool results into session state.
+    - Fail-closed enforcement on `GeminiAdapter`, blocking tainted payloads before transmission.
+  - Implemented observability trace tools in `packages/cli/src/bin/hx.ts`:
+    - `hx replay <run>`: renders step-by-step trace event playback.
+    - `hx trace stats <run>`: computes token consumption, step counts, latencies, and tool-use frequencies.
+  - Implemented `@hx/evals` package:
+    - YAML task schema, loader, and 5 initial smoke eval tasks (`task_01` to `task_05`).
+    - `EvalRunner` and `EvalReporter` generating JSON and Markdown scoreboards.
+    - Added `hx eval [--suite] [--model] [--task]` command to CLI.
+  - Authored and verified automated Phase 3 Exit Gate (`scripts/demo-p3.ts`, `scripts/demo-p3.sh`):
+    - 4 parallel reads (100ms each) finished in 119ms (< 300ms concurrent timing proof).
+    - 3 writes finished in 181ms in strict sequential order `[1, 2, 3]`.
+    - Malformed arguments repaired and coerced into schema compliance.
+    - Tier 2 action blocked until approved, and allowed once approved.
+    - Backup service restored corrupted file to original state.
+    - Privacy gate blocked tainted transmission to Gemini adapter.
+    - Eval framework ran smoke tasks with score reports.
+- **Phase 3 Exit Gate Verdict**:
+  - **ALL PHASE 3 ACCEPTANCE CRITERIA SATISFIED**. Phase 3 is formally COMPLETE and LOCKED.
+- **Tests run + results**:
+  - Full monorepo Vitest: 28/28 test files passed, 112/112 tests passed cleanly (1 skipped).
+  - TypeScript build: 5/5 packages compiled cleanly with zero errors.
+  - `scripts/demo-p3.sh`: exit code 0.
+- **Open issues / next step**:
+  - Phase 4: Context Manager (Tasks T4.1–T4.6).
 - **What changed**:
   - Implemented high-performance native Rust filesystem MCP server in `servers/fs/`:
     - Confinement engine (`confinement.rs`): strict canonicalization and root confinement; rejects symlink escapes and directory traversal outside the active workspace.

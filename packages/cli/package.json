@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@hx/core": "workspace:*",
+    "@hx/evals": "workspace:*",
     "@hx/mcp-host": "workspace:*",
     "@hx/shared": "workspace:*",
     "commander": "^13.1.0",

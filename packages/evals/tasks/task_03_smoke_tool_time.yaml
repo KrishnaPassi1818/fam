@@ -1,0 +1,12 @@
+id: task_03_smoke_tool_time
+suite: smoke
+description: Built-in current_time tool invocation
+prompt: "What is the current time? Call the current_time tool to find out."
+fixtures: {}
+expectedTools:
+  - current_time
+checks:
+  - type: tool_called
+    tool: current_time
+  - type: no_errors
+timeoutMs: 20000

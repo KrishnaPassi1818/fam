@@ -1,0 +1,17 @@
+id: task_04_smoke_file_write
+suite: smoke
+description: File writing in workspace
+prompt: "Create a file named output.txt containing the exact text 'eval test file written'."
+fixtures: {}
+expectedTools:
+  - write_file
+checks:
+  - type: tool_called
+    tool: write_file
+  - type: file_exists
+    path: output.txt
+  - type: file_contains
+    path: output.txt
+    substring: "eval test file written"
+  - type: no_errors
+timeoutMs: 25000

@@ -53,8 +53,9 @@ export class OllamaAdapter implements ModelAdapter {
 
   constructor(options: OllamaAdapterOptions) {
     this.host = options.host || process.env['HX_OLLAMA_HOST'] || 'http://127.0.0.1:11434';
-    this.modelName = options.model;
-    this.id = `ollama:${options.model}`;
+    const cleanModel = options.model.replace(/^ollama:/, '');
+    this.modelName = cleanModel;
+    this.id = `ollama:${cleanModel}`;
     this.defaultNumCtx = options.numCtx || 8192;
     this.numGpu = options.numGpu;
     this.keepAlive = options.keepAlive || '10m';

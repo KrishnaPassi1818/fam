@@ -22,6 +22,7 @@ export class PermissionGate {
         'git log',
         'pnpm test',
       ],
+      toolTierOverrides: policy?.toolTierOverrides || {},
     };
   }
 

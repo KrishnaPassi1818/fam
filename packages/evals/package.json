@@ -17,7 +17,8 @@
   },
   "dependencies": {
     "@hx/core": "workspace:*",
-    "@hx/shared": "workspace:*"
+    "@hx/shared": "workspace:*",
+    "yaml": "^2.9.1"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

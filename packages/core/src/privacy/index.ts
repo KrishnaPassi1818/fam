@@ -46,7 +46,7 @@ export class PrivacyGate {
         '**/*.key',
         '**/.git/**',
       ],
-      secretPatterns: config?.secretPatterns || [
+      secretRegexes: config?.secretRegexes || [
         '(?:AIza[0-9A-Za-z\\-_]{30,40})', // Google API key
         '(?:sk-[a-zA-Z0-9]{20,60})',       // Secret key
         '(?:ghp_[0-9a-zA-Z]{36})',          // GitHub PAT
@@ -55,7 +55,7 @@ export class PrivacyGate {
       failClosed: config?.failClosed ?? true,
     };
 
-    this.compiledPatterns = this.config.secretPatterns.map((p) => new RegExp(p, 'i'));
+    this.compiledPatterns = this.config.secretRegexes.map((p: string) => new RegExp(p, 'i'));
   }
 
   public setOverride(override: boolean): void {
