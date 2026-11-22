@@ -136,21 +136,21 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
 
 ## Phase 7: Office server (lane C)
 
-- [ ] **T7.1** · C · T0.9 · `servers/office` scaffold (TS, MCP SDK stdio), a shared file-safety layer (root confinement, working copy, backup, verify-by-reopen).
-- [ ] **T7.2** · C · T7.1 · Read tools: `docx_read` (outline and section), `xlsx_describe`, `xlsx_read_range`, `pptx_read`, `pdf_read`. All bounded and paginated.
+- [x] **T7.1** · C · T0.9 · `servers/office` scaffold (TS, MCP SDK stdio), a shared file-safety layer (root confinement, working copy, backup, verify-by-reopen).
+- [x] **T7.2** · C · T7.1 · Read tools: `docx_read` (outline and section), `xlsx_describe`, `xlsx_read_range`, `pptx_read`, `pdf_read`. All bounded and paginated.
   AC: fixture files, including large and messy ones.
-- [ ] **T7.3** · C · T7.2 · `xlsx_query_sql` (DuckDB/SQLite, read-only, row limit), a type inference step.
+- [x] **T7.3** · C · T7.2 · `xlsx_query_sql` (DuckDB/SQLite, read-only, row limit), a type inference step.
   AC: aggregation tests incl. dates and mixed types.
-- [ ] **T7.4** · C · T7.1 · xlsx write: `xlsx_write_cells`, `xlsx_add_formula`, `xlsx_add_sheet`, `xlsx_create_from_csv`.
-- [ ] **T7.5** · C · T7.1 · docx write: `docx_replace_text` (run-split safe), `docx_insert_paragraph`, `docx_add_table`, `docx_create_from_markdown`, `docx_apply_template`.
+- [x] **T7.4** · C · T7.1 · xlsx write: `xlsx_write_cells`, `xlsx_add_formula`, `xlsx_add_sheet`, `xlsx_create_from_csv`.
+- [x] **T7.5** · C · T7.1 · docx write: `docx_replace_text` (run-split safe), `docx_insert_paragraph`, `docx_add_table`, `docx_create_from_markdown`, `docx_apply_template`.
   AC: formatting preserved in tests (styles, runs).
-- [ ] **T7.6** · C · T7.1 · pptx: `pptx_create`, `pptx_add_slide`.
-- [ ] **T7.7** · C · T7.1 · LibreOffice manager: locate `soffice`, isolated profile dir, serialized queue, timeouts, `convert(path,to)`, `recalc(path)`, `render_preview(path,pages)` (via PDF to PNG).
+- [x] **T7.6** · C · T7.1 · pptx: `pptx_create`, `pptx_add_slide`.
+- [x] **T7.7** · C · T7.1 · LibreOffice manager: locate `soffice`, isolated profile dir, serialized queue, timeouts, `convert(path,to)`, `recalc(path)`, `render_preview(path,pages)` (via PDF to PNG).
   AC: conversion matrix test (doc↔docx, xls↔xlsx, odt/ods, pdf export).
-- [ ] **T7.8** · C · T7.4, T7.5, T7.7 · Annotations, tiers, dry-run previews and change summaries on all write tools; integrate with the executor's approval flow.
-- [ ] **T7.9** · C/E · T7.8 · ≥ 10 office evals. Automated "opens in LibreOffice without repair" check.
+- [x] **T7.8** · C · T7.4, T7.5, T7.7 · Annotations, tiers, dry-run previews and change summaries on all write tools; integrate with the executor's approval flow.
+- [x] **T7.9** · C/E · T7.8 · ≥ 10 office evals. Automated "opens in LibreOffice without repair" check.
   AC: gate in plan.md.
-- [ ] **T7.10** · C · T7.8 · Fallback: a UNO-script runner tool for operations not covered (tier 3), documented.
+- [x] **T7.10** · C · T7.8 · Fallback: a UNO-script runner tool for operations not covered (tier 3), documented.
 
 ## Phase 8: Sandbox and coding loop
 

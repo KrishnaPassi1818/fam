@@ -1,0 +1,16 @@
+id: task_08_office_docx_replace_text
+suite: office
+description: Replace text in docx document
+prompt: "In 'agreement.docx', replace 'Alpha Corp' with 'Beta Technologies'."
+fixtures: {}
+expectedTools:
+  - docx_replace_text
+checks:
+  - type: tool_called
+    tool: docx_replace_text
+  - type: file_exists
+    path: agreement.docx
+  - type: office_valid
+    path: agreement.docx
+  - type: no_errors
+timeoutMs: 30000

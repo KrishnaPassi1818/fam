@@ -80,7 +80,7 @@ export function matchFastPath(prompt: string): FastPathDecision | null {
   const complexity = estimateComplexity(trimmed);
 
   // 1. General Greeting / Small Talk fast path
-  const greetingRegex = /^(hi|hello|hey|greetings|good\s+(morning|afternoon|evening)|who\s+are\s+you|what\s+can\s+you\s+do|help|what\s+is\s+your\s+name|what\s+time\s+is\s+it)[\.!?]?$/i;
+  const greetingRegex = /^(hi|hello|hey|greetings|good\s+(morning|afternoon|evening)|who\s+are\s+you|what\s+can\s+you\s+do|help|what\s+is\s+your\s+name|what\s+time\s+is\s+it)[.!?]?$/i;
   const generalTopicRegex = /\b(tell\s+me\s+a\s+(funny\s+)?joke|principles\s+of|joke\s+about)\b/i;
   if (greetingRegex.test(lower) || generalTopicRegex.test(lower)) {
     return {
@@ -184,7 +184,7 @@ export function matchFastPath(prompt: string): FastPathDecision | null {
   }
 
   // 7. Simple file reads fast path ("read file X", "show me file X", "cat X", "inspect the contents of X")
-  const fileReadRegex = /^(read\s+file|show\s+me\s+file|cat\s+|open\s+file|inspect\s+the\s+contents\s+of)\s+([a-zA-Z0-9_\-\.\/]+)/i;
+  const fileReadRegex = /^(read\s+file|show\s+me\s+file|cat\s+|open\s+file|inspect\s+the\s+contents\s+of)\s+([a-zA-Z0-9_\-./]+)/i;
   if (fileReadRegex.test(lower)) {
     return {
       intent: 'coding',

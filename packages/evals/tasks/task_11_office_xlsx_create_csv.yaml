@@ -1,0 +1,17 @@
+id: task_11_office_xlsx_create_csv
+suite: office
+description: Convert CSV to formatted Excel workbook
+prompt: "Convert the CSV file 'customers.csv' into an Excel file named 'customers.xlsx'."
+fixtures:
+  customers.csv: "ID,Name,Spend\n1,Alice,120.5\n2,Bob,250.0\n"
+expectedTools:
+  - xlsx_create_from_csv
+checks:
+  - type: tool_called
+    tool: xlsx_create_from_csv
+  - type: file_exists
+    path: customers.xlsx
+  - type: office_valid
+    path: customers.xlsx
+  - type: no_errors
+timeoutMs: 30000

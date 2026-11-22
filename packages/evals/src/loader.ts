@@ -66,7 +66,7 @@ export function loadAllTasks(tasksDir?: string): TaskDefinition[] {
       try {
         const task = loadTaskFile(path.join(targetDir, entry.name));
         tasks.push(task);
-      } catch (err) {
+      } catch {
         // Skip unparseable task files
       }
     }

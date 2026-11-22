@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
+import child_process from 'child_process';
 import { AgentLoop, type ToolExecutionHandler } from '@hx/core';
 import type { ModelAdapter, ToolDescriptor, ToolCall, ToolResult } from '@hx/shared';
 import type {
@@ -26,7 +27,14 @@ export class EvalRunner {
       for (const [relPath, content] of Object.entries(task.fixtures)) {
         const fullPath = path.join(tmpWorkspace, relPath);
         fs.mkdirSync(path.dirname(fullPath), { recursive: true });
-        fs.writeFileSync(fullPath, content, 'utf-8');
+        const isBinary =
+          relPath.endsWith('.docx') ||
+          relPath.endsWith('.xlsx') ||
+          relPath.endsWith('.pptx') ||
+          relPath.endsWith('.pdf') ||
+          relPath.endsWith('.png') ||
+          relPath.endsWith('.bin');
+        fs.writeFileSync(fullPath, content, isBinary ? 'binary' : 'utf-8');
       }
     }
 
@@ -248,6 +256,59 @@ export class EvalRunner {
           expected: check.content,
           actual: content,
         };
+      }
+
+      case 'office_valid': {
+        const filePath = path.join(workspace, check.path || '');
+        if (!fs.existsSync(filePath)) {
+          return {
+            name,
+            type: check.type,
+            passed: false,
+            expected: `Office file exists: ${check.path}`,
+            actual: 'missing',
+          };
+        }
+        try {
+          const profileId = Math.random().toString(36).slice(2);
+          const profileDir = path.join(os.tmpdir(), `soffice_eval_${profileId}`);
+          fs.mkdirSync(profileDir, { recursive: true });
+          const outDir = path.join(os.tmpdir(), `soffice_eval_out_${profileId}`);
+          fs.mkdirSync(outDir, { recursive: true });
+
+          const execRes = child_process.spawnSync(
+            'soffice',
+            ['--headless', `-env:UserInstallation=file://${profileDir}`, '--convert-to', 'pdf', filePath, '--outdir', outDir],
+            { timeout: 30000, encoding: 'utf-8' },
+          );
+
+          try {
+            fs.rmSync(profileDir, { recursive: true, force: true });
+          } catch {
+            // Ignore profile cleanup error
+          }
+          const passed = execRes.status === 0 && !execRes.stderr.includes('corrupt') && !execRes.stderr.includes('repair');
+          try {
+            fs.rmSync(outDir, { recursive: true, force: true });
+          } catch {
+            // Ignore outdir cleanup error
+          }
+
+          return {
+            name,
+            type: check.type,
+            passed,
+            expected: 'Valid office document (opens cleanly in LibreOffice headless)',
+            actual: passed ? 'valid' : `Conversion failed (code ${execRes.status}): ${execRes.stderr}`,
+          };
+        } catch (err) {
+          return {
+            name,
+            type: check.type,
+            passed: false,
+            error: err instanceof Error ? err.message : String(err),
+          };
+        }
       }
 
       case 'no_errors': {

@@ -1,0 +1,16 @@
+id: task_13_office_xlsx_write_formula
+suite: office
+description: Add calculation formula to Excel file
+prompt: "In 'budget.xlsx', add a formula in cell B4 with '=SUM(B2:B3)'."
+fixtures: {}
+expectedTools:
+  - xlsx_add_formula
+checks:
+  - type: tool_called
+    tool: xlsx_add_formula
+  - type: file_exists
+    path: budget.xlsx
+  - type: office_valid
+    path: budget.xlsx
+  - type: no_errors
+timeoutMs: 30000

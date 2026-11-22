@@ -1,0 +1,17 @@
+id: task_07_office_docx_create_markdown
+suite: office
+description: Create formatted docx from markdown
+prompt: "Create a Word document named 'proposal.docx' from 'proposal.md'."
+fixtures:
+  proposal.md: "# Project Proposal\n\n## Overview\nThis is a critical system.\n\n- Milestone 1\n- Milestone 2\n"
+expectedTools:
+  - docx_create_from_markdown
+checks:
+  - type: tool_called
+    tool: docx_create_from_markdown
+  - type: file_exists
+    path: proposal.docx
+  - type: office_valid
+    path: proposal.docx
+  - type: no_errors
+timeoutMs: 30000

@@ -1,0 +1,12 @@
+id: task_12_office_xlsx_query_sql
+suite: office
+description: Run SQL aggregation on Excel spreadsheet
+prompt: "Run a SQL query on 'metrics.xlsx' to get the sum of Spend grouped by Category."
+fixtures: {}
+expectedTools:
+  - xlsx_query_sql
+checks:
+  - type: tool_called
+    tool: xlsx_query_sql
+  - type: no_errors
+timeoutMs: 30000

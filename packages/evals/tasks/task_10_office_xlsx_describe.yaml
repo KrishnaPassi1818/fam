@@ -1,0 +1,12 @@
+id: task_10_office_xlsx_describe
+suite: office
+description: Describe Excel spreadsheet structure
+prompt: "Inspect and describe the sheets and columns in 'financials.xlsx'."
+fixtures: {}
+expectedTools:
+  - xlsx_describe
+checks:
+  - type: tool_called
+    tool: xlsx_describe
+  - type: no_errors
+timeoutMs: 30000

@@ -5,6 +5,7 @@
     { "path": "./packages/core" },
     { "path": "./packages/mcp-host" },
     { "path": "./packages/cli" },
-    { "path": "./packages/evals" }
+    { "path": "./packages/evals" },
+    { "path": "./servers/office" }
   ]
 }

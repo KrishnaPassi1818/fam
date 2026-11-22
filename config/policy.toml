@@ -23,3 +23,26 @@ commandPrefixAllowlist = [
 "fs.write_file" = 1
 "fs.trash" = 2
 "sandbox.run_command" = 3
+
+# Office Tools
+"office.docx_read" = 0
+"office.xlsx_describe" = 0
+"office.xlsx_read_range" = 0
+"office.pptx_read" = 0
+"office.pdf_read" = 0
+"office.xlsx_query_sql" = 0
+"office.render_preview" = 0
+"office.xlsx_write_cells" = 1
+"office.xlsx_add_formula" = 1
+"office.xlsx_add_sheet" = 1
+"office.xlsx_create_from_csv" = 1
+"office.docx_replace_text" = 1
+"office.docx_insert_paragraph" = 1
+"office.docx_add_table" = 1
+"office.docx_create_from_markdown" = 1
+"office.docx_apply_template" = 1
+"office.pptx_create" = 1
+"office.pptx_add_slide" = 1
+"office.convert" = 1
+"office.recalc" = 1
+"office.uno_script" = 3

@@ -1,0 +1,16 @@
+id: task_09_office_docx_add_table
+suite: office
+description: Insert formatted table into docx
+prompt: "Add a 2x2 table to 'summary.docx' with headers ['Metric', 'Value'] and row ['Q1 Revenue', '$10M']."
+fixtures: {}
+expectedTools:
+  - docx_add_table
+checks:
+  - type: tool_called
+    tool: docx_add_table
+  - type: file_exists
+    path: summary.docx
+  - type: office_valid
+    path: summary.docx
+  - type: no_errors
+timeoutMs: 30000

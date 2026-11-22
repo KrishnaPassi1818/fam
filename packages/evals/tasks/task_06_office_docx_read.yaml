@@ -1,0 +1,13 @@
+id: task_06_office_docx_read
+suite: office
+description: Read docx and extract section content
+prompt: "Read 'report.docx' and tell me what the 'Architecture' section says."
+fixtures:
+  report.docx: "" # Created dynamically in eval test setup or runner
+expectedTools:
+  - docx_read
+checks:
+  - type: tool_called
+    tool: docx_read
+  - type: no_errors
+timeoutMs: 30000

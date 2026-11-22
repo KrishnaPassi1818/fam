@@ -1,5 +1,58 @@
 # Development Progress Log
 
+## 2026-11-22 lead-architect Phase 7 Exit Gate Verification: Office Server & LibreOffice Subsystems (status: done)
+- **What changed**:
+  - Implemented `@hx/office` MCP Server (`servers/office/`):
+    - Stdio transport via `@modelcontextprotocol/sdk` exposing 15+ office tools.
+    - Full TypeScript strict ESM integration in pnpm and Cargo monorepo.
+  - Implemented Shared File-Safety Layer (`servers/office/src/safety/`):
+    - Confinement (`confinement.ts`): enforces workspace boundary, detects path escapes, null-byte injection.
+    - Pre-write Backup (`backup.ts`): snapshots pre-modification files to `~/.harness/backups/office/` with SHA-256 digests.
+    - Working Copy (`working-copy.ts`): operations mutate temporary copies and commit via atomic swap (`renameSync`). Discards temp files and protects original on error.
+    - Verify-by-Reopen (`verification.ts`): re-opens files using native libraries (ExcelJS, mammoth/JSZip, pptxgenjs, pdf-parse) before declaring success.
+  - Implemented Document Read Tools (`servers/office/src/tools/read/`):
+    - `docx_read`: heading outline extraction, section filtering, text bounding.
+    - `xlsx_describe`: sheet dimensions, column headers, inferred types (integer, float, date, string), 3 sample rows.
+    - `xlsx_read_range`: range parsing (e.g. "A1:D50"), formatted as Markdown table or CSV, bounded to <= 200 rows.
+    - `pptx_read`: OpenXML XML parsing of slide titles, bullet points, and speaker notes.
+    - `pdf_read`: bounded page text extraction via `pdftotext` with pure-JS fallback (`pdf-parse`).
+  - Implemented In-Memory Spreadsheet SQL Query (`servers/office/src/tools/sql/`):
+    - `xlsx_query_sql`: loads sheets into in-memory SQLite (`node:sqlite`) with automatic column type inference.
+    - Multi-table joins across sheets, aggregations (`SUM`, `AVG`, `GROUP BY`), and read-only security enforcement (blocks `INSERT`, `UPDATE`, `DELETE`, `DROP`).
+  - Implemented Document Write Tools (`servers/office/src/tools/write/`):
+    - `xlsx_write_cells`: cell updates preserving existing styles, formulas, and unaffected cells.
+    - `xlsx_add_formula`: formula assignment (`SUM`, `AVERAGE`).
+    - `xlsx_add_sheet`: worksheet creation with initial data.
+    - `xlsx_create_from_csv`: structured CSV-to-XLSX conversion with styled headers.
+    - `docx_replace_text`: run-split safe text replacement across fragmented OpenXML `<w:r><w:t>` runs.
+    - `docx_insert_paragraph`: structural insertion (after heading or at document end).
+    - `docx_add_table`: formatted table insertion with borders and header shading.
+    - `docx_create_from_markdown`: converts Markdown (headings, lists, code blocks, tables) to professional DOCX.
+    - `docx_apply_template`: token interpolation (`{{key}}`).
+    - `pptx_create`: initial 16:9 presentation deck with title and subtitle.
+    - `pptx_add_slide`: adds slides with bullet points and speaker notes.
+  - Implemented LibreOffice Process Manager (`servers/office/src/tools/libreoffice/`):
+    - `manager.ts`: locates `soffice`, isolates instances via `-env:UserInstallation=file:///tmp/soffice_profile_...`, serialized queue with timeout.
+    - `convert`: format conversions (docx<->doc, xlsx<->pdf, odt/ods).
+    - `recalc`: formula value recalculation via headless LibreOffice.
+    - `render_preview`: document page rendering to PNG previews via `pdftoppm`.
+    - `uno_script` (Fallback UNO tool): execution of Python automation scripts with system `python3.14` and LibreOffice `uno` bridge (Tier 3).
+  - Implemented Permission Tiers & Policy Integration:
+    - Registered Tier 0 (read tools), Tier 1 (workspace write tools), and Tier 3 (`uno_script`) in `config/policy.toml`.
+  - Implemented 10 Office Eval Cases (`packages/evals/tasks/task_06` through `task_15`):
+    - Added `office_valid` check in `packages/evals` that runs headless LibreOffice conversion (`soffice --headless --convert-to pdf`) to verify zero repair prompts.
+    - Ran all 10 office eval cases: 10/10 passed (100.0% pass rate).
+  - Authored Phase 7 Exit Gate Script (`scripts/demo-p7.ts`, `scripts/demo-p7.sh`):
+    - Passed all 5 gate criteria: safety layer, creation/editing, read views & SQL, LibreOffice manager, and 10 office evals.
+- **Phase 7 Exit Gate Verdict**:
+  - **ALL PHASE 7 ACCEPTANCE CRITERIA SATISFIED**. Phase 7 is formally COMPLETE and LOCKED.
+- **Tests run + results**:
+  - Full monorepo Vitest: 46/46 test files passed, 190/190 tests passed cleanly (1 skipped).
+  - `pnpm lint`: passed with 0 errors.
+  - `pnpm typecheck`: passed with 0 errors.
+  - `cargo check`: passed with 0 errors.
+  - `scripts/demo-p7.sh`: exit code 0.
+
 ## 2026-11-22 lead-architect Phase 6 Exit Gate Verification: Memory System, Vector Store, Working Memory, Persistence (status: done)
 - **What changed**:
   - Implemented SQLite Database & Migrations (`packages/core/src/memory/db.ts`):

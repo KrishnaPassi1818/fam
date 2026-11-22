@@ -1,0 +1,16 @@
+id: task_15_office_libreoffice_convert
+suite: office
+description: Convert document to PDF and render preview
+prompt: "Convert 'notes.docx' to 'notes.pdf'."
+fixtures: {}
+expectedTools:
+  - convert
+checks:
+  - type: tool_called
+    tool: convert
+  - type: file_exists
+    path: notes.pdf
+  - type: office_valid
+    path: notes.pdf
+  - type: no_errors
+timeoutMs: 40000

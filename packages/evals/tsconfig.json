@@ -6,7 +6,8 @@
   },
   "references": [
     { "path": "../shared" },
-    { "path": "../core" }
+    { "path": "../core" },
+    { "path": "../../servers/office" }
   ],
   "include": ["src/**/*"]
 }

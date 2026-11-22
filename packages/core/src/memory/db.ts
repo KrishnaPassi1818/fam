@@ -209,7 +209,8 @@ export class MemoryDatabase {
       params.push(...scopes);
     }
 
-    const rows = (this.db.prepare(query).all as any)(...params) as Record<string, unknown>[];
+    const stmt = this.db.prepare(query);
+    const rows = (stmt.all as (...args: unknown[]) => Record<string, unknown>[])(...params);
     return rows.map((r) => this.mapRow(r));
   }
 
@@ -267,13 +268,13 @@ export class MemoryDatabase {
 
     const item: MemoryItem = {
       id: String(row['id']),
-      kind: row['kind'] as any,
+      kind: row['kind'] as MemoryItem['kind'],
       text: String(row['text']),
       tags,
       scope: String(row['scope'] || 'global'),
       importance: Number(row['importance'] ?? 0.5),
-      privacy: (row['privacy'] as any) || 'normal',
-      source: (row['source'] as any) || 'user',
+      privacy: (row['privacy'] as MemoryItem['privacy']) || 'normal',
+      source: (row['source'] as MemoryItem['source']) || 'user',
       createdAt: Number(row['created_at']),
       lastUsedAt: Number(row['last_used_at']),
       useCount: Number(row['use_count'] ?? 0),

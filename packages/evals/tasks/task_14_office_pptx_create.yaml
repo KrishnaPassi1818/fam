@@ -1,0 +1,16 @@
+id: task_14_office_pptx_create
+suite: office
+description: Create presentation deck
+prompt: "Create a PowerPoint presentation named 'pitch.pptx' titled 'AI Agent Harness'."
+fixtures: {}
+expectedTools:
+  - pptx_create
+checks:
+  - type: tool_called
+    tool: pptx_create
+  - type: file_exists
+    path: pitch.pptx
+  - type: office_valid
+    path: pitch.pptx
+  - type: no_errors
+timeoutMs: 30000

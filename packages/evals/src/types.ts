@@ -4,6 +4,7 @@ export type CheckType =
   | 'file_exists'
   | 'file_contains'
   | 'file_equals'
+  | 'office_valid'
   | 'no_errors';
 
 export interface EvalCheck {

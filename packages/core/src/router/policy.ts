@@ -88,10 +88,10 @@ export class RoutingPolicy {
       const defaultChain = (rawRouting['default_chain'] || rawRouting['defaultChain']) as string[] | undefined;
       const rawRules = (rawRouting['rules'] || []) as Record<string, unknown>[];
       const rules: RoutingRule[] = rawRules.map((rule) => ({
-        intent: rule['intent'] as any,
+        intent: rule['intent'] as RoutingRule['intent'],
         minComplexity: (rule['min_complexity'] ?? rule['minComplexity']) as number | undefined,
         maxComplexity: (rule['max_complexity'] ?? rule['maxComplexity']) as number | undefined,
-        privacy: (rule['privacy'] as any) || undefined,
+        privacy: (rule['privacy'] as RoutingRule['privacy']) || undefined,
         chain: (rule['chain'] as string[]) || [],
       }));
 

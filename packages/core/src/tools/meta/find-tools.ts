@@ -1,5 +1,6 @@
 import type { ToolDescriptor } from '@hx/shared';
 import type { ToolRetriever } from '../retriever.js';
+import type { Intent } from '../../router/types.js';
 
 export const FIND_TOOLS_DESCRIPTOR: ToolDescriptor = {
   name: 'core.find_tools',
@@ -43,7 +44,7 @@ export async function handleFindTools(
 
   const retrieved = await retriever.retrieve(
     query,
-    category ? { categories: [category], intent: category as any } : undefined,
+    category ? { categories: [category], intent: category as Intent } : undefined,
     5
   );
 
