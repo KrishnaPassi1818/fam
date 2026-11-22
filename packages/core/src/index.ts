@@ -6,5 +6,8 @@ export * from './adapters/gemini.js';
 export * from './adapters/probe.js';
 export * from './loop/index.js';
 export * from './trace/index.js';
+export * from './tools/validator.js';
+export * from './tools/permission.js';
+export * from './tools/executor.js';
 
 

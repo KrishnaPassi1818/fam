@@ -37,6 +37,20 @@ export interface BuildPromptOptions {
   };
 }
 
+export function resolvePromptsDir(startDir?: string): string {
+  let curr = startDir || process.cwd();
+  for (let i = 0; i < 5; i++) {
+    const candidate = path.join(curr, 'prompts');
+    if (fs.existsSync(candidate) && fs.existsSync(path.join(candidate, 'core.md'))) {
+      return candidate;
+    }
+    const parent = path.dirname(curr);
+    if (parent === curr) break;
+    curr = parent;
+  }
+  return path.resolve(process.cwd(), 'prompts');
+}
+
 export class PromptApprovalStore {
   private readonly storePath: string;
   private approvals: Record<string, string> = {};
@@ -91,7 +105,7 @@ export class PromptBuilder {
   private readonly approvalStore: PromptApprovalStore;
 
   constructor(options?: { promptsDir?: string; dataDir?: string }) {
-    this.promptsDir = options?.promptsDir || path.resolve(process.cwd(), 'prompts');
+    this.promptsDir = options?.promptsDir || resolvePromptsDir();
     this.dataDir = options?.dataDir || path.join(os.homedir(), '.harness');
     this.approvalStore = new PromptApprovalStore(this.dataDir);
   }

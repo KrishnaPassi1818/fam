@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
-import { PromptBuilder } from '../prompts/builder.js';
+import { PromptBuilder, resolvePromptsDir } from '../prompts/builder.js';
 
 describe('PromptBuilder', () => {
   let tmpDataDir: string;
@@ -14,7 +14,7 @@ describe('PromptBuilder', () => {
     tmpCwd = fs.mkdtempSync(path.join(os.tmpdir(), 'hx-builder-cwd-'));
     builder = new PromptBuilder({
       dataDir: tmpDataDir,
-      promptsDir: path.resolve(process.cwd(), 'prompts'),
+      promptsDir: resolvePromptsDir(),
     });
   });
 

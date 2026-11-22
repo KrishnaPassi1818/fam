@@ -10,6 +10,8 @@ import {
 } from '@hx/shared';
 import { PromptBuilder, type BuildPromptOptions } from '../prompts/builder.js';
 import { Tracer } from '../trace/index.js';
+import { ToolExecutor, type ToolHandler } from '../tools/executor.js';
+import { PermissionGate, type PermissionCheckResult } from '../tools/permission.js';
 
 export interface ToolExecutionHandler {
   (args: Record<string, unknown>, signal?: AbortSignal): Promise<{
@@ -28,6 +30,12 @@ export interface AgentLoopOptions {
   projectPrompt?: string;
   tools?: ToolDescriptor[];
   toolHandlers?: Record<string, ToolExecutionHandler>;
+  executor?: ToolExecutor;
+  permissionGate?: PermissionGate;
+  onPermissionRequired?: (
+    toolCall: ToolCall,
+    check: PermissionCheckResult,
+  ) => Promise<boolean>;
   maxSteps?: number;
   maxTokens?: number;
   maxWallMs?: number;
@@ -93,6 +101,9 @@ export class AgentLoop {
   private readonly projectPrompt?: string;
   private readonly tools: ToolDescriptor[];
   private readonly toolHandlers: Record<string, ToolExecutionHandler>;
+  private readonly executor: ToolExecutor;
+  private readonly descriptorMap: Map<string, ToolDescriptor>;
+  private readonly handlerMap: Map<string, ToolHandler>;
   private readonly maxSteps: number;
   private readonly maxTokens: number;
   private readonly maxWallMs: number;
@@ -108,6 +119,21 @@ export class AgentLoop {
     this.projectPrompt = options.projectPrompt;
     this.tools = [...BUILTIN_TOOLS, ...(options.tools || [])];
     this.toolHandlers = { ...BUILTIN_TOOL_HANDLERS, ...(options.toolHandlers || {}) };
+
+    this.descriptorMap = new Map();
+    for (const t of this.tools) {
+      this.descriptorMap.set(t.name, t);
+      if (t.alias) this.descriptorMap.set(t.alias, t);
+    }
+    this.handlerMap = new Map(Object.entries(this.toolHandlers));
+
+    this.executor =
+      options.executor ||
+      new ToolExecutor({
+        permissionGate: options.permissionGate,
+        onPermissionRequired: options.onPermissionRequired,
+      });
+
     this.maxSteps = options.maxSteps ?? 30;
     this.maxTokens = options.maxTokens ?? 100000;
     this.maxWallMs = options.maxWallMs ?? 300000;
@@ -250,7 +276,7 @@ export class AgentLoop {
           toolCalls: turnToolCalls,
         });
 
-        // Execute tool calls sequentially
+        // 1. Check repetition loop detector & emit tool_call events
         for (const call of turnToolCalls) {
           if (signal?.aborted) {
             throw new ModelError('Agent loop interrupted by abort signal');
@@ -289,37 +315,17 @@ export class AgentLoop {
               content: `Notice: You have invoked tool ${call.name} with identical arguments multiple times without progressing. Please modify your plan or provide a conclusion.`,
             });
           }
+        }
 
-          // Execute tool handler
-          const handler = this.toolHandlers[call.name];
-          let toolResult: ToolResult;
+        // 2. Execute tool calls batch via ToolExecutor
+        const batchResults = await this.executor.executeBatch(
+          turnToolCalls,
+          this.descriptorMap,
+          this.handlerMap,
+          signal,
+        );
 
-          if (!handler) {
-            toolResult = {
-              callId: call.id,
-              name: call.name,
-              content: `Error: Tool '${call.name}' not found. Available tools: ${Object.keys(this.toolHandlers).join(', ')}`,
-              isError: true,
-            };
-          } else {
-            try {
-              const out = await handler(call.args, signal);
-              toolResult = {
-                callId: call.id,
-                name: call.name,
-                content: out.content,
-                isError: out.isError ?? false,
-              };
-            } catch (err) {
-              toolResult = {
-                callId: call.id,
-                name: call.name,
-                content: `Tool execution failed: ${err instanceof Error ? err.message : String(err)}`,
-                isError: true,
-              };
-            }
-          }
-
+        for (const toolResult of batchResults) {
           this.tracer?.emit('tool_result', {
             step,
             callId: toolResult.callId,

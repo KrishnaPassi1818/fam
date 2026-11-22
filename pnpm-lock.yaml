@@ -248,6 +248,12 @@ importers:
       '@hx/shared':
         specifier: workspace:*
         version: link:../shared
+      ajv:
+        specifier: ^8.20.0
+        version: 8.20.0
+      ajv-formats:
+        specifier: ^3.0.1
+        version: 3.0.1
       smol-toml:
         specifier: ^1.9.1
         version: 1.9.1
