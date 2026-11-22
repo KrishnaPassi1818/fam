@@ -1,5 +1,40 @@
 # Development Progress Log
 
+## 2026-11-22 lead-architect Task T1.6 Tracer Implementation (status: done)
+- **What changed**:
+  - Implemented `Tracer` in `packages/core/src/trace/index.ts`:
+    - Structured JSONL writer storing runs at `~/.harness/traces/<sessionId>/<runId>.jsonl`.
+    - Event taxonomy per Architecture §4.10: `session_start`, `session_end`, `prompt`, `model_call`, `model_chunk`, `tool_call`, `tool_result`, `permission`, `route`, `escalate`, `compact`, `error`, `loop_warning`.
+    - Integrated with `redactSecrets` from `@hx/shared` to sanitize sensitive API keys, tokens, and credentials before writing to disk.
+    - Added static `readTrace` helper to replay and parse recorded trace events.
+  - Connected `Tracer` into `AgentLoop` in `packages/core/src/loop/index.ts`:
+    - Emits `session_start`, `prompt` (with token counts and layer names), `model_call`, `tool_call`, `tool_result`, `loop_warning`, `session_end`, and `error` events across execution steps.
+  - Added unit test suite in `packages/core/src/__tests__/trace.test.ts` (4 tests passing) covering event emission, secret redaction, loop integration, and error capture.
+- **Decisions made**:
+  - Traces are appended synchronously with secret redaction at write time so no crash or unhandled rejection loses trace data or leaks secrets.
+- **Tests run + results**:
+  - `pnpm test` and `pnpm run ci` passed cleanly (17/17 test files, 61/61 tests passing).
+- **Open issues / next step**:
+  - Next task: T1.7 Ink CLI MVP in Lane D.
+
+## 2026-11-22 lead-architect Task T1.5 Agent Loop v1 Implementation (status: done)
+- **What changed**:
+  - Implemented `AgentLoop` in `packages/core/src/loop/index.ts`:
+    - Layered prompt integration with `PromptBuilder`.
+    - Cumulative message history maintenance.
+    - Streaming response iteration and delta emission.
+    - Sequential tool call execution with built-in tools (`echo`, `current_time`).
+    - Triple safety guards: step limit (`maxSteps`), cumulative token budget (`maxTokens`), and wall-clock timeout (`maxWallMs`).
+    - Repetition loop detector: tracks hash of `(toolName, args)`, issues user intervention warning at 3 repetitions, throws `LoopDetected` at 4 repetitions.
+    - Strict `AbortSignal` cooperative cancellation checks during streaming and between tool execution steps.
+  - Added unit test suite in `packages/core/src/__tests__/loop.test.ts` (5 tests passing).
+- **Decisions made**:
+  - Sequential execution used for v1 built-in tools; concurrent execution will be layered in Phase 3 with ToolExecutor.
+- **Tests run + results**:
+  - All 5 loop unit tests passed.
+- **Open issues / next step**:
+  - Next task: T1.6 Tracer in Lane A.
+
 ## 2026-11-22 lead-architect Task T1.4 Prompt Builder Implementation (status: done)
 - **What changed**:
   - Implemented `PromptBuilder` in `packages/core/src/prompts/builder.ts`:

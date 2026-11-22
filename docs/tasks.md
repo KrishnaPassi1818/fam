@@ -37,9 +37,9 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
   AC: results written to `~/.harness/models.toml` and PROGRESS.md.
 - [x] **T1.4** · A · T0.7, T0.4 · Prompt builder: layers 1–6, model-tier mapping, budget enforcement and drop order, project-file hash approval store, `/system` data.
   AC: tests for ordering, budget trimming, prefix stability across turns (byte-identical stable layers).
-- [ ] **T1.5** · A · T1.1, T1.4 · Agent loop v1: message history, sequential tool calls, limits (steps/tokens/time), loop detector, abort; built-in tools `echo`, `current_time`.
+- [x] **T1.5** · A · T1.1, T1.4 · Agent loop v1: message history, sequential tool calls, limits (steps/tokens/time), loop detector, abort; built-in tools `echo`, `current_time`.
   AC: loop tests with a scripted fake adapter covering limit, abort, and repeat detection.
-- [ ] **T1.6** · A · T0.2 · Tracer: JSONL writer, redaction, event types per architecture 4.10.
+- [x] **T1.6** · A · T0.2 · Tracer: JSONL writer, redaction, event types per architecture 4.10.
   AC: trace emitted for every loop step. Redaction test.
 - [ ] **T1.7** · D · T1.5 · Ink CLI MVP: prompt input, streamed markdown output, tool-call lines, status bar, `/help /system /model /clear /exit`, flags `--model --system --append-system --system-file --role`.
   AC: manual demo plus snapshot tests for the render components.
