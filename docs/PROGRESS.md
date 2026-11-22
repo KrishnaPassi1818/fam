@@ -1,5 +1,35 @@
 # Development Progress Log
 
+## 2026-11-22 lead-architect Task T1.3 Model Capability Probe (status: done)
+- **What changed**:
+  - Implemented model capability prober in `packages/core/src/adapters/probe.ts` (`probeModelCapabilities`).
+  - Added unit test suite in `packages/core/src/__tests__/probe.test.ts`.
+  - Created automated probe runner script `scripts/probe-models.ts`.
+  - Probed real local models running in Ollama on this host and updated `config/models.toml`.
+- **Measured Capability Results**:
+  - `qwen2.5-coder:7b`:
+    - `tools`: **false** (Ollama native tool calling not supported)
+    - `parallelTools`: **false**
+    - `jsonSchemaFormat`: **true**
+    - `maxCtx`: 8192
+    - *Architectural Action*: Configured `caps.tools = false`. Routes `qwen2.5-coder:7b` to the generator path with search/replace blocks or fallback JSON parser.
+  - `llama3.1:8b`:
+    - `tools`: **true**
+    - `parallelTools`: **true**
+    - `jsonSchemaFormat`: **true**
+    - `maxCtx`: 8192
+  - `qwen2.5:1.5b`:
+    - `tools`: **true**
+    - `parallelTools`: **true**
+    - `jsonSchemaFormat`: **true**
+    - `maxCtx`: 4096 (CPU placement)
+- **Decisions made**:
+  - Confirmed qwen2.5-coder:7b requires coder-as-generator workflow.
+- **Tests run + results**:
+  - Live probe executed cleanly; updated `config/models.toml`.
+- **Open issues / next step**:
+  - Next task: T1.4 Prompt builder in Lane A.
+
 ## 2026-11-22 lead-architect Task T1.2 Gemini Adapter Implementation (status: done)
 - **What changed**:
   - Implemented `GeminiAdapter` in `packages/core/src/adapters/gemini.ts` with `@google/genai`:
