@@ -56,17 +56,17 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
   AC: test against a local HTTP fixture.
 - [x] **T2.3** · F · T2.1 · Registry bridge: namespacing, aliasing, annotations to flags, `tools.toml` overrides (tier, timeout, category, short description), resource and prompt listing, `resource_read` meta-tool.
   AC: tests for alias collisions and overrides.
-- [ ] **T2.4** · B · T0.9 · Rust `fs` server skeleton (rmcp, stdio): `list_dir`, `file_info`, `read_file(path,start,end)`, root confinement and symlink-escape rejection.
+- [x] **T2.4** · B · T0.9 · Rust `fs` server skeleton (rmcp, stdio): `list_dir`, `file_info`, `read_file(path,start,end)`, root confinement and symlink-escape rejection.
   AC: cargo tests, MCP stdio integration test.
-- [ ] **T2.5** · B · T2.4 · `glob`, `grep` (regex, context lines, limits, gitignore-aware), bounded output with a truncation indicator.
+- [x] **T2.5** · B · T2.4 · `glob`, `grep` (regex, context lines, limits, gitignore-aware), bounded output with a truncation indicator.
   AC: tests on a fixture tree incl. binary and large files.
-- [ ] **T2.6** · B · T2.4 · `apply_edit` (search/replace blocks, whitespace-tolerant fuzzy match, ambiguity detection, `dry_run`, backups), `write_file`, `move`, `trash` (OS trash).
+- [x] **T2.6** · B · T2.4 · `apply_edit` (search/replace blocks, whitespace-tolerant fuzzy match, ambiguity detection, `dry_run`, backups), `write_file`, `move`, `trash` (OS trash).
   AC: tests for ambiguous match, no match, multi-block, CRLF/LF.
-- [ ] **T2.7** · B · T2.4 · `repo_map` via tree-sitter (TS/JS, Python, Rust, Go at minimum), size-bounded output ranked by file importance.
+- [x] **T2.7** · B · T2.4 · `repo_map` via tree-sitter (TS/JS, Python, Rust, Go at minimum), size-bounded output ranked by file importance.
   AC: snapshot test on a fixture repo, output ≤ configured token estimate.
-- [ ] **T2.8** · F/D · T2.1 · `hx mcp list|add|remove|test`, first-connect approval UI showing the command and tools.
+- [x] **T2.8** · F/D · T2.1 · `hx mcp list|add|remove|test`, first-connect approval UI showing the command and tools.
   AC: manual demo, unit tests for the config edits.
-- [ ] **T2.9** · A · T2.3, T2.5 · Wire registry tools into the loop (all tools presented for now; retrieval comes in P5). Demo: "find all TODOs and summarize by file".
+- [x] **T2.9** · A · T2.3, T2.5 · Wire registry tools into the loop (all tools presented for now; retrieval comes in P5). Demo: "find all TODOs and summarize by file".
   AC: gate demo passes with llama3.1; record the transcript. Connect one third-party MCP server by config only.
 
 ## Phase 3: Executor, permissions, approvals

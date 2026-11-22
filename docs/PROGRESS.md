@@ -1,5 +1,33 @@
 # Development Progress Log
 
+## 2026-11-22 lead-architect Phase 2 Exit Gate Verification & hx-fs Server (status: done)
+- **What changed**:
+  - Implemented high-performance native Rust filesystem MCP server in `servers/fs/`:
+    - Confinement engine (`confinement.rs`): strict canonicalization and root confinement; rejects symlink escapes and directory traversal outside the active workspace.
+    - Inspection & reading tools (`tools/read.rs`): `read_file` (1-indexed bounded ranges, binary check, truncation flags), `list_dir` (recursive directory walker with file types and sizes), `file_info` (file stats, permissions, timestamps, line counts).
+    - Search tools (`tools/search.rs`): `glob` and `grep` with gitignore awareness via `ignore::WalkBuilder`, regex parsing, context lines, match limits, and truncation indicators.
+    - Modification tools (`tools/edit.rs`): `write_file` (creates parent directories), `apply_edit` (search/replace blocks with whitespace-tolerant fuzzy matching, CRLF/LF normalization, and ambiguity detection), `move`, and OS-level `trash` (via `trash` crate).
+    - Repository structure map (`tools/repo_map.rs`): tree-sitter AST extraction for Rust, TypeScript/JavaScript, and Python, outputting concise symbol outlines ranked by file path.
+    - Fast JSON-RPC 2.0 stdio server loop (`server.rs`, `main.rs`) with automated argument coercion (converting stringified `"true"`, `"false"`, and numbers).
+  - Implemented CLI MCP management in `packages/cli/src/mcp/` and `hx mcp`:
+    - `hx mcp list`: table and JSON formats for configured servers.
+    - `hx mcp test <name>`: tests connection, queries tool definitions, and measures round-trip latency.
+    - `hx mcp add <name>` / `hx mcp remove <name>`: manages `~/.harness/servers.toml`.
+  - Executed automated Phase 2 Exit Gate in `scripts/demo-p2.ts` (`scripts/demo-p2.sh`):
+    - Configured multi-server MCP host (`fs` via native binary, `third_party_fixture` via config alone).
+    - Verified discovery of 15 tools across servers.
+    - Ran `AgentLoop` with `llama3.1:8b` asking to find all TODOs in the codebase using `fs_grep`.
+    - `llama3.1:8b` invoked `fs_grep`, self-repaired argument types, retrieved 31 matches, and produced a clear multi-file summary.
+    - Recorded 12 trace events to disk and shut down cleanly.
+- **Phase 2 Exit Gate Verdict**:
+  - **ALL PHASE 2 ACCEPTANCE CRITERIA SATISFIED**. Phase 2 is formally COMPLETE and LOCKED.
+- **Tests run + results**:
+  - `cargo test --package hx-fs`: 9/9 tests passed cleanly.
+  - `pnpm run ci`: 23/23 test files, 86/86 tests passed cleanly.
+  - `scripts/demo-p2.sh`: exit code 0.
+- **Open issues / next step**:
+  - Phase 3: Executor, Permissions, Approvals (Tasks T3.1–T3.8).
+
 ## 2026-11-22 lead-architect Tasks T2.1, T2.2, T2.3 MCP Host & Registry Bridge (status: done)
 - **What changed**:
   - Implemented `McpConnection` in `packages/mcp-host/src/connection.ts`:

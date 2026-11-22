@@ -98,6 +98,32 @@ export class McpHost {
     return this.registry.getModelDescriptors(useAliasAsName);
   }
 
+  public async getToolHandlers(): Promise<
+    Record<
+      string,
+      (args: Record<string, unknown>, signal?: AbortSignal) => Promise<{ content: string; isError?: boolean }>
+    >
+  > {
+    const tools = await this.getTools();
+    const handlers: Record<
+      string,
+      (args: Record<string, unknown>, signal?: AbortSignal) => Promise<{ content: string; isError?: boolean }>
+    > = {};
+
+    for (const tool of tools) {
+      const handler = async (args: Record<string, unknown>) => {
+        const res = await this.callTool(tool.name, args);
+        return { content: res.content, isError: res.isError };
+      };
+      handlers[tool.name] = handler;
+      if (tool.alias) {
+        handlers[tool.alias] = handler;
+      }
+    }
+
+    return handlers;
+  }
+
   public async callTool(
     nameOrAlias: string,
     args: Record<string, unknown> = {},

@@ -1,3 +1,26 @@
-fn main() {
-    println!("hx-fs server v0.1.0");
+use std::env;
+use std::path::PathBuf;
+use anyhow::Result;
+use hx_fs::{Confinement, FsServer};
+
+#[tokio::main]
+async fn main() -> Result<()> {
+    let mut root = env::current_dir()?;
+
+    let args: Vec<String> = env::args().collect();
+    let mut i = 1;
+    while i < args.len() {
+        if args[i] == "--root" && i + 1 < args.len() {
+            root = PathBuf::from(&args[i + 1]);
+            i += 2;
+        } else {
+            i += 1;
+        }
+    }
+
+    let confinement = Confinement::new(&root)?;
+    let server = FsServer::new(confinement);
+
+    server.run_stdio().await?;
+    Ok(())
 }
