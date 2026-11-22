@@ -16,6 +16,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@google/genai": "^3.6.1",
     "@hx/shared": "workspace:*",
     "smol-toml": "^1.9.1"
   },

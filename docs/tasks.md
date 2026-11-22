@@ -29,7 +29,7 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
 
 ## Phase 1: Adapters, loop, CLI MVP
 
-- [ ] **T1.1** · A · T0.2 · Ollama adapter: streaming `/api/chat`, `num_ctx`/`num_gpu`/`keep_alive`/`format` options, synthetic call IDs, usage stats, abort, model warm/unload, tool-call text fallback parser.
+- [x] **T1.1** · A · T0.2 · Ollama adapter: streaming `/api/chat`, `num_ctx`/`num_gpu`/`keep_alive`/`format` options, synthetic call IDs, usage stats, abort, model warm/unload, tool-call text fallback parser.
   AC: unit tests with a mocked server; `@live` test against real Ollama.
 - [ ] **T1.2** · A · T0.2 · Gemini adapter: `@google/genai`, `systemInstruction`, function calling (single and parallel), usage, 429 backoff plus rate limiter, model name from config.
   AC: mocked tests; `@live` test if a key is present.

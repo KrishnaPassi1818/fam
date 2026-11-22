@@ -1,5 +1,24 @@
 # Development Progress Log
 
+## 2026-11-22 lead-architect Task T1.1 Ollama Adapter Implementation (status: done)
+- **What changed**:
+  - Implemented `OllamaAdapter` in `packages/core/src/adapters/ollama.ts` implementing `ModelAdapter`:
+    - Full streaming `/api/chat` with NDJSON parsing.
+    - Explicit `num_ctx`, `num_gpu` (CPU offloading for 1.5b), `keep_alive`, `format` (JSON schema).
+    - Synthetic tool-call ID generation.
+    - Fallback tool-call text parser for raw JSON and markdown code blocks.
+    - Usage extraction (`prompt_eval_count`, `eval_count`).
+    - Model warm (`/api/generate`) and unload (`keep_alive: 0`) hooks.
+  - Added unit and live test suite in `packages/core/src/__tests__/ollama-adapter.test.ts`.
+- **Decisions made**:
+  - Auto-generated synthetic tool call IDs (`call_${counter}_${timestamp}`) to normalize Ollama output with OpenAI/Gemini tool calling format.
+- **Tests run + results**:
+  - Unit tests mocked response parsing, tool calling, fallback JSON, and OOM 507 errors (5 tests passed).
+  - `@live` test executed against local running Ollama instance with `qwen2.5:1.5b` (passed in 4.3s).
+  - `pnpm run ci` passed cleanly (12/12 test files, 41/41 tests passed).
+- **Open issues / next step**:
+  - Next task: T1.2 Gemini Adapter in Lane A.
+
 ## 2026-11-22 lead-architect Phase 0 Exit Gate Verification (status: done)
 - **What changed**:
   - Executed complete Phase 0 verification suite: `pnpm build && pnpm test && cargo build && hx doctor && pnpm prompts:check`.
