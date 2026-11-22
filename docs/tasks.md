@@ -22,7 +22,7 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
   AC: neutral identity only (test greps for vendor names), token budgets enforced by a test, rewritten in own words, most important rules first.
 - [x] **T0.8** · E · T0.7 · Prompt budget test and linter script (`pnpm prompts:check`): counts tokens, checks front-matter, and greps for banned identity strings.
   AC: runs in CI.
-- [ ] **T0.9** · A · T0.2 · ADR: freeze MCP tool-name conventions, alias rules, and annotation usage. Add fixtures for a fake MCP server used in tests.
+- [x] **T0.9** · A · T0.2 · ADR: freeze MCP tool-name conventions, alias rules, and annotation usage. Add fixtures for a fake MCP server used in tests.
   AC: `docs/DECISIONS.md` created, fixture server runs.
 
 **Phase 0 gate**: see plan.md.

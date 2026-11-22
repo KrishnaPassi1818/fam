@@ -1,5 +1,17 @@
 # Development Progress Log
 
+## 2026-11-22 lead-architect Task T0.9 MCP Conventions ADR & Fixture Server (status: done)
+- **What changed**:
+  - Authored ADR-003 in `docs/DECISIONS.md` freezing MCP tool-naming conventions (`<server>.<tool>`), model-safe aliases (`[a-zA-Z0-9_]{1,64}`), and annotation semantics (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`, tiers 0-4).
+  - Built fake MCP fixture server in `packages/mcp-host/fixtures/fake-mcp-server.ts` implementing JSON-RPC stdio protocol (`initialize`, `tools/list`, `tools/call`, `ping`) with `echo`, `add`, `delay`, `write`, and `fail` tools.
+  - Added integration test suite in `packages/mcp-host/src/__tests__/fixture-server.test.ts` verifying stdio MCP protocol lifecycle and tool execution.
+- **Decisions made**:
+  - Model aliases use underscore replacement for dots and sequential suffixing for conflict resolution.
+- **Tests run + results**:
+  - `pnpm run ci` passed cleanly (11/11 test files, 35/35 tests passed, cargo check passed).
+- **Open issues / next step**:
+  - Phase 0 exit gate verification.
+
 ## 2026-11-22 lead-architect Tasks T0.5-T0.8 Prompt Analysis & Distillation (status: done)
 - **What changed**:
   - Analyzed `docs/reference/prompt.md` (~119k tokens, 227 sections) and created `docs/reference/prompt-analysis.md`.

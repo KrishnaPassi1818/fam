@@ -28,3 +28,25 @@
 - **Consequences**:
   - Any future changes to `packages/shared` contracts within Phase 0-2 require an explicit ADR and must preserve backward compatibility.
 
+## ADR-003: MCP Tool Naming, Alias Conventions, and Annotations Specification
+- **Date**: 2026-11-22
+- **Status**: Accepted
+- **Context**: T0.9 requirement to establish rigid conventions for MCP tool discovery, namespacing, model-safe aliases, and execution annotations.
+- **Decision**:
+  1. **Canonical Naming**: Every MCP tool is identified internally by `<server_name>.<tool_name>`, where `<server_name>` matches the key in `config/servers.toml` and `<tool_name>` is the name returned by `tools/list`.
+  2. **Model-Safe Aliases**: Small local models (Llama 3.1, Qwen 2.5) strictly require identifiers matching `^[a-zA-Z0-9_]{1,64}$`. Canonical names with dots (`.`) are mapped to aliases with underscores (`_`). If an alias collision occurs across servers, sequential suffixing (`_2`, `_3`) is deterministically applied and tracked in the MCP registry bridge.
+  3. **Annotation Semantics**:
+     - `readOnlyHint`: When true, signals to the Executor that calls may be scheduled concurrently in parallel batches (up to `maxParallelTools`, default 6). When false, the call requires sequential serialization.
+     - `destructiveHint`: When true, flags an action that deletes or permanently overwrites state.
+     - `idempotentHint`: When true, indicates that re-executing the call with identical arguments has no cumulative side-effects, enabling automatic retry on network/transport drops.
+     - `openWorldHint`: When true, indicates the tool interacts with resources outside the local workspace.
+  4. **Permission Tier Mapping**:
+     - Tier 0: Read-only calls within workspace root (`readOnlyHint=true`, auto-approved).
+     - Tier 1: Workspace modifications with auto-backup and undo capability (`fs.write_file`, `fs.apply_edit`).
+     - Tier 2: Outside-workspace writes, overwrites of existing user documents, or file trash actions (requires approval prompt with preview).
+     - Tier 3: Shell command execution, package installation, process control (`sandbox.run_command`, requires command preview approval).
+     - Tier 4: Irreversible destructive operations (e.g. permanent deletion, `git push --force`, requires typed confirmation).
+- **Consequences**:
+  - The Executor and MCP host rely on these frozen conventions to enforce security and schedule parallel reads.
+
+
