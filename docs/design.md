@@ -24,12 +24,12 @@ hx serve                   expose harness as an MCP server (P3)
 ### Slash commands
 `/help /system [edit] /role <r> /model <m> /models /tools [search] /mcp /memory [list|forget|add] /todo /context /compact /undo /diff /approve-all (session only, tier ≤2) /local /cloud /trace /clear /exit`
 
-### Screen layout (Ink)
-- Scrollback: user and assistant messages (markdown-rendered, streamed).
-- Collapsible tool-call lines: `⚙ fs.grep "TODO" → 14 matches (120 ms)`. Parallel calls render as a grouped block with per-call spinners.
-- Status bar: `model · ctx 3.1k/8k · tier · tokens/s · local|cloud · cwd`.
-- Approval modal: shows tool, args, a preview (diff, command, path), and risk tier. Keys: `y` once, `a` always for this session, `n` deny, `e` edit args, `?` details.
-- Esc interrupts the generation and tool runs (AbortSignal). Ctrl-C twice exits.
+### Screen layout (Ratatui Rust TUI)
+- Scrollback: user and assistant messages (streamed markdown rendering with live cursor `▌`).
+- Collapsible tool-call lines: `⚙ fs.grep "TODO" → 14 matches (120ms)`. Running calls render with animated spinners (`⠋`, `⠙`), completed with `⚙` and error with `✖`.
+- Status bar: `model · ctx 3.1k/8k · tier · tokens/s · LOCAL|CLOUD · cwd`.
+- Approval modal: centered popup dialog showing tool, args, preview (diff, command, path), risk tier, and key hints (`y` once, `a` session, `n` deny, `e` edit args, `?` details; Tier 4 requires typing `CONFIRM`).
+- Esc interrupts generation and tool runs (AbortSignal). Ctrl+C exits cleanly.
 
 ## 2. System prompt system
 

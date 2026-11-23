@@ -30,7 +30,7 @@ Lanes interact only through the contracts in `packages/shared` and MCP schemas. 
 - Ollama and Gemini adapters, capability probing, token counting calibration.
 - Prompt builder (layers, budgets, `/system`).
 - Agent loop with limits and loop detection (single tool calls).
-- Ink CLI: input, streaming, status bar, slash basics.
+- Ratatui Rust TUI: native frontend (`crates/hx-tui`), IPC bridge, streaming, status bar, slash basics.
 - Tracer (JSONL).
 - Benchmark script: measure VRAM, tokens/s, max stable `num_ctx` for each model, then write `models.toml`.
 - Probe: does qwen2.5-coder:7b support Ollama native tool calls? Record the result and set `caps.tools`.

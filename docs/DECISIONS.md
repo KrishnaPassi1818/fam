@@ -49,4 +49,21 @@
 - **Consequences**:
   - The Executor and MCP host rely on these frozen conventions to enforce security and schedule parallel reads.
 
+## ADR-004: TUI Architecture Redesign — Replacing Ink with Rust Ratatui
+- **Date**: 2026-11-23
+- **Status**: Accepted
+- **Context**: The terminal user interface was originally implemented using `ink` (React for terminal in Node.js). While convenient for initial prototyping, Ink incurs heavy runtime overhead (V8 React reconciler, JSX layout calculations), displays visual flickering during high-speed token streaming, and introduces complex Node-specific terminal hook quirks. Replacing Ink with Rust `ratatui` (and `crossterm`) provides native double-buffering, flicker-free differential rendering, zero-allocation layout passes, robust terminal lifecycle handling, and decoupling of UI presentation from core agent loop execution.
+- **Decision**:
+  1. **New Rust Crate (`crates/hx-tui`)**: Built in the Cargo workspace with `ratatui 0.30` and `crossterm 0.29`. It implements the interactive terminal frontend (header, scrollable conversation history, tool calls, animated spinners, prompt input line with history, status bar with color-coded badges, and centered approval modal dialog).
+  2. **Decoupled JSON Lines IPC Protocol**: Defines a strict bidirectional protocol between the TypeScript harness core and the Rust Ratatui frontend:
+     - `ToTuiMessage`: `init`, `message`, `chunk`, `tool_call`, `tool_result`, `status`, `warning`, `approval_request`, `finish`, `error`, `clear`, `exit`.
+     - `FromTuiMessage`: `user_input`, `approval_decision`, `interrupt`, `exit`.
+  3. **Headless Harness & Bridge**: `@hx/cli` implements `SessionDriver` and `ratatui-bridge.ts`. In interactive mode, `hx` launches `hx-tui` (or `hx-tui` spawns `hx --headless`), streaming agent execution events over stdio. One-shot mode (`hx "prompt"`) executes directly in the terminal without full-screen mode.
+  4. **Dependency Removal**: Removed `ink`, `ink-spinner`, `ink-text-input`, `ink-testing-library`, `react`, and `@types/react` from `@hx/cli`.
+- **Consequences**:
+  - The CLI package `@hx/cli` is now pure TypeScript with zero React dependencies.
+  - Interactive terminal performance is vastly superior with zero flicker during token streaming and strict signal abort handling (`Esc` interrupt).
+  - TUI can be tested independently in Rust using `ratatui::backend::TestBackend` and in TypeScript via the IPC session driver.
+
+
 

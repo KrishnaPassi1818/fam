@@ -41,7 +41,7 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
   AC: loop tests with a scripted fake adapter covering limit, abort, and repeat detection.
 - [x] **T1.6** · A · T0.2 · Tracer: JSONL writer, redaction, event types per architecture 4.10.
   AC: trace emitted for every loop step. Redaction test.
-- [x] **T1.7** · D · T1.5 · Ink CLI MVP: prompt input, streamed markdown output, tool-call lines, status bar, `/help /system /model /clear /exit`, flags `--model --system --append-system --system-file --role`.
+- [x] **T1.7** · D · T1.5 · Ratatui Rust TUI: prompt input, streamed markdown output, tool-call lines, status bar, `/help /system /model /clear /exit`, flags `--model --system --append-system --system-file --role`. (Redesigned with Rust Ratatui `crates/hx-tui` and headless IPC bridge).
   AC: manual demo plus snapshot tests for the render components.
 - [x] **T1.8** · A/D · T1.1 · Benchmark script `pnpm bench:models`: for each local model, measure load time, tokens/s, VRAM (nvidia-smi), and max stable `num_ctx` (stepwise 4096→8192→…) without OOM or CPU spill. Write `models.toml`.
   AC: results table in PROGRESS.md, `models.toml` reflects measured values.

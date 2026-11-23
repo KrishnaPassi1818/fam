@@ -1,5 +1,38 @@
 # Development Progress Log
 
+## 2026-11-23 lead-architect Project Redesign: Replaced Ink with Rust Ratatui TUI (status: done)
+- **What changed**:
+  - Re-architected the TUI subsystem by replacing `ink` (React CLI) with a native Rust TUI built using `ratatui 0.30` and `crossterm 0.29` (`crates/hx-tui`).
+  - Implemented `crates/hx-tui` in the Cargo workspace:
+    - `protocol.rs`: strict bi-directional IPC message protocol between Node.js harness core and Rust frontend.
+    - `app.rs`: terminal application state machine, scrollback history, animated spinners, input line editing, history navigation, auto-scroll, and interrupt handling.
+    - `ui/status_bar.rs`: persistent status bar with model, context meter (`ctx 2.4k/8k`), tier, tokens/sec, LOCAL/CLOUD badge, and working directory.
+    - `ui/messages.rs`: scrollable conversation view with color-coded role tags, wrapped lines, and live streaming cursor (`▌`).
+    - `ui/tools.rs`: tool execution display with animated spinner (`⠋`), `⚙` for success, `✖` for errors, execution duration in milliseconds, and result previews.
+    - `ui/input.rs`: interactive prompt line with `hx > ` prefix and processing state indicator.
+    - `ui/approval.rs`: centered modal dialog overlay for permission checks across Tiers 1-4 with argument previews and typed `CONFIRM` prompt for Tier 4.
+    - `tests/tui_tests.rs`: full unit and integration test suite using `ratatui::backend::TestBackend` (6/6 tests passing).
+  - Redesigned `@hx/cli`:
+    - Removed `ink`, `ink-spinner`, `ink-text-input`, `ink-testing-library`, `react`, and `@types/react` from `package.json`.
+    - Implemented `packages/cli/src/ui/session.ts` (`SessionDriver`): decoupled turn loop execution, slash command handlers (`/help`, `/context`, `/compact`, `/undo`, `/memory`, `/system`, `/model`, `/models`, `/role`, `/clear`, `/exit`), abort signals, and token counting.
+    - Implemented `packages/cli/src/ui/ratatui-bridge.ts`: binary discovery (`target/release/hx-tui`, `target/debug/hx-tui`, `HX_TUI_BIN`) and stdio headless bridge mode.
+    - Updated `packages/cli/src/bin/hx.ts`: interactive mode automatically launches `hx-tui` Ratatui frontend; headless bridge mode (`--headless`); one-shot direct terminal streaming.
+    - Added unit tests in `packages/cli/src/__tests__/ui.test.ts` (5/5 tests passing).
+  - Documented architectural decision in `docs/DECISIONS.md` (ADR-004), updated `docs/architecture.md`, `docs/design.md`, `docs/plan.md`, and `docs/tasks.md`.
+- **Decisions made**:
+  - Adopted stdio NDJSON protocol between `@hx/cli` and `hx-tui`, providing complete separation of presentation from agent orchestration.
+- **Tests run + results**:
+  - `pnpm lint`: clean, 0 errors, 0 warnings.
+  - `pnpm typecheck`: clean across all workspace packages.
+  - `pnpm test`: 46 test files passed (183 tests passed, 2 skipped live tests).
+  - `cargo clippy -p hx-tui -- -D warnings`: passed with zero warnings.
+  - `cargo fmt -p hx-tui --check`: passed.
+  - `cargo test --workspace`: 15/15 tests passed (`hx-fs`, `hx-sandbox`, `hx-tui`).
+  - `cargo test -p hx-tui`: 6/6 tests passed.
+  - `node packages/cli/dist/bin/hx.js --help` & `doctor`: verified working.
+  - `./target/debug/hx-tui --help`: verified working.
+
+
 ## 2026-11-22 lead-architect Phase 7 Exit Gate Verification: Office Server & LibreOffice Subsystems (status: done)
 - **What changed**:
   - Implemented `@hx/office` MCP Server (`servers/office/`):

@@ -12,8 +12,8 @@
 
 ```
                 ┌───────────────────────────── hx (Node/TS) ─────────────────────────────┐
- User ─ CLI ──▶ │ Session ─▶ PromptBuilder ─▶ Router ─▶ Orchestrator ─▶ AgentLoop         │
- (Ink TUI)      │              ▲                 │            │             │             │
+ User ──▶ hx-tui ──IPC──▶ Session ─▶ PromptBuilder ─▶ Router ─▶ Orchestrator ─▶ AgentLoop │
+ (Ratatui Rust) │              ▲                 │            │             │             │
                 │        MemoryStore       ToolRetriever   Planner(DAG)  Executor ─┐      │
                 │              ▲                 │            │             │      │      │
                 │        ContextManager ◀────────┴────────────┴─────────────┘      │      │
@@ -33,10 +33,12 @@ External runtime dependencies: Ollama (localhost:11434), Gemini API, LibreOffice
 
 ```
 harness/
+├─ crates/
+│  └─ hx-tui/       Rust (Ratatui + Crossterm) native TUI frontend
 ├─ packages/
 │  ├─ core/         agent loop, adapters, router, context, memory, prompt, planner, executor
 │  ├─ mcp-host/     MCP client manager, tool registry bridge
-│  ├─ cli/          Ink TUI, commands, approval UI
+│  ├─ cli/          CLI entrypoint, commands, doctor, Ratatui IPC bridge
 │  ├─ evals/        task definitions, runner, reports
 │  └─ shared/       types, zod schemas, token counting, logger
 ├─ servers/
@@ -148,7 +150,7 @@ JSONL per run at `~/.harness/traces/<session>/<run>.jsonl`, with events: `prompt
 |---|---|
 | Workspace | pnpm + TypeScript (strict, ESM), cargo workspace |
 | Validation | zod (own config/types), ajv (tool JSON Schemas) |
-| CLI | Ink (React TUI), commander for subcommands |
+| CLI | Ratatui (Rust TUI via `crates/hx-tui`), commander for TS subcommands & IPC bridge |
 | MCP | `@modelcontextprotocol/sdk` (TS), `rmcp` (Rust) |
 | Models | `ollama` JS client or raw fetch, `@google/genai` |
 | DB | SQLite (`better-sqlite3`) + `sqlite-vec` (fallback: in-memory cosine) |

@@ -1,15 +1,12 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
-import React from 'react';
-import { render } from 'ink';
 import { Command } from 'commander';
 import { VERSION } from '@hx/shared';
-import { loadConfig, Tracer, MemoryService } from '@hx/core';
+import { loadConfig, Tracer, MemoryService, AgentLoop } from '@hx/core';
 import { runDoctor, formatDoctorTable } from '../doctor/index.js';
 import { listServers, testServer, saveServerConfig, removeServerConfig } from '../mcp/index.js';
 import { loadAllTasks, EvalRunner, saveEvalReport, formatMarkdownReport } from '@hx/evals';
-import { createAdapter } from '../ui/adapter-factory.js';
-import { App } from '../ui/App.js';
+import { createAdapter, launchRatatuiTui, runHeadlessBridge } from '../ui/index.js';
 
 const program = new Command();
 
@@ -328,6 +325,7 @@ program
   .option('--append-system <text>', 'Append custom instructions to the prompt')
   .option('--system-file <path>', 'Read system prompt override from file')
   .option('--local-only', 'Never use Gemini API or external network models', false)
+  .option('--headless', 'Run harness in headless IPC bridge mode for TUI', false)
   .action(async (promptArg: string | undefined, options: {
     model?: string;
     role?: 'assistant' | 'coder' | 'router';
@@ -335,6 +333,7 @@ program
     appendSystem?: string;
     systemFile?: string;
     localOnly?: boolean;
+    headless?: boolean;
   }) => {
     try {
       const config = loadConfig();
@@ -344,9 +343,7 @@ program
         systemOverride = fs.readFileSync(options.systemFile, 'utf-8');
       }
 
-      const isOneShot = Boolean(promptArg && promptArg.trim().length > 0);
-
-      const appElement = React.createElement(App, {
+      const sessionConfig = {
         config,
         initialModel: options.model,
         initialRole: options.role,
@@ -354,11 +351,44 @@ program
         systemOverride,
         appendSystem: options.appendSystem,
         initialPrompt: promptArg,
-        isOneShot,
-      });
+      };
 
-      const { waitUntilExit } = render(appElement);
-      await waitUntilExit();
+      if (options.headless) {
+        await runHeadlessBridge(sessionConfig);
+        return;
+      }
+
+      const isOneShot = Boolean(promptArg && promptArg.trim().length > 0);
+      if (isOneShot) {
+        const modelId = options.model || config.general.defaultModel || 'llama3.1:8b';
+        const adapter = createAdapter({
+          modelId,
+          config,
+          localOnly: options.localOnly,
+        });
+        const profile = config.models.models[modelId];
+        const tier = (profile as unknown as { tier?: string })?.tier || (modelId.includes('gemini') ? 'full' : modelId.includes('1.5b') ? 'min' : 'medium');
+        const loop = new AgentLoop({
+          adapter,
+          tracer: new Tracer(),
+          role: options.role || 'assistant',
+          tier: tier as 'full' | 'medium' | 'min',
+          userGlobalPrompt: systemOverride,
+          projectPrompt: options.appendSystem,
+        });
+
+        for await (const event of loop.run([{ role: 'user', content: promptArg! }])) {
+          if (event.type === 'chunk') {
+            process.stdout.write(event.delta);
+          } else if (event.type === 'finish') {
+            process.stdout.write('\n');
+          }
+        }
+        process.exit(0);
+      }
+
+      // Interactive mode: launch Rust Ratatui TUI!
+      await launchRatatuiTui(sessionConfig);
     } catch (err) {
       process.stderr.write(`Execution failed: ${err instanceof Error ? err.message : String(err)}\n`);
       process.exit(1);

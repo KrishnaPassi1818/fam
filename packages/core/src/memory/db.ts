@@ -6,7 +6,6 @@ import { resolvePath } from '../config/index.js';
 import type { MemoryItem } from './types.js';
 
 const require = createRequire(import.meta.url);
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 const { DatabaseSync } = require('node:sqlite');
 
 export interface MemoryDatabaseOptions {
@@ -39,7 +38,6 @@ export class MemoryDatabase {
   private initSqliteVec(): void {
     try {
       // Try to load sqlite-vec dynamically
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const sqliteVec = require('sqlite-vec');
       if (typeof sqliteVec?.getLoadablePath === 'function') {
         const loadablePath = sqliteVec.getLoadablePath();
