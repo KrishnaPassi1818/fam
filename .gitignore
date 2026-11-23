@@ -9,3 +9,4 @@ target/
 coverage/
 *.tsbuildinfo
 .harness-data/
+tmp/
