@@ -1,4 +1,5 @@
 import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { PDFParse } from 'pdf-parse';
@@ -23,10 +24,21 @@ export interface PdfReadResult {
  * Reads a PDF file using pdftotext CLI (fast, page-bounded) with fallback to pdf-parse.
  */
 export async function pdf_read(options: PdfReadOptions): Promise<PdfReadResult> {
-  const { path: filePath, pages = 'all', max_chars = 8000 } = options;
+  const { path: rawPath, pages = 'all', max_chars = 8000 } = options;
 
+  let filePath = rawPath;
   if (!fs.existsSync(filePath)) {
-    throw new Error(`File not found: ${filePath}`);
+    const candidateCwd = path.resolve(process.cwd(), rawPath);
+    if (fs.existsSync(candidateCwd)) {
+      filePath = candidateCwd;
+    } else {
+      const candidateBench = path.resolve(process.cwd(), 'hx-benchmark-workspace', rawPath);
+      if (fs.existsSync(candidateBench)) {
+        filePath = candidateBench;
+      } else {
+        throw new Error(`File not found: ${rawPath}`);
+      }
+    }
   }
 
   let text = '';

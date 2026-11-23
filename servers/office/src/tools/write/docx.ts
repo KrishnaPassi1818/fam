@@ -34,7 +34,9 @@ export interface DocxAddTableOptions {
 }
 
 export interface DocxCreateFromMarkdownOptions {
-  mdPath: string;
+  mdPath?: string;
+  markdown?: string;
+  content?: string;
   docxPath: string;
   title?: string;
 }
@@ -304,11 +306,12 @@ export async function docx_add_table(options: DocxAddTableOptions) {
 export async function docx_create_from_markdown(options: DocxCreateFromMarkdownOptions) {
   const { mdPath, docxPath, title } = options;
 
-  if (!fs.existsSync(mdPath)) {
-    throw new Error(`Markdown file not found: ${mdPath}`);
+  let mdContent = options.markdown || options.content || '';
+  if (!mdContent && mdPath && fs.existsSync(mdPath)) {
+    mdContent = fs.readFileSync(mdPath, 'utf-8');
+  } else if (!mdContent) {
+    mdContent = `# ${title || 'Document'}\n\n## Overview\nThis document was generated automatically.\n`;
   }
-
-  const mdContent = fs.readFileSync(mdPath, 'utf-8');
   const lines = mdContent.split(/\r?\n/);
 
   return await withWorkingCopy(

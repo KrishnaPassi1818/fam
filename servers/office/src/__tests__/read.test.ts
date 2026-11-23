@@ -104,5 +104,5 @@ describe('Office Read Tools (T7.2)', () => {
     expect(readRes.content).toContain('PDF Test Document');
     expect(readRes.content).toContain('This is paragraph one');
     expect(readRes.truncated).toBe(false);
-  });
+  }, 30000);
 });

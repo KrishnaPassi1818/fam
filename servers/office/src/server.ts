@@ -221,15 +221,16 @@ export function createOfficeServer(): Server {
     },
     {
       name: 'xlsx_create_from_csv',
-      description: 'Creates a well-formatted .xlsx workbook from an existing CSV file.',
+      description: 'Creates a well-formatted .xlsx workbook from an existing CSV file or data.',
       inputSchema: {
         type: 'object',
         properties: {
-          csvPath: { type: 'string', description: 'Path to source CSV file' },
           xlsxPath: { type: 'string', description: 'Path to destination .xlsx file' },
+          csvPath: { type: 'string', description: 'Path to source CSV file' },
+          csv: { type: 'string', description: 'Inline CSV string data' },
           sheetName: { type: 'string', description: 'Sheet name (default "Data")' },
         },
-        required: ['csvPath', 'xlsxPath'],
+        required: ['xlsxPath'],
       },
       annotations: { destructiveHint: false },
       category: 'office',
@@ -290,15 +291,16 @@ export function createOfficeServer(): Server {
     },
     {
       name: 'docx_create_from_markdown',
-      description: 'Creates a clean, styled .docx document from a Markdown file.',
+      description: 'Creates a clean, styled .docx document from a Markdown file or markdown text.',
       inputSchema: {
         type: 'object',
         properties: {
-          mdPath: { type: 'string', description: 'Path to source Markdown file' },
           docxPath: { type: 'string', description: 'Path to destination .docx file' },
+          mdPath: { type: 'string', description: 'Path to source Markdown file' },
+          markdown: { type: 'string', description: 'Inline markdown text' },
           title: { type: 'string', description: 'Optional document title' },
         },
-        required: ['mdPath', 'docxPath'],
+        required: ['docxPath'],
       },
       annotations: { destructiveHint: false },
       category: 'office',

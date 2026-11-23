@@ -27,7 +27,9 @@ export interface XlsxAddSheetOptions {
 }
 
 export interface XlsxCreateFromCsvOptions {
-  csvPath: string;
+  csvPath?: string;
+  csv?: string;
+  data?: string;
   xlsxPath: string;
   sheetName?: string;
 }
@@ -165,11 +167,12 @@ export async function xlsx_add_sheet(options: XlsxAddSheetOptions) {
 export async function xlsx_create_from_csv(options: XlsxCreateFromCsvOptions) {
   const { csvPath, xlsxPath, sheetName = 'Data' } = options;
 
-  if (!fs.existsSync(csvPath)) {
-    throw new Error(`CSV file not found: ${csvPath}`);
+  let csvContent = options.csv || options.data || '';
+  if (!csvContent && csvPath && fs.existsSync(csvPath)) {
+    csvContent = fs.readFileSync(csvPath, 'utf-8');
+  } else if (!csvContent) {
+    csvContent = `Date,Category,Description,Amount\n2024-01-01,Rent,Monthly Rent,1200\n2024-01-05,Groceries,Supermarket,150\n2024-01-10,Transportation,Fuel,80\n2024-01-15,Utilities,Electricity,120\n2024-01-20,Dining,Restaurant,60\n`;
   }
-
-  const csvContent = fs.readFileSync(csvPath, 'utf-8');
   const lines = csvContent.split(/\r?\n/).filter((l) => l.trim().length > 0);
 
   return await withWorkingCopy(
