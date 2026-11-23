@@ -1,9 +1,9 @@
-use std::fs;
+use crate::confinement::Confinement;
+use crate::protocol::{ToolCallResult, ToolDefinition};
 use anyhow::{bail, Result};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use crate::confinement::Confinement;
-use crate::protocol::{ToolCallResult, ToolDefinition};
+use std::fs;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct WriteFileArgs {
@@ -258,7 +258,11 @@ fn apply_single_block(text: &str, search: &str, replace: &str) -> Result<String>
     }
 
     // 3. Line-trimmed fuzzy match
-    let search_lines: Vec<&str> = norm_search.lines().map(|l| l.trim()).filter(|l| !l.is_empty()).collect();
+    let search_lines: Vec<&str> = norm_search
+        .lines()
+        .map(|l| l.trim())
+        .filter(|l| !l.is_empty())
+        .collect();
     let text_lines: Vec<&str> = norm_text.lines().collect();
 
     if search_lines.is_empty() {
@@ -335,7 +339,10 @@ pub fn execute_move(conf: &Confinement, args: MoveArgs) -> ToolCallResult {
     }
 
     if let Err(e) = fs::rename(&src, &dst) {
-        return ToolCallResult::error(format!("Failed to move from '{}' to '{}': {e}", args.from, args.to));
+        return ToolCallResult::error(format!(
+            "Failed to move from '{}' to '{}': {e}",
+            args.from, args.to
+        ));
     }
 
     let res_json = json!({

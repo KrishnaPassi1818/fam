@@ -1,7 +1,7 @@
-pub mod protocol;
 pub mod confinement;
-pub mod tools;
+pub mod protocol;
 pub mod server;
+pub mod tools;
 
 pub use confinement::Confinement;
 pub use server::FsServer;
@@ -74,7 +74,11 @@ mod tests {
         let tmp = tempdir().unwrap();
         let conf = Confinement::new(tmp.path()).unwrap();
 
-        fs::write(tmp.path().join("a.rs"), "fn foo() { println!(\"TODO: bar\"); }").unwrap();
+        fs::write(
+            tmp.path().join("a.rs"),
+            "fn foo() { println!(\"TODO: bar\"); }",
+        )
+        .unwrap();
         fs::write(tmp.path().join("b.txt"), "regular note").unwrap();
 
         let glob_res = tools::search::execute_glob(
@@ -101,7 +105,10 @@ mod tests {
         assert_eq!(grep_res.is_error, Some(false));
         let grep_val: serde_json::Value = serde_json::from_str(&grep_res.content[0].text).unwrap();
         assert_eq!(grep_val["total_matches"], 1);
-        assert!(grep_val["matches"][0]["line"].as_str().unwrap().contains("TODO: bar"));
+        assert!(grep_val["matches"][0]["line"]
+            .as_str()
+            .unwrap()
+            .contains("TODO: bar"));
     }
 
     #[test]
@@ -160,7 +167,10 @@ mod tests {
         // tools/list
         let list_resp = server.handle_request("tools/list", None, json!(2));
         assert!(list_resp.error.is_none());
-        let tools = list_resp.result.unwrap()["tools"].as_array().unwrap().clone();
+        let tools = list_resp.result.unwrap()["tools"]
+            .as_array()
+            .unwrap()
+            .clone();
         assert!(tools.len() >= 9);
 
         // tools/call: write_file

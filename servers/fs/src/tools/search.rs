@@ -1,13 +1,13 @@
-use std::fs;
-use std::path::Path;
+use crate::confinement::Confinement;
+use crate::protocol::{ToolCallResult, ToolDefinition};
 use anyhow::Result;
 use glob::Pattern;
 use ignore::WalkBuilder;
 use regex::{Regex, RegexBuilder};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use crate::confinement::Confinement;
-use crate::protocol::{ToolCallResult, ToolDefinition};
+use std::fs;
+use std::path::Path;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GlobArgs {
@@ -33,7 +33,8 @@ pub fn tool_definitions() -> Vec<ToolDefinition> {
     vec![
         ToolDefinition {
             name: "glob".into(),
-            description: "Find files matching a glob pattern (e.g. '**/*.rs'), respecting .gitignore.".into(),
+            description:
+                "Find files matching a glob pattern (e.g. '**/*.rs'), respecting .gitignore.".into(),
             input_schema: json!({
                 "type": "object",
                 "properties": {
@@ -51,7 +52,8 @@ pub fn tool_definitions() -> Vec<ToolDefinition> {
         },
         ToolDefinition {
             name: "grep".into(),
-            description: "Search file contents using regular expressions, respecting .gitignore.".into(),
+            description: "Search file contents using regular expressions, respecting .gitignore."
+                .into(),
             input_schema: json!({
                 "type": "object",
                 "properties": {
@@ -84,7 +86,9 @@ pub fn execute_glob(conf: &Confinement, args: GlobArgs) -> ToolCallResult {
 
     let pattern = match Pattern::new(&args.pattern) {
         Ok(pat) => pat,
-        Err(e) => return ToolCallResult::error(format!("Invalid glob pattern '{}': {e}", args.pattern)),
+        Err(e) => {
+            return ToolCallResult::error(format!("Invalid glob pattern '{}': {e}", args.pattern))
+        }
     };
 
     let mut matches = Vec::new();
@@ -147,7 +151,9 @@ pub fn execute_grep(conf: &Confinement, args: GrepArgs) -> ToolCallResult {
         .build()
     {
         Ok(r) => r,
-        Err(e) => return ToolCallResult::error(format!("Invalid regex pattern '{}': {e}", args.pattern)),
+        Err(e) => {
+            return ToolCallResult::error(format!("Invalid regex pattern '{}': {e}", args.pattern))
+        }
     };
 
     let max_matches = args.max_matches.unwrap_or(100).max(1);
@@ -158,7 +164,16 @@ pub fn execute_grep(conf: &Confinement, args: GrepArgs) -> ToolCallResult {
     let mut truncated = false;
 
     if target.is_file() {
-        let _ = grep_file(&target, &re, conf, context_lines, max_matches, &mut matches, &mut total_count, &mut truncated);
+        let _ = grep_file(
+            &target,
+            &re,
+            conf,
+            context_lines,
+            max_matches,
+            &mut matches,
+            &mut total_count,
+            &mut truncated,
+        );
     } else {
         let walker = WalkBuilder::new(&target)
             .standard_filters(true)
@@ -173,7 +188,16 @@ pub fn execute_grep(conf: &Confinement, args: GrepArgs) -> ToolCallResult {
 
             let p = e.path();
             if p.is_file() {
-                let _ = grep_file(p, &re, conf, context_lines, max_matches, &mut matches, &mut total_count, &mut truncated);
+                let _ = grep_file(
+                    p,
+                    &re,
+                    conf,
+                    context_lines,
+                    max_matches,
+                    &mut matches,
+                    &mut total_count,
+                    &mut truncated,
+                );
                 if matches.len() >= max_matches {
                     truncated = true;
                     break;
@@ -194,6 +218,7 @@ pub fn execute_grep(conf: &Confinement, args: GrepArgs) -> ToolCallResult {
     ToolCallResult::success(res_json.to_string())
 }
 
+#[allow(clippy::too_many_arguments)]
 fn grep_file(
     path: &Path,
     re: &Regex,

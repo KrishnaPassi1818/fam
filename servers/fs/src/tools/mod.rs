@@ -1,7 +1,7 @@
-pub mod read;
-pub mod search;
 pub mod edit;
+pub mod read;
 pub mod repo_map;
+pub mod search;
 
 use crate::confinement::Confinement;
 use crate::protocol::{ToolCallResult, ToolDefinition};
@@ -87,4 +87,3 @@ fn normalize_args(val: &mut serde_json::Value) {
         }
     }
 }
-

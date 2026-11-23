@@ -1,7 +1,7 @@
-use std::env;
-use std::path::PathBuf;
 use anyhow::Result;
 use hx_fs::{Confinement, FsServer};
+use std::env;
+use std::path::PathBuf;
 
 #[tokio::main]
 async fn main() -> Result<()> {

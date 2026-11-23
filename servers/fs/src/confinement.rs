@@ -1,5 +1,5 @@
-use std::path::{Path, PathBuf};
 use anyhow::{bail, Result};
+use std::path::{Path, PathBuf};
 
 #[derive(Debug, Clone)]
 pub struct Confinement {
@@ -9,7 +9,9 @@ pub struct Confinement {
 impl Confinement {
     pub fn new(root: impl AsRef<Path>) -> Result<Self> {
         let canonical_root = std::fs::canonicalize(root.as_ref())?;
-        Ok(Self { root: canonical_root })
+        Ok(Self {
+            root: canonical_root,
+        })
     }
 
     pub fn root(&self) -> &Path {
@@ -104,7 +106,10 @@ mod tests {
 
         let res = conf.resolve("../escaped.txt");
         assert!(res.is_err());
-        assert!(res.unwrap_err().to_string().contains("escapes confinement root"));
+        assert!(res
+            .unwrap_err()
+            .to_string()
+            .contains("escapes confinement root"));
     }
 
     #[test]
@@ -122,6 +127,9 @@ mod tests {
         let conf = Confinement::new(tmp_root.path()).unwrap();
         let res = conf.resolve("link_to_secret");
         assert!(res.is_err());
-        assert!(res.unwrap_err().to_string().contains("escapes confinement root"));
+        assert!(res
+            .unwrap_err()
+            .to_string()
+            .contains("escapes confinement root"));
     }
 }

@@ -1,10 +1,10 @@
-use std::fs;
-use std::path::Path;
+use crate::confinement::Confinement;
+use crate::protocol::{ToolCallResult, ToolDefinition};
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use crate::confinement::Confinement;
-use crate::protocol::{ToolCallResult, ToolDefinition};
+use std::fs;
+use std::path::Path;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ReadFileArgs {
@@ -34,7 +34,8 @@ pub fn tool_definitions() -> Vec<ToolDefinition> {
     vec![
         ToolDefinition {
             name: "read_file".into(),
-            description: "Read contents of a file within a bounded line range (1-indexed inclusive).".into(),
+            description:
+                "Read contents of a file within a bounded line range (1-indexed inclusive).".into(),
             input_schema: json!({
                 "type": "object",
                 "properties": {
@@ -53,7 +54,8 @@ pub fn tool_definitions() -> Vec<ToolDefinition> {
         },
         ToolDefinition {
             name: "list_dir".into(),
-            description: "List directory contents with file metadata (size, type, modification time).".into(),
+            description:
+                "List directory contents with file metadata (size, type, modification time).".into(),
             input_schema: json!({
                 "type": "object",
                 "properties": {
@@ -71,7 +73,9 @@ pub fn tool_definitions() -> Vec<ToolDefinition> {
         },
         ToolDefinition {
             name: "file_info".into(),
-            description: "Get detailed file metadata: size, type, timestamps, permissions, and line count.".into(),
+            description:
+                "Get detailed file metadata: size, type, timestamps, permissions, and line count."
+                    .into(),
             input_schema: json!({
                 "type": "object",
                 "properties": {
@@ -207,7 +211,8 @@ fn walk_dir(
     max_depth: usize,
     entries: &mut Vec<DirEntryInfo>,
 ) -> Result<()> {
-    let read_dir = fs::read_dir(dir).with_context(|| format!("Reading directory {}", dir.display()))?;
+    let read_dir =
+        fs::read_dir(dir).with_context(|| format!("Reading directory {}", dir.display()))?;
 
     for item in read_dir {
         let entry = match item {

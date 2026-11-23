@@ -1,11 +1,11 @@
-use std::fs;
-use std::path::Path;
+use crate::confinement::Confinement;
+use crate::protocol::{ToolCallResult, ToolDefinition};
 use ignore::WalkBuilder;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
+use std::fs;
+use std::path::Path;
 use tree_sitter::{Node, Parser};
-use crate::confinement::Confinement;
-use crate::protocol::{ToolCallResult, ToolDefinition};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct RepoMapArgs {
@@ -126,11 +126,12 @@ fn extract_symbols(path: &Path, ext: &str) -> Vec<String> {
     let mut parser = Parser::new();
 
     match ext {
-        "rs" => {
-            if parser.set_language(&tree_sitter_rust::LANGUAGE.into()).is_ok() {
-                if let Some(tree) = parser.parse(&source, None) {
-                    return collect_rust_symbols(tree.root_node(), bytes);
-                }
+        "rs" if parser
+            .set_language(&tree_sitter_rust::LANGUAGE.into())
+            .is_ok() =>
+        {
+            if let Some(tree) = parser.parse(&source, None) {
+                return collect_rust_symbols(tree.root_node(), bytes);
             }
         }
         "ts" | "tsx" | "js" | "jsx" => {
@@ -145,11 +146,12 @@ fn extract_symbols(path: &Path, ext: &str) -> Vec<String> {
                 }
             }
         }
-        "py" => {
-            if parser.set_language(&tree_sitter_python::LANGUAGE.into()).is_ok() {
-                if let Some(tree) = parser.parse(&source, None) {
-                    return collect_py_symbols(tree.root_node(), bytes);
-                }
+        "py" if parser
+            .set_language(&tree_sitter_python::LANGUAGE.into())
+            .is_ok() =>
+        {
+            if let Some(tree) = parser.parse(&source, None) {
+                return collect_py_symbols(tree.root_node(), bytes);
             }
         }
         _ => {}
