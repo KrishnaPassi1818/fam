@@ -1,5 +1,37 @@
 # Development Progress Log
 
+## 2026-11-23 lead-architect Documentation Redesign & Architecture Guides Suite (status: done)
+- **What changed**:
+  - Authored a comprehensive, production-grade root `README.md` for `hx`:
+    - Visual ASCII branding and status badges (CI, TypeScript 5.7 ESM, Rust 1.80+, MCP 1.0, Ollama, MIT).
+    - Detailed system architecture diagram illustrating the process boundaries between the native Rust Ratatui TUI, Node.js orchestration core, and isolated MCP servers (`hx-fs`, `hx-sandbox`, `office`, `web`).
+    - Feature matrices covering the dual-engine cascade, 5-tier permission gates, 4-phase context manager, semantic vector memory, and document automation.
+    - Real hardware profile and benchmark scorecard: 25 / 25 benchmark tasks passing (100.0%) on AMD Ryzen 7 7435HS + RTX 4050 6GB.
+    - Quickstart installation walkthrough, Ollama model commands, interactive/one-shot usage, and documentation cross-links.
+  - Overhauled `docs/README.md` into a comprehensive Documentation Hub & Navigation Map indexing all system specifications, architectural blueprints, user manuals, and progress tracking files.
+  - Authored `docs/getting-started.md`:
+    - Full system prerequisites, monorepo installation instructions, and local model setup (`llama3.1:8b`, `qwen2.5-coder:7b`, `qwen2.5:1.5b`, `nomic-embed-text`).
+    - Diagnostic verification walkthrough using `hx doctor`.
+    - 5 practical hands-on tutorials: general reasoning with grounded arithmetic, coding agent with AST mapping, office spreadsheet analysis via SQL, and persistent cross-session vector memory.
+  - Authored `docs/cli.md`:
+    - Complete CLI command syntax, flags (`--model`, `--role`, `--system`, `--append-system`, `--system-file`, `--local-only`, `-y`, `--headless`), and subcommands (`doctor`, `eval`, `mcp`, `memory`, `replay`, `trace`).
+    - Native Rust Ratatui TUI manual: screen layout, live cursor streaming, braille spinners, telemetry status bar, approval dialog controls (`y`, `a`, `n`, `e`, `?`, `CONFIRM`), keyboard shortcuts, and slash commands.
+  - Authored `docs/mcp.md`:
+    - Complete specification of Model Context Protocol integration in `hx`.
+    - Stdio and HTTP/SSE transports, canonical names (`server.tool`) vs. model-safe aliases (`[a-zA-Z0-9_]{1,64}`), and tool execution annotations (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`).
+    - Comprehensive tool references for built-in MCP servers: `hx-fs`, `hx-sandbox`, `office`, and `web`.
+    - Step-by-step guide for adding third-party MCP servers and first-connect approval security flow.
+  - Authored `docs/configuration.md`:
+    - Detailed specification of `~/.harness/` configuration directory structure.
+    - Line-by-line documentation of `default.toml`, `models.toml`, `policy.toml`, `privacy.toml`, `routing.toml`, and `servers.toml`.
+    - Reference table for system environment variables (`GEMINI_API_KEY`, `OLLAMA_HOST`, `HX_TUI_BIN`, `HX_LIVE`, `DEBUG`).
+- **Tests run + results**:
+  - `pnpm prettier --write "README.md" "docs/**/*.md"`: clean.
+  - `pnpm lint`: clean (0 errors, 0 warnings).
+  - `pnpm prompts:check`: all 10 prompt files passed budget and identity checks.
+  - `pnpm typecheck`: clean across all monorepo packages.
+  - `cargo check --workspace`: clean exit (0 errors).
+
 ## 2026-11-23 lead-architect 25 Benchmark Tasks Verification Suite: 100% Pass Rate (status: done)
 - **What changed**:
   - Executed and validated all 25 benchmark tasks across 5 distinct categories against the local AI agent harness (`hx` CLI, local Ollama `llama3.1:8b`, and local MCP servers):
