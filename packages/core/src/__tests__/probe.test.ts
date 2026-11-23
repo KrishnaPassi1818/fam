@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { probeModelCapabilities } from '../adapters/probe.js';
-import type { ModelAdapter, ChatRequest, ChatChunk } from '@hx/shared';
+import type { ModelAdapter, ChatRequest, ChatChunk } from '@fam/shared';
 
 describe('probeModelCapabilities', () => {
   it('detects tools, parallelTools and jsonSchemaFormat from adapter output', async () => {

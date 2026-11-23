@@ -10,8 +10,8 @@ describe('PromptBuilder', () => {
   let builder: PromptBuilder;
 
   beforeEach(() => {
-    tmpDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hx-builder-data-'));
-    tmpCwd = fs.mkdtempSync(path.join(os.tmpdir(), 'hx-builder-cwd-'));
+    tmpDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fam-builder-data-'));
+    tmpCwd = fs.mkdtempSync(path.join(os.tmpdir(), 'fam-builder-cwd-'));
     builder = new PromptBuilder({
       dataDir: tmpDataDir,
       promptsDir: resolvePromptsDir(),

@@ -1,4 +1,4 @@
-import type { PolicyRule, ToolTier } from '@hx/shared';
+import type { PolicyRule, ToolTier } from '@fam/shared';
 
 export interface PermissionCheckResult {
   granted: boolean;

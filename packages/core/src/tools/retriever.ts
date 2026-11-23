@@ -1,4 +1,4 @@
-import { estimateTokens, type ToolDescriptor } from '@hx/shared';
+import { estimateTokens, type ToolDescriptor } from '@fam/shared';
 import { EmbeddingService, cosineSimilarity } from './embedding.js';
 import type { FastPathDecision } from '../router/rules.js';
 

@@ -5,20 +5,25 @@ import { spawn } from 'node:child_process';
 import type { TuiSessionConfig, FromTuiMessage, ToTuiMessage } from './types.js';
 import { SessionDriver } from './session.js';
 
-export function findHxTuiBinary(): string | null {
+export function findFamTuiBinary(): string | null {
+  if (process.env['FAM_TUI_BIN'] && fs.existsSync(process.env['FAM_TUI_BIN'])) {
+    return process.env['FAM_TUI_BIN'];
+  }
   if (process.env['HX_TUI_BIN'] && fs.existsSync(process.env['HX_TUI_BIN'])) {
     return process.env['HX_TUI_BIN'];
   }
 
   const candidates = [
     // Monorepo target directory relative to current working directory
+    path.resolve(process.cwd(), 'target/release/fam-tui'),
+    path.resolve(process.cwd(), 'target/debug/fam-tui'),
     path.resolve(process.cwd(), 'target/release/hx-tui'),
     path.resolve(process.cwd(), 'target/debug/hx-tui'),
     // Relative to dist/ui
-    path.resolve(import.meta.dirname, '../../../target/release/hx-tui'),
-    path.resolve(import.meta.dirname, '../../../target/debug/hx-tui'),
-    path.resolve(import.meta.dirname, '../../../../target/release/hx-tui'),
-    path.resolve(import.meta.dirname, '../../../../target/debug/hx-tui'),
+    path.resolve(import.meta.dirname, '../../../target/release/fam-tui'),
+    path.resolve(import.meta.dirname, '../../../target/debug/fam-tui'),
+    path.resolve(import.meta.dirname, '../../../../target/release/fam-tui'),
+    path.resolve(import.meta.dirname, '../../../../target/debug/fam-tui'),
   ];
 
   for (const c of candidates) {
@@ -30,33 +35,35 @@ export function findHxTuiBinary(): string | null {
   return null;
 }
 
+export const findHxTuiBinary = findFamTuiBinary;
+
 export async function launchRatatuiTui(options: TuiSessionConfig): Promise<void> {
-  let binPath = findHxTuiBinary();
+  let binPath = findFamTuiBinary();
 
   if (!binPath) {
     // Attempt fast build if target binary not found
-    process.stderr.write('Building hx-tui (Rust Ratatui)... ');
-    const buildRes = spawn('cargo', ['build', '-p', 'hx-tui'], {
+    process.stderr.write('Building fam-tui (Rust Ratatui)... ');
+    const buildRes = spawn('cargo', ['build', '-p', 'fam-tui'], {
       stdio: 'inherit',
     });
     await new Promise<void>((resolve, reject) => {
       buildRes.on('close', (code) => {
         if (code === 0) resolve();
-        else reject(new Error(`cargo build -p hx-tui failed with code ${code}`));
+        else reject(new Error(`cargo build -p fam-tui failed with code ${code}`));
       });
     });
-    binPath = findHxTuiBinary();
+    binPath = findFamTuiBinary();
   }
 
   if (!binPath) {
     throw new Error(
-      'hx-tui binary could not be found or built. Please run `cargo build -p hx-tui` in the workspace root.',
+      'fam-tui binary could not be found or built. Please run `cargo build -p fam-tui` in the workspace root.',
     );
   }
 
-  // Determine path to hx binary for child backend command
-  const hxBin = path.resolve(import.meta.dirname, '../bin/hx.js');
-  const backendCmdArgs = [`node ${hxBin} --headless`];
+  // Determine path to fam binary for child backend command
+  const famBin = path.resolve(import.meta.dirname, '../bin/fam.js');
+  const backendCmdArgs = [`node ${famBin} --headless`];
   if (options.initialModel) backendCmdArgs.push(`--model "${options.initialModel}"`);
   if (options.initialRole) backendCmdArgs.push(`--role "${options.initialRole}"`);
   if (options.localOnly) backendCmdArgs.push(`--local-only`);
@@ -76,7 +83,7 @@ export async function launchRatatuiTui(options: TuiSessionConfig): Promise<void>
       if (code === 0 || code === null) {
         resolve();
       } else {
-        reject(new Error(`hx-tui exited with status ${code}`));
+        reject(new Error(`fam-tui exited with status ${code}`));
       }
     });
     tuiProcess.on('error', (err) => {

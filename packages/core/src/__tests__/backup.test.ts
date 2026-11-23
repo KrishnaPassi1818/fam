@@ -10,8 +10,8 @@ describe('BackupService (T3.5)', () => {
   let backupService: BackupService;
 
   beforeEach(() => {
-    tmpBackupDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hx-backup-test-'));
-    tmpWorkspaceDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hx-ws-test-'));
+    tmpBackupDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fam-backup-test-'));
+    tmpWorkspaceDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fam-ws-test-'));
     backupService = new BackupService(tmpBackupDir);
   });
 

@@ -32,7 +32,7 @@ export async function pdf_read(options: PdfReadOptions): Promise<PdfReadResult> 
     if (fs.existsSync(candidateCwd)) {
       filePath = candidateCwd;
     } else {
-      const candidateBench = path.resolve(process.cwd(), 'hx-benchmark-workspace', rawPath);
+      const candidateBench = path.resolve(process.cwd(), 'fam-benchmark-workspace', rawPath);
       if (fs.existsSync(candidateBench)) {
         filePath = candidateBench;
       } else {

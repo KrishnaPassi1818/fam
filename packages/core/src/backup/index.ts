@@ -31,7 +31,7 @@ export class BackupService {
   private currentChangeSetId: string | null = null;
 
   constructor(baseDir?: string) {
-    this.baseDir = baseDir || path.join(os.homedir(), '.harness', 'backups');
+    this.baseDir = baseDir || path.join(os.homedir(), '.fam', 'backups');
     if (!fs.existsSync(this.baseDir)) {
       fs.mkdirSync(this.baseDir, { recursive: true });
     }

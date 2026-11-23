@@ -2,8 +2,8 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
 import * as toml from 'smol-toml';
-import { McpHost } from '@hx/mcp-host';
-import type { HxConfig, ServerConfig } from '@hx/shared';
+import { McpHost } from '@fam/mcp-host';
+import type { FamConfig, ServerConfig } from '@fam/shared';
 
 export interface ServerListItem {
   name: string;
@@ -13,7 +13,7 @@ export interface ServerListItem {
   enabled: boolean;
 }
 
-export function listServers(config: HxConfig): ServerListItem[] {
+export function listServers(config: FamConfig): ServerListItem[] {
   const result: ServerListItem[] = [];
   for (const [name, s] of Object.entries(config.servers.servers)) {
     result.push({
@@ -27,7 +27,7 @@ export function listServers(config: HxConfig): ServerListItem[] {
   return result;
 }
 
-export async function testServer(name: string, config: HxConfig): Promise<{
+export async function testServer(name: string, config: FamConfig): Promise<{
   name: string;
   success: boolean;
   toolCount: number;
@@ -92,9 +92,9 @@ export async function testServer(name: string, config: HxConfig): Promise<{
 export function saveServerConfig(
   name: string,
   newConfig: Partial<ServerConfig>,
-  harnessDir?: string,
+  famDir?: string,
 ): void {
-  const baseDir = harnessDir || path.join(os.homedir(), '.harness');
+  const baseDir = famDir || path.join(os.homedir(), '.fam');
   const filePath = path.join(baseDir, 'servers.toml');
 
   let currentToml: Record<string, unknown> = {};
@@ -125,8 +125,8 @@ export function saveServerConfig(
   fs.writeFileSync(filePath, toml.stringify(currentToml), 'utf-8');
 }
 
-export function removeServerConfig(name: string, harnessDir?: string): boolean {
-  const baseDir = harnessDir || path.join(os.homedir(), '.harness');
+export function removeServerConfig(name: string, famDir?: string): boolean {
+  const baseDir = famDir || path.join(os.homedir(), '.fam');
   const filePath = path.join(baseDir, 'servers.toml');
 
   if (!fs.existsSync(filePath)) {

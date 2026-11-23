@@ -199,7 +199,7 @@ async function runModelBench(
 
 async function main() {
   console.log('================================================================');
-  console.log('              HX MODEL BENCHMARK HARNESS (T1.8)                 ');
+  console.log('              FAM MODEL BENCHMARK HARNESS (T1.8)                 ');
   console.log('================================================================\n');
 
   const gpuInfo = getGpuVram();

@@ -11,8 +11,8 @@
 ## 2. Process view
 
 ```
-                ┌───────────────────────────── hx (Node/TS) ─────────────────────────────┐
- User ──▶ hx-tui ──IPC──▶ Session ─▶ PromptBuilder ─▶ Router ─▶ Orchestrator ─▶ AgentLoop │
+                ┌───────────────────────────── fam (Node/TS) ─────────────────────────────┐
+ User ──▶ fam-tui ──IPC──▶ Session ─▶ PromptBuilder ─▶ Router ─▶ Orchestrator ─▶ AgentLoop │
  (Ratatui Rust) │              ▲                 │            │             │             │
                 │        MemoryStore       ToolRetriever   Planner(DAG)  Executor ─┐      │
                 │              ▲                 │            │             │      │      │
@@ -34,7 +34,7 @@ External runtime dependencies: Ollama (localhost:11434), Gemini API, LibreOffice
 ```
 harness/
 ├─ crates/
-│  └─ hx-tui/       Rust (Ratatui + Crossterm) native TUI frontend
+│  └─ fam-tui/       Rust (Ratatui + Crossterm) native TUI frontend
 ├─ packages/
 │  ├─ core/         agent loop, adapters, router, context, memory, prompt, planner, executor
 │  ├─ mcp-host/     MCP client manager, tool registry bridge
@@ -108,7 +108,7 @@ Loop detection: hash of (tool, normalized args) repeated ≥3 → inject a "you 
 
 ### 4.5 Context manager (`core/context`)
 - Budget table per model (from `models.toml`). Default for 8B local: `num_ctx 8192` with allocation: system 500, tools 1000, memory 500, history 2500, work 3500.
-- Strategies, in order: (1) offload large tool outputs to `~/.harness/blobs/<hash>` and replace them with `{handle, summary, size}`, with built-in `blob_read(range)` and `blob_grep` tools; (2) drop old tool results to one-line stubs; (3) compact older turns with the 1.5b model into a rolling summary that preserves facts, file paths, decisions, and open TODOs; (4) hard-truncate oldest as the last resort.
+- Strategies, in order: (1) offload large tool outputs to `~/.fam/blobs/<hash>` and replace them with `{handle, summary, size}`, with built-in `blob_read(range)` and `blob_grep` tools; (2) drop old tool results to one-line stubs; (3) compact older turns with the 1.5b model into a rolling summary that preserves facts, file paths, decisions, and open TODOs; (4) hard-truncate oldest as the last resort.
 - Always count tokens before sending. Never let Ollama truncate silently. If the prompt + reserved output exceeds `num_ctx`, the manager must act.
 - Keep the system-prompt prefix byte-stable for KV-cache reuse. Dynamic content goes last.
 
@@ -131,7 +131,7 @@ Loop detection: hash of (tool, normalized args) repeated ≥3 → inject a "you 
 Applies before any Gemini request. Path globs (`privacy.toml`), content detectors (API keys, passwords, tokens via regex and entropy), and per-session flags. A match blocks or redacts, or asks the user. Tool results carry `taint: local_only` which propagates into the conversation. A tainted conversation stays local unless the user overrides.
 
 ### 4.10 Observability (`core/trace`)
-JSONL per run at `~/.harness/traces/<session>/<run>.jsonl`, with events: `prompt`, `model_call`, `model_chunk` (optional), `tool_call`, `tool_result`, `permission`, `route`, `escalate`, `compact`, `error`. Include timings, token counts, and model ids. `hx replay <run>` re-renders; `hx trace stats` summarizes. Secrets are redacted at write time.
+JSONL per run at `~/.fam/traces/<session>/<run>.jsonl`, with events: `prompt`, `model_call`, `model_chunk` (optional), `tool_call`, `tool_result`, `permission`, `route`, `escalate`, `compact`, `error`. Include timings, token counts, and model ids. `fam replay <run>` re-renders; `fam trace stats` summarizes. Secrets are redacted at write time.
 
 ### 4.11 Servers
 | Server | Lang | Key tools |
@@ -142,7 +142,7 @@ JSONL per run at `~/.harness/traces/<session>/<run>.jsonl`, with events: `prompt
 | web | TS | `web_search`, `fetch_markdown`, `fetch_many` |
 | system | TBD | `clipboard_*`, `notify`, `reminder_*`, `timer_*`, `open_app`, `sysinfo`, `screenshot` |
 
-### 4.12 Config and storage (`~/.harness/`)
+### 4.12 Config and storage (`~/.fam/`)
 `config.toml`, `models.toml`, `routing.toml`, `policy.toml`, `privacy.toml`, `tools.toml`, `servers.toml`, `SYSTEM.md`, `prompts/`, `db/harness.sqlite`, `blobs/`, `traces/`, `sessions/`, `backups/`.
 
 ## 5. Key technology choices
@@ -150,7 +150,7 @@ JSONL per run at `~/.harness/traces/<session>/<run>.jsonl`, with events: `prompt
 |---|---|
 | Workspace | pnpm + TypeScript (strict, ESM), cargo workspace |
 | Validation | zod (own config/types), ajv (tool JSON Schemas) |
-| CLI | Ratatui (Rust TUI via `crates/hx-tui`), commander for TS subcommands & IPC bridge |
+| CLI | Ratatui (Rust TUI via `crates/fam-tui`), commander for TS subcommands & IPC bridge |
 | MCP | `@modelcontextprotocol/sdk` (TS), `rmcp` (Rust) |
 | Models | `ollama` JS client or raw fetch, `@google/genai` |
 | DB | SQLite (`better-sqlite3`) + `sqlite-vec` (fallback: in-memory cosine) |

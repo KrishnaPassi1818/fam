@@ -1,4 +1,4 @@
-import type { Intent, PrivacyLevel, RoutingRule } from '@hx/shared';
+import type { Intent, PrivacyLevel, RoutingRule } from '@fam/shared';
 
 export type { Intent, PrivacyLevel, RoutingRule };
 

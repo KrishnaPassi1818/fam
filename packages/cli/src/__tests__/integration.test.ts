@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { SessionDriver } from '../ui/session.js';
 import type { ToTuiMessage } from '../ui/types.js';
-import type { ModelAdapter, Message, ChatRequest, ChatChunk } from '@hx/shared';
-import { loadConfig } from '@hx/core';
+import type { ModelAdapter, Message, ChatRequest, ChatChunk } from '@fam/shared';
+import { loadConfig } from '@fam/core';
 
 class MockAdapter implements ModelAdapter {
   id = 'mock:test-model';

@@ -3,7 +3,7 @@
 ## ADR-001: Initial Architecture Baseline and Repository Setup
 - **Date**: 2026-11-22
 - **Status**: Accepted
-- **Context**: Setting up `hx`, a local-first CLI AI agent harness running on Linux (Omarchy / Arch-based, AMD Ryzen 7 7435HS, NVIDIA RTX 4050 6GB VRAM, 24GB RAM).
+- **Context**: Setting up `fam`, a local-first CLI AI agent harness running on Linux (Omarchy / Arch-based, AMD Ryzen 7 7435HS, NVIDIA RTX 4050 6GB VRAM, 24GB RAM).
 - **Decision**:
   1. Monorepo structure using `pnpm` workspaces for TypeScript packages and Cargo workspace for Rust MCP servers.
   2. Local models managed via Ollama (`qwen2.5:1.5b` on CPU for router/compactor, `llama3.1:8b` on GPU for general worker, `qwen2.5-coder:7b` on GPU for coding generator, `nomic-embed-text` for vector embeddings).
@@ -22,7 +22,7 @@
   2. `ToolCall` and `ToolResult` frozen with synthetic ID support (`callId`), execution error flags, and taint labels (`normal` vs `local_only`).
   3. `ToolDescriptor` frozen with namespaced name (`server.tool`), model-safe alias (`[a-zA-Z0-9_]{1,64}`), annotations (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`), and permission tiers (0-4).
   4. `ModelAdapter` interface frozen with `caps` flags (`tools`, `parallelTools`, `vision`, `jsonSchemaFormat`, `maxCtx`), async iterable streaming `chat(req, signal)`, token counting, and warm/unload hooks.
-  5. Error taxonomy frozen with `HxError` base and typed subclasses: `ModelError`, `ToolValidationError`, `ToolExecError`, `PermissionDenied`, `PrivacyBlocked`, `BudgetExceeded`, `LoopDetected`.
+  5. Error taxonomy frozen with `FamError` base and typed subclasses: `ModelError`, `ToolValidationError`, `ToolExecError`, `PermissionDenied`, `PrivacyBlocked`, `BudgetExceeded`, `LoopDetected`.
   6. Shared logger with automatic secret redaction (Google API keys, OpenAI keys, GitHub tokens, Bearer tokens).
   7. Token estimator calibrated for local models and message framing overhead.
 - **Consequences**:
@@ -54,14 +54,14 @@
 - **Status**: Accepted
 - **Context**: The terminal user interface was originally implemented using `ink` (React for terminal in Node.js). While convenient for initial prototyping, Ink incurs heavy runtime overhead (V8 React reconciler, JSX layout calculations), displays visual flickering during high-speed token streaming, and introduces complex Node-specific terminal hook quirks. Replacing Ink with Rust `ratatui` (and `crossterm`) provides native double-buffering, flicker-free differential rendering, zero-allocation layout passes, robust terminal lifecycle handling, and decoupling of UI presentation from core agent loop execution.
 - **Decision**:
-  1. **New Rust Crate (`crates/hx-tui`)**: Built in the Cargo workspace with `ratatui 0.30` and `crossterm 0.29`. It implements the interactive terminal frontend (header, scrollable conversation history, tool calls, animated spinners, prompt input line with history, status bar with color-coded badges, and centered approval modal dialog).
+  1. **New Rust Crate (`crates/fam-tui`)**: Built in the Cargo workspace with `ratatui 0.30` and `crossterm 0.29`. It implements the interactive terminal frontend (header, scrollable conversation history, tool calls, animated spinners, prompt input line with history, status bar with color-coded badges, and centered approval modal dialog).
   2. **Decoupled JSON Lines IPC Protocol**: Defines a strict bidirectional protocol between the TypeScript harness core and the Rust Ratatui frontend:
      - `ToTuiMessage`: `init`, `message`, `chunk`, `tool_call`, `tool_result`, `status`, `warning`, `approval_request`, `finish`, `error`, `clear`, `exit`.
      - `FromTuiMessage`: `user_input`, `approval_decision`, `interrupt`, `exit`.
-  3. **Headless Harness & Bridge**: `@hx/cli` implements `SessionDriver` and `ratatui-bridge.ts`. In interactive mode, `hx` launches `hx-tui` (or `hx-tui` spawns `hx --headless`), streaming agent execution events over stdio. One-shot mode (`hx "prompt"`) executes directly in the terminal without full-screen mode.
-  4. **Dependency Removal**: Removed `ink`, `ink-spinner`, `ink-text-input`, `ink-testing-library`, `react`, and `@types/react` from `@hx/cli`.
+  3. **Headless Harness & Bridge**: `@fam/cli` implements `SessionDriver` and `ratatui-bridge.ts`. In interactive mode, `fam` launches `fam-tui` (or `fam-tui` spawns `fam --headless`), streaming agent execution events over stdio. One-shot mode (`fam "prompt"`) executes directly in the terminal without full-screen mode.
+  4. **Dependency Removal**: Removed `ink`, `ink-spinner`, `ink-text-input`, `ink-testing-library`, `react`, and `@types/react` from `@fam/cli`.
 - **Consequences**:
-  - The CLI package `@hx/cli` is now pure TypeScript with zero React dependencies.
+  - The CLI package `@fam/cli` is now pure TypeScript with zero React dependencies.
   - Interactive terminal performance is vastly superior with zero flicker during token streaming and strict signal abort handling (`Esc` interrupt).
   - TUI can be tested independently in Rust using `ratatui::backend::TestBackend` and in TypeScript via the IPC session driver.
 

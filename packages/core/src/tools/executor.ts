@@ -1,4 +1,4 @@
-import type { ToolCall, ToolResult, ToolDescriptor } from '@hx/shared';
+import type { ToolCall, ToolResult, ToolDescriptor } from '@fam/shared';
 import { ToolValidator, type ValidationResult } from './validator.js';
 import { PermissionGate, type PermissionCheckResult } from './permission.js';
 

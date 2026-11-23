@@ -1,4 +1,4 @@
-export abstract class HxError extends Error {
+export abstract class FamError extends Error {
   public readonly code: string;
   public readonly details?: unknown;
   public readonly timestamp: number;
@@ -13,7 +13,9 @@ export abstract class HxError extends Error {
   }
 }
 
-export class ModelError extends HxError {
+export { FamError as HxError };
+
+export class ModelError extends FamError {
   public readonly isOom?: boolean;
   public readonly isRateLimit?: boolean;
   public readonly isTimeout?: boolean;
@@ -36,7 +38,7 @@ export interface ValidationIssue {
   actual?: unknown;
 }
 
-export class ToolValidationError extends HxError {
+export class ToolValidationError extends FamError {
   public readonly toolName: string;
   public readonly issues: ValidationIssue[];
   public readonly repairable: boolean;
@@ -54,7 +56,7 @@ export class ToolValidationError extends HxError {
   }
 }
 
-export class ToolExecError extends HxError {
+export class ToolExecError extends FamError {
   public readonly toolName: string;
 
   constructor(toolName: string, message: string, details?: unknown) {
@@ -63,7 +65,7 @@ export class ToolExecError extends HxError {
   }
 }
 
-export class PermissionDenied extends HxError {
+export class PermissionDenied extends FamError {
   public readonly toolName: string;
   public readonly tier: number;
 
@@ -78,7 +80,7 @@ export class PermissionDenied extends HxError {
   }
 }
 
-export class PrivacyBlocked extends HxError {
+export class PrivacyBlocked extends FamError {
   public readonly target: string;
   public readonly reason: string;
 
@@ -92,7 +94,7 @@ export class PrivacyBlocked extends HxError {
   }
 }
 
-export class BudgetExceeded extends HxError {
+export class BudgetExceeded extends FamError {
   public readonly currentTokens: number;
   public readonly maxTokens: number;
 
@@ -107,7 +109,7 @@ export class BudgetExceeded extends HxError {
   }
 }
 
-export class LoopDetected extends HxError {
+export class LoopDetected extends FamError {
   public readonly toolName: string;
   public readonly repetitions: number;
 

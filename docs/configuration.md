@@ -1,13 +1,13 @@
 # ⚙️ Configuration Reference
 
-`hx` uses a structured TOML configuration system. Configuration files are stored in `~/.harness/` in the user's home directory, with built-in defaults supplied from `config/` in the repository root.
+`fam` uses a structured TOML configuration system. Configuration files are stored in `~/.fam/` in the user's home directory, with built-in defaults supplied from `config/` in the repository root.
 
 ---
 
 ## 📁 Configuration Directory Structure
 
 ```
-~/.harness/
+~/.fam/
 ├── default.toml         # General settings (default model, timeouts, limits)
 ├── models.toml          # Model registry, placements, contexts, and capabilities
 ├── policy.toml          # Security rules, permission tiers, and allowlists
@@ -197,14 +197,14 @@ Configures Model Context Protocol servers.
 ```toml
 [servers.fs]
 transport = "stdio"
-command = "target/debug/hx-fs"
+command = "target/debug/fam-fs"
 args = ["--root", "${HOME}"]
 auto_start = true
 enabled = true
 
 [servers.sandbox]
 transport = "stdio"
-command = "target/debug/hx-sandbox"
+command = "target/debug/fam-sandbox"
 auto_start = true
 enabled = true
 
@@ -231,6 +231,6 @@ enabled = true
 | :--------------- | :---------------------------------------------------------- |
 | `GEMINI_API_KEY` | Google Gemini API key for cloud planning and escalation     |
 | `OLLAMA_HOST`    | Ollama service endpoint (default: `http://localhost:11434`) |
-| `HX_TUI_BIN`     | Custom path to the compiled `hx-tui` binary                 |
-| `HX_LIVE`        | When set to `1`, enables live integration test suites       |
+| `FAM_TUI_BIN`     | Custom path to the compiled `fam-tui` binary                 |
+| `FAM_LIVE`        | When set to `1`, enables live integration test suites       |
 | `DEBUG`          | Enable verbose diagnostic logging for MCP and AgentLoop     |

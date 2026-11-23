@@ -37,11 +37,11 @@ import type { ToolExecutionHandler } from '../packages/core/dist/index.js';
 
 async function main() {
   console.log('================================================================');
-  console.log('HX HARNESS — PHASE 7 EXIT GATE DEMO & VERIFICATION');
+  console.log('FAM HARNESS — PHASE 7 EXIT GATE DEMO & VERIFICATION');
   console.log('Subsystems: Office Server, LibreOffice Manager, Document Tools, Evals');
   console.log('================================================================\n');
 
-  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hx-p7-gate-'));
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fam-p7-gate-'));
   const backupDir = path.join(tmpDir, 'backups');
 
   try {
@@ -80,7 +80,7 @@ async function main() {
     const mdPath = path.join(tmpDir, 'specs.md');
     fs.writeFileSync(
       mdPath,
-      '# HX Agent Architecture\n\nClient Name: {{client_name}}\nVersion: 1.0.0\n\n## Subsystems\n- Core Loop\n- Office Server\n\n| Subsystem | Language |\n| Core | TypeScript |\n| Office | TypeScript |\n',
+      '# FAM Agent Architecture\n\nClient Name: {{client_name}}\nVersion: 1.0.0\n\n## Subsystems\n- Core Loop\n- Office Server\n\n| Subsystem | Language |\n| Core | TypeScript |\n| Office | TypeScript |\n',
       'utf-8',
     );
     const docxPath = path.join(tmpDir, 'specs.docx');
@@ -114,7 +114,7 @@ async function main() {
 
     // 4. PPTX Creation & Slides
     const pptxPath = path.join(tmpDir, 'presentation.pptx');
-    await pptx_create({ path: pptxPath, title: 'HX Harness Office Superpowers', subtitle: 'Phase 7 Release' });
+    await pptx_create({ path: pptxPath, title: 'FAM Harness Office Superpowers', subtitle: 'Phase 7 Release' });
     await pptx_add_slide({
       path: pptxPath,
       title: 'Highlights',

@@ -1,6 +1,6 @@
 import AjvModule, { type ValidateFunction, type ErrorObject } from 'ajv';
 import addFormatsModule from 'ajv-formats';
-import type { ToolDescriptor } from '@hx/shared';
+import type { ToolDescriptor } from '@fam/shared';
 
 // ESM Interop
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -223,7 +223,7 @@ export async function runDoctor(): Promise<DoctorReport> {
 
 export function formatDoctorTable(report: DoctorReport): string {
   const lines: string[] = [];
-  lines.push('=== hx doctor environment inspection ===');
+  lines.push('=== fam doctor environment inspection ===');
   lines.push('');
   lines.push(
     `${'STATUS'.padEnd(8)} | ${'COMPONENT'.padEnd(24)} | DETAILS`,

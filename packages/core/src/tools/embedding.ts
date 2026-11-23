@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
-import type { ToolDescriptor } from '@hx/shared';
+import type { ToolDescriptor } from '@fam/shared';
 import { resolvePath } from '../config/index.js';
 
 export interface CachedEmbedding {
@@ -51,7 +51,7 @@ export class EmbeddingService {
     this.baseUrl = options.baseUrl || process.env['OLLAMA_BASE_URL'] || 'http://127.0.0.1:11434';
     const rawModel = options.model || 'nomic-embed-text';
     this.model = rawModel.replace(/^ollama:/, '');
-    this.cachePath = options.cachePath || resolvePath('~/.harness/cache/tool_embeddings.json');
+    this.cachePath = options.cachePath || resolvePath('~/.fam/cache/tool_embeddings.json');
     this.timeoutMs = options.timeoutMs ?? 5000;
   }
 

@@ -50,7 +50,7 @@ export function formatMarkdownReport(report: EvalSuiteReport): string {
 }
 
 export function saveEvalReport(report: EvalSuiteReport, targetDir?: string): { jsonPath: string; mdPath: string } {
-  const dir = targetDir || path.join(os.homedir(), '.harness', 'evals');
+  const dir = targetDir || path.join(os.homedir(), '.fam', 'evals');
   fs.mkdirSync(dir, { recursive: true });
 
   const jsonPath = path.join(dir, `${report.runId}.json`);

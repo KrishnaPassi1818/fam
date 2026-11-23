@@ -8,6 +8,6 @@ async function main() {
 }
 
 main().catch((err) => {
-  process.stderr.write(`hx-web server fatal: ${err}\n`);
+  process.stderr.write(`fam-web server fatal: ${err}\n`);
   process.exit(1);
 });

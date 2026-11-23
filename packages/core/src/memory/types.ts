@@ -1,4 +1,4 @@
-import type { PrivacyLevel } from '@hx/shared';
+import type { PrivacyLevel } from '@fam/shared';
 
 export type MemoryKind = 'semantic' | 'episodic';
 export type MemorySource = 'user' | 'extracted' | 'tool';

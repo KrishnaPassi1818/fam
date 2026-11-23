@@ -1,5 +1,5 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
-use hx_tui::{
+use fam_tui::{
     app::{App, StatusInfo},
     protocol::{FromTuiMessage, ToTuiMessage},
     ui,

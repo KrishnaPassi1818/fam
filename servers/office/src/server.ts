@@ -37,7 +37,7 @@ import { resolveConfinedPath } from './safety/confinement.js';
 export function createOfficeServer(): Server {
   const server = new Server(
     {
-      name: 'hx-office',
+      name: 'fam-office',
       version: '0.1.0',
     },
     {

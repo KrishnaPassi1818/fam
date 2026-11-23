@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { estimateTokens } from '@hx/shared';
+import { estimateTokens } from '@fam/shared';
 import { MemoryDatabase } from './db.js';
 import { EmbeddingService, cosineSimilarity } from '../tools/embedding.js';
 import { PrivacyGate } from '../privacy/index.js';

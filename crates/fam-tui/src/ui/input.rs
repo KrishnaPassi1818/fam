@@ -31,7 +31,7 @@ impl<'a> Widget for InputWidget<'a> {
         let line = if self.app.is_processing {
             Line::from(vec![
                 Span::styled(
-                    "hx > ",
+                    "fam > ",
                     Style::default()
                         .fg(Color::DarkGray)
                         .add_modifier(Modifier::BOLD),
@@ -44,7 +44,7 @@ impl<'a> Widget for InputWidget<'a> {
         } else if self.app.input.is_empty() {
             Line::from(vec![
                 Span::styled(
-                    "hx > ",
+                    "fam > ",
                     Style::default()
                         .fg(Color::Cyan)
                         .add_modifier(Modifier::BOLD),
@@ -57,7 +57,7 @@ impl<'a> Widget for InputWidget<'a> {
         } else {
             Line::from(vec![
                 Span::styled(
-                    "hx > ",
+                    "fam > ",
                     Style::default()
                         .fg(Color::Cyan)
                         .add_modifier(Modifier::BOLD),

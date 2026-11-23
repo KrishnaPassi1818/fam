@@ -1,4 +1,4 @@
-import { estimateTokens, type Message, type ToolDescriptor } from '@hx/shared';
+import { estimateTokens, type Message, type ToolDescriptor } from '@fam/shared';
 
 export interface ModelBudgetAllocation {
   numCtx: number;

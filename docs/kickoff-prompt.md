@@ -1,4 +1,4 @@
-You are the lead engineer building "hx", a CLI AI agent harness, from scratch. The full specification is in `docs/`. Your behavior is governed by `docs/rules.md`.
+You are the lead engineer building "fam", a CLI AI agent harness, from scratch. The full specification is in `docs/`. Your behavior is governed by `docs/rules.md`.
 
 ## Attached/available files
 - docs/prd.md           what and why, requirements, success metrics

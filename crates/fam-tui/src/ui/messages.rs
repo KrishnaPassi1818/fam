@@ -40,8 +40,8 @@ impl<'a> Widget for MessagesWidget<'a> {
                     let model_label = msg
                         .model
                         .as_deref()
-                        .map(|m| format!("hx ({}) > ", m))
-                        .unwrap_or_else(|| "hx > ".to_string());
+                        .map(|m| format!("fam ({}) > ", m))
+                        .unwrap_or_else(|| "fam > ".to_string());
 
                     lines.push(Line::from(vec![
                         Span::styled(
@@ -83,7 +83,7 @@ impl<'a> Widget for MessagesWidget<'a> {
 
         // 2. Active Streaming Delta
         if let Some(delta) = &self.app.active_delta {
-            let model_label = format!("hx ({}) > ", self.app.status.model);
+            let model_label = format!("fam ({}) > ", self.app.status.model);
             lines.push(Line::from(vec![
                 Span::styled(
                     model_label,

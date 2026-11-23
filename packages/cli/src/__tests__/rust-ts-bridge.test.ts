@@ -3,9 +3,9 @@ import { spawn } from 'node:child_process';
 import path from 'node:path';
 import readline from 'node:readline';
 import { SessionDriver } from '../ui/session.js';
-import { findHxTuiBinary } from '../ui/ratatui-bridge.js';
+import { findFamTuiBinary } from '../ui/ratatui-bridge.js';
 import type { ToTuiMessage, FromTuiMessage } from '../ui/types.js';
-import { loadConfig } from '@hx/core';
+import { loadConfig } from '@fam/core';
 
 const testConfig = loadConfig();
 
@@ -90,9 +90,9 @@ describe('Rust <-> TypeScript Module & Protocol Bridge', () => {
     expect(emitted.some((m) => m.type === 'message' && m.content.includes("Unknown command '/unknown_xyz'"))).toBe(true);
   });
 
-  it('spawns hx in --headless mode and verifies bidirectional stdio IPC', async () => {
-    const hxBin = path.resolve(import.meta.dirname, '../../dist/bin/hx.js');
-    const child = spawn('node', [hxBin, '--headless'], {
+  it('spawns fam in --headless mode and verifies bidirectional stdio IPC', async () => {
+    const famBin = path.resolve(import.meta.dirname, '../../dist/bin/fam.js');
+    const child = spawn('node', [famBin, '--headless'], {
       stdio: ['pipe', 'pipe', 'pipe'],
     });
 
@@ -149,11 +149,11 @@ describe('Rust <-> TypeScript Module & Protocol Bridge', () => {
     expect(exitCode).toBe(0);
   });
 
-  it('verifies that the compiled Rust hx-tui binary exists and runs', async () => {
-    const binPath = findHxTuiBinary();
+  it('verifies that the compiled Rust fam-tui binary exists and runs', async () => {
+    const binPath = findFamTuiBinary();
     expect(binPath).not.toBeNull();
 
-    // Run --help on hx-tui
+    // Run --help on fam-tui
     const child = spawn(binPath!, ['--help']);
     let stdout = '';
     child.stdout.on('data', (d) => {
@@ -165,7 +165,7 @@ describe('Rust <-> TypeScript Module & Protocol Bridge', () => {
     });
 
     expect(code).toBe(0);
-    expect(stdout).toContain('Ratatui TUI frontend for hx agent harness');
+    expect(stdout).toContain('Ratatui TUI frontend for fam agent harness');
     expect(stdout).toContain('--backend-cmd');
   });
 });

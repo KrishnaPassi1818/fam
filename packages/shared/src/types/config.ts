@@ -6,7 +6,7 @@ export const GeneralConfigSchema = z.object({
   defaultRole: z.string().default('assistant'),
   fallbackModel: z.string().default('gemini:gemini-2.5-flash'),
   logLevel: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
-  dataDir: z.string().default('~/.harness'),
+  dataDir: z.string().default('~/.fam'),
   maxSteps: z.number().default(30),
   maxWallTimeMs: z.number().default(300000), // 5 minutes
 });
@@ -105,7 +105,7 @@ export const RoutingConfigSchema = z.object({
 });
 export type RoutingConfig = z.infer<typeof RoutingConfigSchema>;
 
-export const HxConfigSchema = z.object({
+export const FamConfigSchema = z.object({
   general: GeneralConfigSchema.default({}),
   models: ModelsConfigSchema.default({ models: {} }),
   policy: PolicyRuleSchema.default({}),
@@ -116,4 +116,7 @@ export const HxConfigSchema = z.object({
     rules: [],
   }),
 });
-export type HxConfig = z.infer<typeof HxConfigSchema>;
+export type FamConfig = z.infer<typeof FamConfigSchema>;
+
+export const HxConfigSchema = FamConfigSchema;
+export type HxConfig = FamConfig;

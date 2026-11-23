@@ -16,7 +16,7 @@ describe('DOCX Write Tools (T7.5)', () => {
   let docxPath: string;
 
   beforeEach(async () => {
-    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hx_docx_write_test_'));
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fam_docx_write_test_'));
     const mdPath = path.join(tempDir, 'init.md');
     fs.writeFileSync(
       mdPath,

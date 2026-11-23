@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import os from 'os';
-import { estimateTokens } from '@hx/shared';
+import { estimateTokens } from '@fam/shared';
 
 export interface PromptLayerInfo {
   layer: number;
@@ -56,7 +56,7 @@ export class PromptApprovalStore {
   private approvals: Record<string, string> = {};
 
   constructor(dataDir?: string) {
-    const base = dataDir || path.join(os.homedir(), '.harness');
+    const base = dataDir || path.join(os.homedir(), '.fam');
     this.storePath = path.join(base, 'approvals.json');
     this.load();
   }
@@ -106,7 +106,7 @@ export class PromptBuilder {
 
   constructor(options?: { promptsDir?: string; dataDir?: string }) {
     this.promptsDir = options?.promptsDir || resolvePromptsDir();
-    this.dataDir = options?.dataDir || path.join(os.homedir(), '.harness');
+    this.dataDir = options?.dataDir || path.join(os.homedir(), '.fam');
     this.approvalStore = new PromptApprovalStore(this.dataDir);
   }
 
@@ -179,7 +179,7 @@ export class PromptBuilder {
     const stableLayers = [coreBody, profileBody, roleBody].filter(Boolean);
     const stablePrefix = stableLayers.join('\n\n');
 
-    // Layer 4: User Global (~/.harness/SYSTEM.md)
+    // Layer 4: User Global (~/.fam/SYSTEM.md)
     let userGlobal = options.userGlobalPrompt || '';
     if (!userGlobal) {
       const userFile = path.join(this.dataDir, 'SYSTEM.md');
@@ -188,10 +188,10 @@ export class PromptBuilder {
       }
     }
 
-    // Layer 5: Project prompt (HARNESS.md or AGENTS.md in cwd)
+    // Layer 5: Project prompt (FAM.md, HARNESS.md or AGENTS.md in cwd)
     let projectPrompt = options.projectPrompt || '';
     if (!projectPrompt) {
-      const candidates = [path.join(cwd, 'HARNESS.md'), path.join(cwd, 'AGENTS.md')];
+      const candidates = [path.join(cwd, 'FAM.md'), path.join(cwd, 'HARNESS.md'), path.join(cwd, 'AGENTS.md')];
       for (const cand of candidates) {
         if (fs.existsSync(cand)) {
           const content = fs.readFileSync(cand, 'utf-8').trim();

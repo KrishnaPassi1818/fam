@@ -1,5 +1,5 @@
 import path from 'path';
-import { type PrivacyConfig, type Message, PrivacyBlocked } from '@hx/shared';
+import { type PrivacyConfig, type Message, PrivacyBlocked } from '@fam/shared';
 
 export interface SecretMatch {
   type: 'pattern' | 'entropy';

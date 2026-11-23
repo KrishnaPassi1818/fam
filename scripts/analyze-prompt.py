@@ -48,18 +48,18 @@ for i, m in enumerate(matches):
         'search_instructions', 'core_search_behaviors', 'web_search', 'web_fetch'
     ]):
         decision = 'ADAPT'
-        reason = 'Adapt web search and citation etiquette to hx web MCP server'
+        reason = 'Adapt web search and citation etiquette to fam web MCP server'
     elif any(k in title_lower for k in [
         'file_handling_rules', 'file_creation_advice', 'package_management',
         'producing_outputs', 'sharing_files'
     ]):
         decision = 'ADAPT'
-        reason = 'Adapt file and code generation etiquette to hx fs and sandbox servers'
+        reason = 'Adapt file and code generation etiquette to fam fs and sandbox servers'
     elif any(k in title_lower for k in [
         'bash_tool', 'create_file', 'str_replace', 'view', 'list_dir', 'grep'
     ]):
         decision = 'ADAPT'
-        reason = 'Tool use conventions adapted to hx MCP tool schema'
+        reason = 'Tool use conventions adapted to fam MCP tool schema'
     elif any(k in title_lower for k in [
         'thinking_behavior', 'request_evaluation'
     ]):
@@ -163,13 +163,13 @@ with open(out_path, 'w') as f:
 
 1. **Memory Storage**:
    - *Prompt.md*: Employs a virtual filesystem of markdown files manipulated via string replacement.
-   - *hx*: Employs SQLite (`memory`, `memory_vec`, `sessions`) + bounded working memory (`todo`, `scratch`) to strictly enforce the ≤ 500 token memory budget.
+   - *fam*: Employs SQLite (`memory`, `memory_vec`, `sessions`) + bounded working memory (`todo`, `scratch`) to strictly enforce the ≤ 500 token memory budget.
 2. **Permission Checks**:
    - *Prompt.md*: Directs the model itself to decide what to ask the user.
-   - *hx*: Non-negotiable Rule S2: Permission tiers (0-4) are evaluated and enforced strictly inside the TypeScript executor outside model control.
+   - *fam*: Non-negotiable Rule S2: Permission tiers (0-4) are evaluated and enforced strictly inside the TypeScript executor outside model control.
 3. **Context Management & Budgeting**:
    - *Prompt.md*: Designed for 200k+ cloud context windows.
-   - *hx*: Optimized for 4k-8k local contexts. Large tool results are offloaded to blob storage; system prompts are strictly budgeted.
+   - *fam*: Optimized for 4k-8k local contexts. Large tool results are offloaded to blob storage; system prompts are strictly budgeted.
 ''')
 
 print('Generated prompt-analysis.md successfully')

@@ -22,7 +22,7 @@ export class MemoryDatabase {
     if (options.inMemory) {
       this.db = new DatabaseSync(':memory:', { allowExtension: true });
     } else {
-      const rawPath = options.dbPath || resolvePath('~/.harness/db/memory.sqlite');
+      const rawPath = options.dbPath || resolvePath('~/.fam/db/memory.sqlite');
       this.dbPath = resolvePath(rawPath);
       const dir = path.dirname(this.dbPath);
       if (!fs.existsSync(dir)) {

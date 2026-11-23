@@ -1,4 +1,4 @@
-import type { HxConfig } from '@hx/shared';
+import type { FamConfig } from '@fam/shared';
 
 export type ToTuiMessage =
   | {
@@ -92,7 +92,7 @@ export type FromTuiMessage =
     };
 
 export interface TuiSessionConfig {
-  config: HxConfig;
+  config: FamConfig;
   initialModel?: string;
   initialRole?: 'assistant' | 'coder' | 'router';
   localOnly?: boolean;

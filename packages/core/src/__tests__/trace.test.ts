@@ -4,13 +4,13 @@ import * as os from 'node:os';
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { Tracer } from '../trace/index.js';
 import { AgentLoop } from '../loop/index.js';
-import type { ModelAdapter, ChatChunk, ChatRequest } from '@hx/shared';
+import type { ModelAdapter, ChatChunk, ChatRequest } from '@fam/shared';
 
 describe('Tracer', () => {
   let tmpDir: string;
 
   beforeEach(() => {
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hx-trace-test-'));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fam-trace-test-'));
   });
 
   afterEach(() => {

@@ -1,4 +1,4 @@
-import { estimateTokens, type Message } from '@hx/shared';
+import { estimateTokens, type Message } from '@fam/shared';
 
 export class EmergencyTruncator {
   public truncate(messages: Message[], targetTokens: number): { messages: Message[]; droppedCount: number } {

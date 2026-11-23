@@ -1,4 +1,4 @@
-import { estimateTokens, type Message, type ModelAdapter } from '@hx/shared';
+import { estimateTokens, type Message, type ModelAdapter } from '@fam/shared';
 
 export interface CompactorOptions {
   adapter?: ModelAdapter;

@@ -10,13 +10,13 @@ import {
   EmergencyTruncator,
   ContextManager,
 } from '../context/index.js';
-import type { Message, ToolDescriptor } from '@hx/shared';
+import type { Message, ToolDescriptor } from '@fam/shared';
 
 describe('Context Manager (Phase 4: T4.1 - T4.5)', () => {
   let tmpBlobsDir: string;
 
   beforeEach(() => {
-    tmpBlobsDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hx-blobs-test-'));
+    tmpBlobsDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fam-blobs-test-'));
   });
 
   afterEach(() => {

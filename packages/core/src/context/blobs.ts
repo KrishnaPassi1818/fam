@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import os from 'os';
-import type { ToolDescriptor } from '@hx/shared';
+import type { ToolDescriptor } from '@fam/shared';
 
 export interface BlobMetadata {
   handle: string;
@@ -20,8 +20,9 @@ export class BlobStore {
   constructor(options?: { blobsDir?: string; thresholdChars?: number }) {
     this.blobsDir =
       options?.blobsDir ||
+      process.env['FAM_BLOBS_DIR'] ||
       process.env['HX_BLOBS_DIR'] ||
-      path.join(os.homedir(), '.harness', 'blobs');
+      path.join(os.homedir(), '.fam', 'blobs');
     this.thresholdChars = options?.thresholdChars ?? 8000;
 
     if (!fs.existsSync(this.blobsDir)) {

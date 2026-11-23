@@ -4,13 +4,13 @@ import * as os from 'node:os';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { McpHost } from '../host.js';
 
-describe('McpHost + Rust hx-fs Server Integration', () => {
+describe('McpHost + Rust fam-fs Server Integration', () => {
   let host: McpHost;
   let tmpDir: string;
-  const binaryPath = path.resolve(__dirname, '../../../../target/debug/hx-fs');
+  const binaryPath = path.resolve(__dirname, '../../../../target/debug/fam-fs');
 
   beforeAll(async () => {
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hx-fs-test-'));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fam-fs-test-'));
 
     host = new McpHost({
       servers: {

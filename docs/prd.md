@@ -1,7 +1,7 @@
-# PRD: Harness (working name: `hx`)
+# PRD: Harness (working name: `fam`)
 
 ## 1. Summary
-`hx` is a CLI AI agent harness for a single user on a laptop (Ryzen 7 7435HS, RTX 4050 6 GB VRAM, 24 GB RAM). It runs local models via Ollama plus Gemini via API, and extends them through MCP servers. It serves two purposes:
+`fam` is a CLI AI agent harness for a single user on a laptop (Ryzen 7 7435HS, RTX 4050 6 GB VRAM, 24 GB RAM). It runs local models via Ollama plus Gemini via API, and extends them through MCP servers. It serves two purposes:
 1. **Coding agent**: read, edit, test and commit code in a repo.
 2. **Personal system assistant**: files, documents (docx/xlsx/pptx/pdf via LibreOffice and libraries), web, notes, reminders, media, system control.
 
@@ -55,7 +55,7 @@ Single power user, also a casual user for everyday tasks.
 | FR-19 | `web` MCP server: search, fetch→markdown, PDF fetch | P2 |
 | FR-20 | `system` MCP server: clipboard, notifications, reminders/timers, app launch, system info, screenshot | P2 |
 | FR-21 | Privacy routing: content and paths tagged local-only are never sent to Gemini without explicit consent | P0 |
-| FR-22 | Tracing (JSONL) of prompts, responses, tool calls, timings, tokens; `hx replay` | P0 |
+| FR-22 | Tracing (JSONL) of prompts, responses, tool calls, timings, tokens; `fam replay` | P0 |
 | FR-23 | Eval harness with ≥30 tasks, run per model, with a metrics report | P1 |
 | FR-24 | Session persistence and resume; checkpoints | P1 |
 | FR-25 | Expose the harness itself as an MCP server | P3 |

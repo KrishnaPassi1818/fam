@@ -1,4 +1,4 @@
-use hx_tui::protocol::{FromTuiMessage, ToTuiMessage};
+use fam_tui::protocol::{FromTuiMessage, ToTuiMessage};
 
 #[test]
 fn test_rust_deserializes_all_backend_messages() {

@@ -1,4 +1,4 @@
-import type { Message, ModelAdapter, ModelProfile, ToolDescriptor } from '@hx/shared';
+import type { Message, ModelAdapter, ModelProfile, ToolDescriptor } from '@fam/shared';
 import {
   AgentLoop,
   Tracer,
@@ -7,8 +7,8 @@ import {
   BackupService,
   MemoryService,
   type ToolExecutionHandler,
-} from '@hx/core';
-import { McpHost } from '@hx/mcp-host';
+} from '@fam/core';
+import { McpHost } from '@fam/mcp-host';
 import { createAdapter } from './adapter-factory.js';
 import type { FromTuiMessage, ToTuiMessage, TuiSessionConfig } from './types.js';
 

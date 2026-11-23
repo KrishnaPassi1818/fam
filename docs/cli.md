@@ -1,17 +1,17 @@
 # 💻 CLI & TUI Reference Manual
 
-This document provides a comprehensive guide to the `hx` command-line interface, all command flags, subcommands, interactive slash commands, keyboard shortcuts, and the Rust Ratatui TUI frontend.
+This document provides a comprehensive guide to the `fam` command-line interface, all command flags, subcommands, interactive slash commands, keyboard shortcuts, and the Rust Ratatui TUI frontend.
 
 ---
 
 ## ⌨️ Command Syntax
 
 ```bash
-hx [OPTIONS] [PROMPT]
-hx <SUBCOMMAND> [SUBCOMMAND_OPTIONS]
+fam [OPTIONS] [PROMPT]
+fam <SUBCOMMAND> [SUBCOMMAND_OPTIONS]
 ```
 
-When called with a `[PROMPT]`, `hx` executes in **one-shot mode** directly in the terminal. When called without arguments, `hx` launches the interactive **Ratatui Rust TUI**.
+When called with a `[PROMPT]`, `fam` executes in **one-shot mode** directly in the terminal. When called without arguments, `fam` launches the interactive **Ratatui Rust TUI**.
 
 ---
 
@@ -27,77 +27,77 @@ When called with a `[PROMPT]`, `hx` executes in **one-shot mode** directly in th
 | `--local-only`           |       | Enforce strict offline operation; never invoke the Google Gemini cloud adapter.                  |    `false`    |
 | `--yes`                  | `-y`  | Automatically grant approvals for all tool operations (Tiers 0–3).                               |    `false`    |
 | `--headless`             |       | Launch harness core in headless stdio IPC mode (used by external TUI frontends).                 |    `false`    |
-| `--version`              | `-v`  | Display the installed version of `hx`.                                                           |               |
+| `--version`              | `-v`  | Display the installed version of `fam`.                                                           |               |
 | `--help`                 | `-h`  | Display help screen with available options and commands.                                         |               |
 
 ---
 
 ## 🛠 Subcommands
 
-### 1. `hx doctor`
+### 1. `fam doctor`
 
 Inspect and verify the local operating system, CPU, RAM, GPU VRAM, Ollama models, LibreOffice, and tools.
 
 ```bash
-hx doctor
-hx doctor --json  # Outputs diagnostic report in machine-readable JSON
+fam doctor
+fam doctor --json  # Outputs diagnostic report in machine-readable JSON
 ```
 
-### 2. `hx mcp`
+### 2. `fam mcp`
 
 Manage and test configured Model Context Protocol (MCP) servers.
 
-- **`hx mcp list [--json]`**: Display all registered MCP servers, transport types (`stdio` or `http`), autostart status, and commands.
-- **`hx mcp test <name>`**: Connect to an MCP server, list exposed tools, and measure round-trip response latency.
-- **`hx mcp add <name> [cmd] [args...] [--transport stdio|http] [--url <url>] [--auto-start]`**: Register a new MCP server in `~/.harness/servers.toml`.
-- **`hx mcp remove <name>`**: Remove a server configuration.
+- **`fam mcp list [--json]`**: Display all registered MCP servers, transport types (`stdio` or `http`), autostart status, and commands.
+- **`fam mcp test <name>`**: Connect to an MCP server, list exposed tools, and measure round-trip response latency.
+- **`fam mcp add <name> [cmd] [args...] [--transport stdio|http] [--url <url>] [--auto-start]`**: Register a new MCP server in `~/.fam/servers.toml`.
+- **`fam mcp remove <name>`**: Remove a server configuration.
 
-### 3. `hx memory`
+### 3. `fam memory`
 
 Inspect and maintain the persistent SQLite semantic memory database.
 
-- **`hx memory list [--project]`**: List all stored memories (with category, privacy level, and ID). Filter to current workspace with `--project`.
-- **`hx memory search <query>`**: Run vector similarity search against long-term memory using `nomic-embed-text` embeddings.
-- **`hx memory forget <id>`**: Delete a specific memory item by ID.
-- **`hx memory wipe`**: Permanently purge all memories and session records from `~/.harness/db/memory.sqlite`.
+- **`fam memory list [--project]`**: List all stored memories (with category, privacy level, and ID). Filter to current workspace with `--project`.
+- **`fam memory search <query>`**: Run vector similarity search against long-term memory using `nomic-embed-text` embeddings.
+- **`fam memory forget <id>`**: Delete a specific memory item by ID.
+- **`fam memory wipe`**: Permanently purge all memories and session records from `~/.fam/db/memory.sqlite`.
 
-### 4. `hx replay <run>`
+### 4. `fam replay <run>`
 
-Replay an agent session step-by-step from JSONL execution traces stored in `~/.harness/traces/`.
+Replay an agent session step-by-step from JSONL execution traces stored in `~/.fam/traces/`.
 
 ```bash
-hx replay gate_p1_1732304520
+fam replay gate_p1_1732304520
 ```
 
-### 5. `hx trace stats <run>`
+### 5. `fam trace stats <run>`
 
 Calculate performance statistics for a recorded run: total duration, step count, token consumption, models used, and tool call breakdown.
 
 ```bash
-hx trace stats gate_p1_1732304520
-hx trace stats gate_p1_1732304520 --json
+fam trace stats gate_p1_1732304520
+fam trace stats gate_p1_1732304520 --json
 ```
 
-### 6. `hx eval`
+### 6. `fam eval`
 
 Run automated benchmark evaluation suites against models:
 
 ```bash
-hx eval --suite smoke
-hx eval --model llama3.1:8b --task task_01
-hx eval --suite smoke --json
+fam eval --suite smoke
+fam eval --model llama3.1:8b --task task_01
+fam eval --suite smoke --json
 ```
 
 ---
 
-## 🖥️ Interactive Ratatui Rust TUI (`crates/hx-tui`)
+## 🖥️ Interactive Ratatui Rust TUI (`crates/fam-tui`)
 
-When launched interactively (`hx`), `hx` spawns the native Rust TUI frontend built with `ratatui 0.30` and `crossterm 0.29`.
+When launched interactively (`fam`), `fam` spawns the native Rust TUI frontend built with `ratatui 0.30` and `crossterm 0.29`.
 
 ### Screen Layout
 
 ```
-┌─ hx: Local AI Agent Harness ────────────────────────────────────────────────────────┐
+┌─ fam: Local AI Agent Harness ────────────────────────────────────────────────────────┐
 │                                                                                     │
 │  assistant: How can I help you today?                                               │
 │                                                                                     │
@@ -111,7 +111,7 @@ When launched interactively (`hx`), `hx` spawns the native Rust TUI frontend bui
 │  ...▌                                                                               │
 │                                                                                     │
 ├─────────────────────────────────────────────────────────────────────────────────────┤
-│  hx > _                                                                             │
+│  fam > _                                                                             │
 ├─────────────────────────────────────────────────────────────────────────────────────┤
 │ llama3.1:8b │ ctx 2.4k/8k │ medium │ 21.2 tok/s │ [LOCAL] │ /home/krishna/Projects/harness │
 └─────────────────────────────────────────────────────────────────────────────────────┘
@@ -185,7 +185,7 @@ Type these commands directly into the prompt line during an interactive session:
 | `/help`               | Print list of all available commands and keyboard controls                  |
 | `/context`            | Display real-time token breakdown table (system, tools, history, headroom)  |
 | `/compact`            | Manually compress past conversation history using small model summarization |
-| `/undo`               | Roll back the last file modifications from `~/.harness/backups/`            |
+| `/undo`               | Roll back the last file modifications from `~/.fam/backups/`            |
 | `/memory list`        | List semantic memories stored in SQLite                                     |
 | `/memory search <q>`  | Perform vector search across stored memories                                |
 | `/memory forget <id>` | Delete a memory entry                                                       |

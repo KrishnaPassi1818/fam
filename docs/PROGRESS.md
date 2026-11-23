@@ -1,30 +1,65 @@
 # Development Progress Log
 
+## 2026-11-23 lead-architect Project Rebranding: Complete Migration from `hx` to `fam` (status: done)
+- **What changed**:
+  - Executed a comprehensive, repo-wide rebranding and architectural migration from `hx` to `fam`:
+    - **Rust Crates & Workspaces**:
+      - Renamed `crates/hx-tui` -> `crates/fam-tui`.
+      - Renamed crate packages: `hx-tui` -> `fam-tui`, `hx-fs` -> `fam-fs`, `hx-sandbox` -> `fam-sandbox`.
+      - Updated all Rust crate references, internal module imports, binary compilation targets, and test suites.
+      - Updated TUI prompts (`fam > `, `fam ({}) > `) and command metadata (`about = "Ratatui TUI frontend for fam agent harness"`).
+    - **TypeScript Monorepo & Packages**:
+      - Renamed workspace package identifiers: `@fam/cli`, `@fam/core`, `@fam/shared`, `@fam/mcp-host`, `@fam/evals`, `@fam/office`, `@fam/web`.
+      - Renamed CLI entrypoint: `packages/cli/src/bin/hx.ts` -> `packages/cli/src/bin/fam.ts`.
+      - Updated root `package.json` to `fam-monorepo` and configured CLI binary target `fam`.
+      - Relinked pnpm dependencies across all workspace packages via `pnpm install`.
+    - **Error Taxonomy & Schema Migration**:
+      - Migrated base error class `HxError` -> `FamError` in `@fam/shared/errors` (retaining `HxError` alias for backward compatibility).
+      - Migrated configuration schema `HxConfigSchema` -> `FamConfigSchema` and `HxConfig` -> `FamConfig`.
+      - Updated default data directory to `~/.fam/` with directory bootstrap `ensureFamDirs`.
+      - Supported primary environment variables (`FAM_DATA_DIR`, `FAM_TUI_BIN`, `FAM_LIVE`, `FAM_DEFAULT_MODEL`, `FAM_DEFAULT_ROLE`, `FAM_LOG_LEVEL`, `FAM_FALLBACK_MODEL`, `FAM_BLOBS_DIR`, `FAM_TRACES_DIR`, `FAM_FS_ROOT`, `FAM_ROOT`) while preserving fallback support for `HX_*`.
+    - **MCP Servers & Integration**:
+      - Updated built-in MCP server identifiers: `fam-fs`, `fam-sandbox`, `fam-office`, `fam-web`.
+      - Updated `config/servers.toml` with binaries `target/debug/fam-fs` and `target/debug/fam-sandbox`.
+      - Updated `@fam/mcp-host` connection client info to `fam-${serverName}`.
+    - **Documentation & User Guides**:
+      - Authored new `fam` ASCII visual branding banner and updated architecture diagram in root `README.md`.
+      - Updated all CLI commands, invocation walkthroughs, and repository paths in `docs/getting-started.md`, `docs/cli.md`, `docs/mcp.md`, `docs/configuration.md`, `docs/README.md`, `docs/architecture.md`, `docs/design.md`, `docs/memory.md`, `docs/rules.md`, `docs/plan.md`, `docs/tasks.md`, `docs/DECISIONS.md`, and `AGENTS.md`.
+      - Updated benchmark script `scripts/benchmark-25-tasks.ts` and all phase exit gate scripts (`scripts/demo-p*.ts`, `.sh`).
+- **Tests run + results**:
+  - `pnpm build`: clean build across all 7 packages (`shared`, `mcp-host`, `core`, `office`, `web`, `evals`, `cli`).
+  - `cargo build --workspace`: compiled all 3 Rust crates (`fam-fs`, `fam-sandbox`, `fam-tui`).
+  - `cargo test --workspace`: **25 / 25 Rust tests passed** (0 failed).
+  - `pnpm test`: **49 / 49 Vitest test files passed** (197 passed, 2 skipped live).
+  - `pnpm lint`: clean exit (0 errors, 0 warnings).
+  - `pnpm typecheck`: clean exit (0 errors).
+  - `pnpm prompts:check`: all 10 prompt files passed budget and neutral identity checks.
+
 ## 2026-11-23 lead-architect Documentation Redesign & Architecture Guides Suite (status: done)
 - **What changed**:
-  - Authored a comprehensive, production-grade root `README.md` for `hx`:
+  - Authored a comprehensive, production-grade root `README.md` for `fam`:
     - Visual ASCII branding and status badges (CI, TypeScript 5.7 ESM, Rust 1.80+, MCP 1.0, Ollama, MIT).
-    - Detailed system architecture diagram illustrating the process boundaries between the native Rust Ratatui TUI, Node.js orchestration core, and isolated MCP servers (`hx-fs`, `hx-sandbox`, `office`, `web`).
+    - Detailed system architecture diagram illustrating the process boundaries between the native Rust Ratatui TUI, Node.js orchestration core, and isolated MCP servers (`fam-fs`, `fam-sandbox`, `office`, `web`).
     - Feature matrices covering the dual-engine cascade, 5-tier permission gates, 4-phase context manager, semantic vector memory, and document automation.
     - Real hardware profile and benchmark scorecard: 25 / 25 benchmark tasks passing (100.0%) on AMD Ryzen 7 7435HS + RTX 4050 6GB.
     - Quickstart installation walkthrough, Ollama model commands, interactive/one-shot usage, and documentation cross-links.
   - Overhauled `docs/README.md` into a comprehensive Documentation Hub & Navigation Map indexing all system specifications, architectural blueprints, user manuals, and progress tracking files.
   - Authored `docs/getting-started.md`:
     - Full system prerequisites, monorepo installation instructions, and local model setup (`llama3.1:8b`, `qwen2.5-coder:7b`, `qwen2.5:1.5b`, `nomic-embed-text`).
-    - Diagnostic verification walkthrough using `hx doctor`.
+    - Diagnostic verification walkthrough using `fam doctor`.
     - 5 practical hands-on tutorials: general reasoning with grounded arithmetic, coding agent with AST mapping, office spreadsheet analysis via SQL, and persistent cross-session vector memory.
   - Authored `docs/cli.md`:
     - Complete CLI command syntax, flags (`--model`, `--role`, `--system`, `--append-system`, `--system-file`, `--local-only`, `-y`, `--headless`), and subcommands (`doctor`, `eval`, `mcp`, `memory`, `replay`, `trace`).
     - Native Rust Ratatui TUI manual: screen layout, live cursor streaming, braille spinners, telemetry status bar, approval dialog controls (`y`, `a`, `n`, `e`, `?`, `CONFIRM`), keyboard shortcuts, and slash commands.
   - Authored `docs/mcp.md`:
-    - Complete specification of Model Context Protocol integration in `hx`.
+    - Complete specification of Model Context Protocol integration in `fam`.
     - Stdio and HTTP/SSE transports, canonical names (`server.tool`) vs. model-safe aliases (`[a-zA-Z0-9_]{1,64}`), and tool execution annotations (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`).
-    - Comprehensive tool references for built-in MCP servers: `hx-fs`, `hx-sandbox`, `office`, and `web`.
+    - Comprehensive tool references for built-in MCP servers: `fam-fs`, `fam-sandbox`, `office`, and `web`.
     - Step-by-step guide for adding third-party MCP servers and first-connect approval security flow.
   - Authored `docs/configuration.md`:
-    - Detailed specification of `~/.harness/` configuration directory structure.
+    - Detailed specification of `~/.fam/` configuration directory structure.
     - Line-by-line documentation of `default.toml`, `models.toml`, `policy.toml`, `privacy.toml`, `routing.toml`, and `servers.toml`.
-    - Reference table for system environment variables (`GEMINI_API_KEY`, `OLLAMA_HOST`, `HX_TUI_BIN`, `HX_LIVE`, `DEBUG`).
+    - Reference table for system environment variables (`GEMINI_API_KEY`, `OLLAMA_HOST`, `FAM_TUI_BIN`, `FAM_LIVE`, `DEBUG`).
 - **Tests run + results**:
   - `pnpm prettier --write "README.md" "docs/**/*.md"`: clean.
   - `pnpm lint`: clean (0 errors, 0 warnings).
@@ -34,9 +69,9 @@
 
 ## 2026-11-23 lead-architect 25 Benchmark Tasks Verification Suite: 100% Pass Rate (status: done)
 - **What changed**:
-  - Executed and validated all 25 benchmark tasks across 5 distinct categories against the local AI agent harness (`hx` CLI, local Ollama `llama3.1:8b`, and local MCP servers):
+  - Executed and validated all 25 benchmark tasks across 5 distinct categories against the local AI agent harness (`fam` CLI, local Ollama `llama3.1:8b`, and local MCP servers):
     1. **Category 1: General Assistant Capabilities (Tasks 01–04)**: 30-day backend learning roadmap, mathematical reasoning (₹250, ₹450, ₹120, ₹800, ₹380 -> Total ₹2000, Avg ₹400, 12% discount saves ₹240), information organization and deduplication, multi-step budget reasoning (₹5000 - ₹1200 - ₹800 - ₹1000 = ₹2000 remaining, ₹66.67/day).
-    2. **Category 2: Filesystem and Computer Operations (Tasks 05–09)**: Workspace exploration, directory and multi-file creation (`hx-test/README.md`, `notes.txt`, `config.json`), TODO/FIXME comment search with line numbers, file modification (`Development Setup` addition), and SHA-256 duplicate detection.
+    2. **Category 2: Filesystem and Computer Operations (Tasks 05–09)**: Workspace exploration, directory and multi-file creation (`fam-test/README.md`, `notes.txt`, `config.json`), TODO/FIXME comment search with line numbers, file modification (`Development Setup` addition), and SHA-256 duplicate detection.
     3. **Category 3: Coding Agent Capabilities (Tasks 10–15)**: Isolated in disposable Git repository: CLI calculator generation with verified unittest execution, code defect debugging and fix (`math_lib.py` multiplication repair), FastAPI + SQLite task CRUD REST API, multi-criteria code review, modular refactoring, and read-only Git status analysis.
     4. **Category 4: Office and Document Automation (Tasks 16–19)**: Excel workbook creation (`monthly_expenses.xlsx` with formulas and category summaries), Word document proposal generation (`Software Development Project Proposal.docx` with timeline table), PDF text/heading extraction via `pdf_read`, and cross-format workflow analyzing Excel student performance into a formatted Word DOCX report.
     5. **Category 5: Research, Memory and Multi-Step Tasks (Tasks 20–25)**: Web research with $\ge 5$ credible sources and links, RTX 4050 6GB local inference comparison (Ollama vs. LM Studio vs. llama.cpp), 3-preference persistent memory storage, cross-session preference retrieval without hallucination, vector database comparative research, and autonomous error recovery/re-test.
@@ -46,7 +81,7 @@
     3. *Local Arithmetic Tooling*: Added built-in `math` and `budget` tool handlers in `packages/core/src/loop/index.ts` to ground mental arithmetic calculations and eliminate 8B model arithmetic hallucinations.
     4. *Malformed JSON Resilience*: Enhanced fallback JSON parser in `packages/core/src/adapters/ollama.ts` to repair empty object syntax errors emitted by local models (`:\s*\{"\s*\}\}` -> `: {}`).
     5. *Web URL Pattern Recognition*: Broadened source link matching in `scripts/benchmark-25-tasks.ts` to capture domain paths lacking `https://` schemes.
-    6. *Automated Workspace Cleanup*: Automated removal of `hx-benchmark-workspace`, `hx-test`, and temporary test documents upon completion.
+    6. *Automated Workspace Cleanup*: Automated removal of `fam-benchmark-workspace`, `fam-test`, and temporary test documents upon completion.
 - **Tests run + results**:
   - `pnpm tsx scripts/benchmark-25-tasks.ts`: **25 / 25 tasks passed (100.0%)**.
   - `pnpm test`: **49/49 test files passed** (197 passed, 2 skipped live).
@@ -57,38 +92,38 @@
 - **What changed**:
   - **Issue Resolved**: When users asked the agent in interactive or one-shot mode to perform filesystem tasks (e.g. list or read files in `~/Downloads`), the agent responded that tool execution failed, claimed lack of direct system access, and hallucinated fictitious tool names (`fs.readdir`).
   - **Root Cause Analysis**:
-    1. `SessionDriver` (`packages/cli/src/ui/session.ts`) and one-shot execution in `packages/cli/src/bin/hx.ts` instantiated `AgentLoop` with default built-in tools only (`echo`, `current_time`), failing to initialize `McpHost` or attach configured MCP server tools and handlers.
-    2. `config/servers.toml` configured `hx-fs` without `--root` argument, defaulting confinement to `process.cwd()` (`/home/krishna/Projects/harness`), rejecting user paths outside the project workspace (such as `~/Downloads`).
+    1. `SessionDriver` (`packages/cli/src/ui/session.ts`) and one-shot execution in `packages/cli/src/bin/fam.ts` instantiated `AgentLoop` with default built-in tools only (`echo`, `current_time`), failing to initialize `McpHost` or attach configured MCP server tools and handlers.
+    2. `config/servers.toml` configured `fam-fs` without `--root` argument, defaulting confinement to `process.cwd()` (`/home/krishna/Projects/harness`), rejecting user paths outside the project workspace (such as `~/Downloads`).
     3. `servers/fs` confinement did not expand tilde (`~` / `~/`) to user home directory (`HOME`).
     4. `execute_list_dir` in `servers/fs` traversed recursively without depth/entry limits, producing oversized JSON arrays that triggered token budget limits and forced premature blob offloading.
     5. `packages/core/src/loop/index.ts` evaluated token budget limits prior to context manager preparation (blob offload), causing large tool outputs to fail prematurely.
   - **Fixes Applied**:
-    1. Wired `McpHost` into `SessionDriver` and `hx.ts` one-shot runner, ensuring auto-start MCP servers (such as `fs`) are initialized and passed with model-safe aliases into `AgentLoop`.
+    1. Wired `McpHost` into `SessionDriver` and `fam.ts` one-shot runner, ensuring auto-start MCP servers (such as `fs`) are initialized and passed with model-safe aliases into `AgentLoop`.
     2. Expanded environment variables (`${HOME}`) in MCP server arguments in `packages/mcp-host/src/connection.ts` and set `args = ["--root", "${HOME}"]` in `servers.toml`.
     3. Added `~` and `~/` expansion in `servers/fs/src/confinement.rs` and `main.rs`.
     4. Bounded `execute_list_dir` to 100 entries max, filtered noisy directories (`.git`, `node_modules`, `target`), and generated a compact textual table view.
     5. Re-ordered context preparation before token budget accounting in `packages/core/src/loop/index.ts` and adjusted default blob threshold to 8000 chars per `docs/rules.md`.
 - **Tests run + results**:
-  - Verified with real prompt `node packages/cli/dist/bin/hx.js --model llama3.1:8b "go to downloads folder and tell me what files and folder are present in downloads directory"`. Tool `fs_list_dir` successfully executed and the model returned the exact list of 100 files and directories in `~/Downloads`.
+  - Verified with real prompt `node packages/cli/dist/bin/fam.js --model llama3.1:8b "go to downloads folder and tell me what files and folder are present in downloads directory"`. Tool `fs_list_dir` successfully executed and the model returned the exact list of 100 files and directories in `~/Downloads`.
   - `pnpm run ci`: passed cleanly (`eslint`, `tsc -b`, 49 test files with 197 tests passed, `cargo check` clean).
-  - `cargo test --package hx-fs`: 9/9 tests passed.
+  - `cargo test --package fam-fs`: 9/9 tests passed.
 
 ## 2026-11-23 lead-architect Comprehensive Test Suite Implementation & Failure Analysis (status: done)
 - **What changed**:
   - Implemented comprehensive multi-tier testing suites covering Unit Testing, Integration Testing, System Testing, and Rust-TS Module Bridge Testing:
-    - **Rust Unit Testing (`crates/hx-tui/tests/app_unit_tests.rs`)**: 7 tests covering input line editing (Left/Right/Home/End/Delete), history navigation (Up/Down cycling), scroll management (PageUp/PageDown, auto-scroll recovery), spinner tick animations, all approval keys (`y`, `a`, `n`, `e`, `?`), Cloud status bar badge, and tool call result truncation.
-    - **Rust-TS Protocol Testing (`crates/hx-tui/tests/protocol_bridge_tests.rs`)**: 3 tests verifying bidirectional JSON schema compatibility, Unicode characters, and emoji rendering across all 12 `ToTuiMessage` and 4 `FromTuiMessage` variants.
-    - **Rust-TS Bridge Integration (`packages/cli/src/__tests__/rust-ts-bridge.test.ts`)**: 5 tests verifying schema integrity, `FromTuiMessage` dispatching in `SessionDriver`, malformed JSON resilience, real `--headless` stdio IPC child process execution, and verified execution of the compiled `hx-tui` Rust binary.
+    - **Rust Unit Testing (`crates/fam-tui/tests/app_unit_tests.rs`)**: 7 tests covering input line editing (Left/Right/Home/End/Delete), history navigation (Up/Down cycling), scroll management (PageUp/PageDown, auto-scroll recovery), spinner tick animations, all approval keys (`y`, `a`, `n`, `e`, `?`), Cloud status bar badge, and tool call result truncation.
+    - **Rust-TS Protocol Testing (`crates/fam-tui/tests/protocol_bridge_tests.rs`)**: 3 tests verifying bidirectional JSON schema compatibility, Unicode characters, and emoji rendering across all 12 `ToTuiMessage` and 4 `FromTuiMessage` variants.
+    - **Rust-TS Bridge Integration (`packages/cli/src/__tests__/rust-ts-bridge.test.ts`)**: 5 tests verifying schema integrity, `FromTuiMessage` dispatching in `SessionDriver`, malformed JSON resilience, real `--headless` stdio IPC child process execution, and verified execution of the compiled `fam-tui` Rust binary.
     - **Agent Loop & TUI Integration Testing (`packages/cli/src/__tests__/integration.test.ts`)**: 3 tests simulating complete multi-turn streaming conversations, tool call lifecycle (`echo` tool dispatch, execution, result reporting, and finish), and live interrupt cancellation via `AbortController`.
-    - **CLI System & End-to-End Testing (`packages/cli/src/__tests__/system.test.ts`)**: 6 end-to-end tests spawning real processes for `hx --version`, `hx --help`, `hx doctor --json`, `hx mcp list --json`, `hx memory list`, and `hx-tui --help`.
+    - **CLI System & End-to-End Testing (`packages/cli/src/__tests__/system.test.ts`)**: 6 end-to-end tests spawning real processes for `fam --version`, `fam --help`, `fam doctor --json`, `fam mcp list --json`, `fam memory list`, and `fam-tui --help`.
   - Analyzed and resolved all failed test cases encountered during implementation:
     1. *Failure*: `test_tool_call_truncation_rendering` in `app_unit_tests.rs` panicked when asserting ellipsis `...`.
        *Analysis*: The formatted tool line (icon + name + args + result + duration) spanned 92 characters, but the test terminal buffer was configured with an 80-column width, causing the terminal line to clip before the ellipsis.
        *Fix*: Adjusted `TestBackend` width to 120 columns to accommodate full tool call lines.
-    2. *Failure*: `spawns hx in --headless mode` in `rust-ts-bridge.test.ts` timed out.
-       *Analysis*: The test attempted to spawn `src/bin/hx.js` directly with `node`, which did not exist as an uncompiled JavaScript file.
-       *Fix*: Resolved path to the built entrypoint `dist/bin/hx.js`.
-    3. *Failure*: `hx memory list` in `system.test.ts` failed on `stderr` assertion.
+    2. *Failure*: `spawns fam in --headless mode` in `rust-ts-bridge.test.ts` timed out.
+       *Analysis*: The test attempted to spawn `src/bin/fam.js` directly with `node`, which did not exist as an uncompiled JavaScript file.
+       *Fix*: Resolved path to the built entrypoint `dist/bin/fam.js`.
+    3. *Failure*: `fam memory list` in `system.test.ts` failed on `stderr` assertion.
        *Analysis*: Node.js 22 outputs non-fatal `ExperimentalWarning: SQLite is an experimental feature` to stderr when loading `node:sqlite`.
        *Fix*: Added stderr sanitization to strip runtime experimental warnings while strictly verifying clean process termination.
     4. *Failure*: `cargo clippy --workspace` flagged `grep_file` (too many arguments) and `repo_map.rs` (collapsible match).
@@ -99,51 +134,51 @@
   - `pnpm test`: **49 test files passed** (197 passed, 2 skipped live tests).
   - `cargo fmt --all --check`: passed.
   - `cargo clippy --workspace -- -D warnings`: passed with zero warnings.
-  - `cargo test --workspace`: **25/25 tests passed** across all workspace crates (`hx-fs`, `hx-sandbox`, `hx-tui`).
-  - `@live` Ollama tests: **8/8 tests passed** when verified against active local Ollama daemon (`HX_LIVE=1`).
+  - `cargo test --workspace`: **25/25 tests passed** across all workspace crates (`fam-fs`, `fam-sandbox`, `fam-tui`).
+  - `@live` Ollama tests: **8/8 tests passed** when verified against active local Ollama daemon (`FAM_LIVE=1`).
 
 
 ## 2026-11-23 lead-architect Project Redesign: Replaced Ink with Rust Ratatui TUI (status: done)
 - **What changed**:
-  - Re-architected the TUI subsystem by replacing `ink` (React CLI) with a native Rust TUI built using `ratatui 0.30` and `crossterm 0.29` (`crates/hx-tui`).
-  - Implemented `crates/hx-tui` in the Cargo workspace:
+  - Re-architected the TUI subsystem by replacing `ink` (React CLI) with a native Rust TUI built using `ratatui 0.30` and `crossterm 0.29` (`crates/fam-tui`).
+  - Implemented `crates/fam-tui` in the Cargo workspace:
     - `protocol.rs`: strict bi-directional IPC message protocol between Node.js harness core and Rust frontend.
     - `app.rs`: terminal application state machine, scrollback history, animated spinners, input line editing, history navigation, auto-scroll, and interrupt handling.
     - `ui/status_bar.rs`: persistent status bar with model, context meter (`ctx 2.4k/8k`), tier, tokens/sec, LOCAL/CLOUD badge, and working directory.
     - `ui/messages.rs`: scrollable conversation view with color-coded role tags, wrapped lines, and live streaming cursor (`▌`).
     - `ui/tools.rs`: tool execution display with animated spinner (`⠋`), `⚙` for success, `✖` for errors, execution duration in milliseconds, and result previews.
-    - `ui/input.rs`: interactive prompt line with `hx > ` prefix and processing state indicator.
+    - `ui/input.rs`: interactive prompt line with `fam > ` prefix and processing state indicator.
     - `ui/approval.rs`: centered modal dialog overlay for permission checks across Tiers 1-4 with argument previews and typed `CONFIRM` prompt for Tier 4.
     - `tests/tui_tests.rs`: full unit and integration test suite using `ratatui::backend::TestBackend` (6/6 tests passing).
-  - Redesigned `@hx/cli`:
+  - Redesigned `@fam/cli`:
     - Removed `ink`, `ink-spinner`, `ink-text-input`, `ink-testing-library`, `react`, and `@types/react` from `package.json`.
     - Implemented `packages/cli/src/ui/session.ts` (`SessionDriver`): decoupled turn loop execution, slash command handlers (`/help`, `/context`, `/compact`, `/undo`, `/memory`, `/system`, `/model`, `/models`, `/role`, `/clear`, `/exit`), abort signals, and token counting.
-    - Implemented `packages/cli/src/ui/ratatui-bridge.ts`: binary discovery (`target/release/hx-tui`, `target/debug/hx-tui`, `HX_TUI_BIN`) and stdio headless bridge mode.
-    - Updated `packages/cli/src/bin/hx.ts`: interactive mode automatically launches `hx-tui` Ratatui frontend; headless bridge mode (`--headless`); one-shot direct terminal streaming.
+    - Implemented `packages/cli/src/ui/ratatui-bridge.ts`: binary discovery (`target/release/fam-tui`, `target/debug/fam-tui`, `FAM_TUI_BIN`) and stdio headless bridge mode.
+    - Updated `packages/cli/src/bin/fam.ts`: interactive mode automatically launches `fam-tui` Ratatui frontend; headless bridge mode (`--headless`); one-shot direct terminal streaming.
     - Added unit tests in `packages/cli/src/__tests__/ui.test.ts` (5/5 tests passing).
   - Documented architectural decision in `docs/DECISIONS.md` (ADR-004), updated `docs/architecture.md`, `docs/design.md`, `docs/plan.md`, and `docs/tasks.md`.
 - **Decisions made**:
-  - Adopted stdio NDJSON protocol between `@hx/cli` and `hx-tui`, providing complete separation of presentation from agent orchestration.
+  - Adopted stdio NDJSON protocol between `@fam/cli` and `fam-tui`, providing complete separation of presentation from agent orchestration.
 - **Tests run + results**:
   - `pnpm lint`: clean, 0 errors, 0 warnings.
   - `pnpm typecheck`: clean across all workspace packages.
   - `pnpm test`: 46 test files passed (183 tests passed, 2 skipped live tests).
-  - `cargo clippy -p hx-tui -- -D warnings`: passed with zero warnings.
-  - `cargo fmt -p hx-tui --check`: passed.
-  - `cargo test --workspace`: 15/15 tests passed (`hx-fs`, `hx-sandbox`, `hx-tui`).
-  - `cargo test -p hx-tui`: 6/6 tests passed.
-  - `node packages/cli/dist/bin/hx.js --help` & `doctor`: verified working.
-  - `./target/debug/hx-tui --help`: verified working.
+  - `cargo clippy -p fam-tui -- -D warnings`: passed with zero warnings.
+  - `cargo fmt -p fam-tui --check`: passed.
+  - `cargo test --workspace`: 15/15 tests passed (`fam-fs`, `fam-sandbox`, `fam-tui`).
+  - `cargo test -p fam-tui`: 6/6 tests passed.
+  - `node packages/cli/dist/bin/fam.js --help` & `doctor`: verified working.
+  - `./target/debug/fam-tui --help`: verified working.
 
 
 ## 2026-11-22 lead-architect Phase 7 Exit Gate Verification: Office Server & LibreOffice Subsystems (status: done)
 - **What changed**:
-  - Implemented `@hx/office` MCP Server (`servers/office/`):
+  - Implemented `@fam/office` MCP Server (`servers/office/`):
     - Stdio transport via `@modelcontextprotocol/sdk` exposing 15+ office tools.
     - Full TypeScript strict ESM integration in pnpm and Cargo monorepo.
   - Implemented Shared File-Safety Layer (`servers/office/src/safety/`):
     - Confinement (`confinement.ts`): enforces workspace boundary, detects path escapes, null-byte injection.
-    - Pre-write Backup (`backup.ts`): snapshots pre-modification files to `~/.harness/backups/office/` with SHA-256 digests.
+    - Pre-write Backup (`backup.ts`): snapshots pre-modification files to `~/.fam/backups/office/` with SHA-256 digests.
     - Working Copy (`working-copy.ts`): operations mutate temporary copies and commit via atomic swap (`renameSync`). Discards temp files and protects original on error.
     - Verify-by-Reopen (`verification.ts`): re-opens files using native libraries (ExcelJS, mammoth/JSZip, pptxgenjs, pdf-parse) before declaring success.
   - Implemented Document Read Tools (`servers/office/src/tools/read/`):
@@ -192,7 +227,7 @@
 ## 2026-11-22 lead-architect Phase 6 Exit Gate Verification: Memory System, Vector Store, Working Memory, Persistence (status: done)
 - **What changed**:
   - Implemented SQLite Database & Migrations (`packages/core/src/memory/db.ts`):
-    - Persistent SQLite database at `~/.harness/db/memory.sqlite` with migration versioning.
+    - Persistent SQLite database at `~/.fam/db/memory.sqlite` with migration versioning.
     - Full schema implementation per `memory.md` §3: `memory`, `sessions`, and virtual vector tables.
     - Native `sqlite-vec` extension support (`vec0` virtual table) with automatic pure-JS Float32Array blob + cosine fallback.
   - Implemented `MemoryService` (`packages/core/src/memory/service.ts`):
@@ -212,14 +247,14 @@
   - Implemented Working Memory Subsystem (`packages/core/src/memory/working.ts`):
     - `TodoManager`: manages task checklist (`add`, `done`, `list`, `clear`), formatted for prompt Layer 6.
     - `Scratchpad`: key-value scratchpad (`set`, `get`, `append`) bounded to strict 2 KB capacity limit.
-    - `SessionPersistence`: persists session state (`todos`, `scratch`, `summary`, `messages`) to `~/.harness/sessions/<id>.json`.
+    - `SessionPersistence`: persists session state (`todos`, `scratch`, `summary`, `messages`) to `~/.fam/sessions/<id>.json`.
     - `history_search`: searches past session transcripts for past decisions and context.
   - Implemented Memory Extraction (`packages/core/src/memory/extractor.ts`):
     - Small model extraction on CPU (`qwen2.5:1.5b`) extracting <= 5 candidate memories at session end or on `/compact`.
   - Implemented Built-in Memory Tools (`packages/core/src/memory/tools.ts`):
     - `core.remember`, `core.todo`, `core.scratch`, `core.history_search` descriptors and handlers.
   - Implemented CLI & UI Memory Commands:
-    - CLI commands: `hx memory list`, `hx memory search <query>`, `hx memory forget <id>`, `hx memory wipe`.
+    - CLI commands: `fam memory list`, `fam memory search <query>`, `fam memory forget <id>`, `fam memory wipe`.
     - TUI slash commands: `/memory list|search|forget|export|import|wipe`.
   - Authored comprehensive test suite:
     - `packages/core/src/__tests__/memory.test.ts`: 13 test cases verifying SQLite migrations, write dedup/supersede, read scoring, 400-token cap, privacy isolation, working memory, and user controls.
@@ -251,7 +286,7 @@
     - Pinned to CPU (`num_gpu: 0`) using `qwen2.5:1.5b` with strict JSON schema output formatting.
     - Robust parsing and fallback classification on network failure or model timeout.
   - Implemented Routing Policy Loader & Model Chain Resolver (`packages/core/src/router/policy.ts`):
-    - Built-in default policy and TOML file loader (`config/routing.toml`, `~/.harness/routing.toml`).
+    - Built-in default policy and TOML file loader (`config/routing.toml`, `~/.fam/routing.toml`).
     - Maps (intent, complexity, privacy) to optimized model chains.
     - Enforced non-negotiable privacy guarantee: `local_only` prompts strictly purge all cloud/Gemini models.
     - Throws `PrivacyBlocked` if user attempts to override with a cloud model on a `local_only` prompt.
@@ -259,7 +294,7 @@
     - Fast path rules -> 1.5B LLM router -> Policy chain resolver -> emits `route` trace events.
   - Implemented `EmbeddingService` (`packages/core/src/tools/embedding.ts`):
     - Ollama `nomic-embed-text` vector embedding generation.
-    - On-disk persistent embedding cache at `~/.harness/cache/tool_embeddings.json`.
+    - On-disk persistent embedding cache at `~/.fam/cache/tool_embeddings.json`.
     - SHA-256 tool signature invalidation based on name, descriptions, and inputSchema.
     - JS cosine similarity calculation fallback.
   - Implemented `ToolRetriever` (`packages/core/src/tools/retriever.ts`):
@@ -304,7 +339,7 @@
     - Granular token accounting across system prefix, tool descriptors, conversation history, and reserve headroom.
     - Pre-send validation guaranteeing `prompt + reserve <= num_ctx`.
   - Implemented `BlobStore` & Large Result Offloading (`packages/core/src/context/blobs.ts`):
-    - Persistent content-addressed blob store at `~/.harness/blobs/<sha256>`.
+    - Persistent content-addressed blob store at `~/.fam/blobs/<sha256>`.
     - Automated offloading of tool outputs exceeding threshold (default 2,000 chars).
     - Compact surrogate summaries with first/last preview lines, byte size, line count, and SHA handle.
     - Built-in retrieval tools: `blob_read(handle, offset?, limit?)` and `blob_grep(handle, pattern, ignore_case?)`.
@@ -362,7 +397,7 @@
     - Visual risk badge with color coding, path/command/diff previews, and interactive keys (`y`, `a`, `n`, `e`, `?`).
     - Enforced typed `"CONFIRM"` requirement for Tier 4 destructive actions.
   - Implemented `BackupService` (`packages/core/src/backup/index.ts`):
-    - Pre-write snapshotting to `~/.harness/backups/<changeSetId>/` with SHA-256 hashes and change manifests.
+    - Pre-write snapshotting to `~/.fam/backups/<changeSetId>/` with SHA-256 hashes and change manifests.
     - `/undo` command restoring modified files and deleting newly created files byte-for-byte.
   - Implemented `PrivacyGate` (`packages/core/src/privacy/index.ts`):
     - Path glob detection for local-only files (`.env*`, `secrets/**`, `*.pem`, `*.key`, `.git/**`).
@@ -370,13 +405,13 @@
     - Shannon entropy calculation (> 4.5 bit threshold) detecting random keys.
     - Taint propagation from tool results into session state.
     - Fail-closed enforcement on `GeminiAdapter`, blocking tainted payloads before transmission.
-  - Implemented observability trace tools in `packages/cli/src/bin/hx.ts`:
-    - `hx replay <run>`: renders step-by-step trace event playback.
-    - `hx trace stats <run>`: computes token consumption, step counts, latencies, and tool-use frequencies.
-  - Implemented `@hx/evals` package:
+  - Implemented observability trace tools in `packages/cli/src/bin/fam.ts`:
+    - `fam replay <run>`: renders step-by-step trace event playback.
+    - `fam trace stats <run>`: computes token consumption, step counts, latencies, and tool-use frequencies.
+  - Implemented `@fam/evals` package:
     - YAML task schema, loader, and 5 initial smoke eval tasks (`task_01` to `task_05`).
     - `EvalRunner` and `EvalReporter` generating JSON and Markdown scoreboards.
-    - Added `hx eval [--suite] [--model] [--task]` command to CLI.
+    - Added `fam eval [--suite] [--model] [--task]` command to CLI.
   - Authored and verified automated Phase 3 Exit Gate (`scripts/demo-p3.ts`, `scripts/demo-p3.sh`):
     - 4 parallel reads (100ms each) finished in 119ms (< 300ms concurrent timing proof).
     - 3 writes finished in 181ms in strict sequential order `[1, 2, 3]`.
@@ -401,10 +436,10 @@
     - Modification tools (`tools/edit.rs`): `write_file` (creates parent directories), `apply_edit` (search/replace blocks with whitespace-tolerant fuzzy matching, CRLF/LF normalization, and ambiguity detection), `move`, and OS-level `trash` (via `trash` crate).
     - Repository structure map (`tools/repo_map.rs`): tree-sitter AST extraction for Rust, TypeScript/JavaScript, and Python, outputting concise symbol outlines ranked by file path.
     - Fast JSON-RPC 2.0 stdio server loop (`server.rs`, `main.rs`) with automated argument coercion (converting stringified `"true"`, `"false"`, and numbers).
-  - Implemented CLI MCP management in `packages/cli/src/mcp/` and `hx mcp`:
-    - `hx mcp list`: table and JSON formats for configured servers.
-    - `hx mcp test <name>`: tests connection, queries tool definitions, and measures round-trip latency.
-    - `hx mcp add <name>` / `hx mcp remove <name>`: manages `~/.harness/servers.toml`.
+  - Implemented CLI MCP management in `packages/cli/src/mcp/` and `fam mcp`:
+    - `fam mcp list`: table and JSON formats for configured servers.
+    - `fam mcp test <name>`: tests connection, queries tool definitions, and measures round-trip latency.
+    - `fam mcp add <name>` / `fam mcp remove <name>`: manages `~/.fam/servers.toml`.
   - Executed automated Phase 2 Exit Gate in `scripts/demo-p2.ts` (`scripts/demo-p2.sh`):
     - Configured multi-server MCP host (`fs` via native binary, `third_party_fixture` via config alone).
     - Verified discovery of 15 tools across servers.
@@ -414,7 +449,7 @@
 - **Phase 2 Exit Gate Verdict**:
   - **ALL PHASE 2 ACCEPTANCE CRITERIA SATISFIED**. Phase 2 is formally COMPLETE and LOCKED.
 - **Tests run + results**:
-  - `cargo test --package hx-fs`: 9/9 tests passed cleanly.
+  - `cargo test --package fam-fs`: 9/9 tests passed cleanly.
   - `pnpm run ci`: 23/23 test files, 86/86 tests passed cleanly.
   - `scripts/demo-p2.sh`: exit code 0.
 - **Open issues / next step**:
@@ -454,7 +489,7 @@
     1. Conversed with CPU model `qwen2.5:1.5b` (`placement = "cpu"`, `num_gpu = 0`) with live streaming response.
     2. Conversed with Coder model `qwen2.5-coder:7b` generating syntactically valid TypeScript function.
     3. Successfully performed tool-call round-trip on local GPU model `llama3.1:8b` (built-in `echo` tool invoked with arguments, executed, and result fed back to model for turn completion).
-    4. Verified structured trace recording: validated that `Tracer` wrote 8 events (`session_start`, `prompt`, `model_call`, `tool_call`, `tool_result`, `session_end`) to disk at `~/.harness/traces/gate_p1_<timestamp>/demo_run.jsonl`.
+    4. Verified structured trace recording: validated that `Tracer` wrote 8 events (`session_start`, `prompt`, `model_call`, `tool_call`, `tool_result`, `session_end`) to disk at `~/.fam/traces/gate_p1_<timestamp>/demo_run.jsonl`.
     5. Verified Gemini model adapter with comprehensive mocked test suite (and conditional live test when `GEMINI_API_KEY` is present).
     6. Verified `config/models.toml` matches measured capabilities and benchmarks.
 - **Phase 1 Exit Gate Verdict**:
@@ -497,12 +532,12 @@
     - `ToolCallView.tsx`: renders collapsible tool call indicators with real-time `ink-spinner` while running, success gear `⚙` or failure cross `✖`, execution duration in milliseconds, and argument/result summaries.
     - `adapter-factory.ts`: handles model adapter instantiations (`OllamaAdapter` / `GeminiAdapter`) respecting placement and `--local-only` privacy restrictions.
     - `App.tsx`: main interactive Ink terminal application integrating streaming turns, keyboard navigation (Esc to cancel generation), and built-in slash command handlers (`/help`, `/system`, `/model <name>`, `/models`, `/role <role>`, `/clear`, `/exit`).
-  - Updated CLI runner in `packages/cli/src/bin/hx.ts`:
+  - Updated CLI runner in `packages/cli/src/bin/fam.ts`:
     - Full Commander CLI options: `--model`, `--role`, `--system`, `--append-system`, `--system-file`, and `--local-only`.
     - Supports both interactive multi-turn session mode and one-shot non-interactive prompt execution.
   - Added unit test suite in `packages/cli/src/__tests__/ui.test.tsx` (8 tests passing) using `ink-testing-library`.
 - **Decisions made**:
-  - Configured TSX support with `jsx: "react-jsx"` in `@hx/cli` to keep other packages clean.
+  - Configured TSX support with `jsx: "react-jsx"` in `@fam/cli` to keep other packages clean.
 - **Tests run + results**:
   - `pnpm run ci` passed cleanly (18/18 test files, 69/69 tests passing, eslint and cargo check clean).
 - **Open issues / next step**:
@@ -511,9 +546,9 @@
 ## 2026-11-22 lead-architect Task T1.6 Tracer Implementation (status: done)
 - **What changed**:
   - Implemented `Tracer` in `packages/core/src/trace/index.ts`:
-    - Structured JSONL writer storing runs at `~/.harness/traces/<sessionId>/<runId>.jsonl`.
+    - Structured JSONL writer storing runs at `~/.fam/traces/<sessionId>/<runId>.jsonl`.
     - Event taxonomy per Architecture §4.10: `session_start`, `session_end`, `prompt`, `model_call`, `model_chunk`, `tool_call`, `tool_result`, `permission`, `route`, `escalate`, `compact`, `error`, `loop_warning`.
-    - Integrated with `redactSecrets` from `@hx/shared` to sanitize sensitive API keys, tokens, and credentials before writing to disk.
+    - Integrated with `redactSecrets` from `@fam/shared` to sanitize sensitive API keys, tokens, and credentials before writing to disk.
     - Added static `readTrace` helper to replay and parse recorded trace events.
   - Connected `Tracer` into `AgentLoop` in `packages/core/src/loop/index.ts`:
     - Emits `session_start`, `prompt` (with token counts and layer names), `model_call`, `tool_call`, `tool_result`, `loop_warning`, `session_end`, and `error` events across execution steps.
@@ -549,7 +584,7 @@
     - Strict assembly of Layers 1–6 (Core -> Profile -> Role -> User Global -> Project -> Dynamic context).
     - Preserves byte-identical stable prefix (Layers 1-3) across turns for KV-cache reuse.
     - Implemented drop order on budget overflow: dynamic hints -> project -> user -> profile -> role trimmed (Core is non-removable).
-    - Implemented `PromptApprovalStore` (`~/.harness/approvals.json`) with SHA-256 hash checks for repository `AGENTS.md` / `HARNESS.md` first-use approval.
+    - Implemented `PromptApprovalStore` (`~/.fam/approvals.json`) with SHA-256 hash checks for repository `AGENTS.md` / `HARNESS.md` first-use approval.
     - Model family and tier mapping (Gemini full 4k, Llama/Coder medium 600, Qwen min 150).
   - Added unit test suite in `packages/core/src/__tests__/prompt-builder.test.ts` (5 tests passing).
 - **Decisions made**:
@@ -627,13 +662,13 @@
 
 ## 2026-11-22 lead-architect Phase 0 Exit Gate Verification (status: done)
 - **What changed**:
-  - Executed complete Phase 0 verification suite: `pnpm build && pnpm test && cargo build && hx doctor && pnpm prompts:check`.
+  - Executed complete Phase 0 verification suite: `pnpm build && pnpm test && cargo build && fam doctor && pnpm prompts:check`.
   - All 9 tasks in Phase 0 (T0.1 - T0.9) completed, tested, and verified.
 - **Verification Evidence**:
   - `pnpm build`: 5 packages built cleanly.
   - `vitest run`: 11 test files, 35 tests passed (100% pass rate).
-  - `cargo build`: `hx-fs` and `hx-sandbox` compiled successfully.
-  - `hx doctor`: full environment report, all required dependencies passed.
+  - `cargo build`: `fam-fs` and `fam-sandbox` compiled successfully.
+  - `fam doctor`: full environment report, all required dependencies passed.
   - `pnpm prompts:check`: 10/10 prompts verified within token budgets and neutral identity verified.
   - ADRs: ADR-001 (baseline), ADR-002 (contracts frozen v1), ADR-003 (MCP conventions) recorded in `docs/DECISIONS.md`.
 - **Exit Gate Verdict**: PHASE 0 PASSED. Ready for Phase 1.
@@ -679,8 +714,8 @@
 - **What changed**:
   - Created default TOML configuration files: `config/default.toml`, `config/models.toml`, `config/policy.toml`, `config/privacy.toml`, `config/servers.toml`.
   - Implemented config loader in `packages/core/src/config/index.ts`:
-    - `ensureHarnessDirs`: auto-creates `~/.harness` subdirectories (`blobs`, `traces`, `sessions`, `backups`, `db`, `prompts`).
-    - `loadConfig`: loads and merges user config with bundled defaults, copies defaults if missing, validates with Zod, applies environment variable overrides (`HX_DEFAULT_MODEL`, `HX_DEFAULT_ROLE`, `HX_LOG_LEVEL`, `HX_FALLBACK_MODEL`, `HX_DATA_DIR`).
+    - `ensureHarnessDirs`: auto-creates `~/.fam` subdirectories (`blobs`, `traces`, `sessions`, `backups`, `db`, `prompts`).
+    - `loadConfig`: loads and merges user config with bundled defaults, copies defaults if missing, validates with Zod, applies environment variable overrides (`FAM_DEFAULT_MODEL`, `FAM_DEFAULT_ROLE`, `FAM_LOG_LEVEL`, `FAM_FALLBACK_MODEL`, `FAM_DATA_DIR`).
     - Handled TOML syntax error reporting and schema validation issue formatting.
   - Added unit test suite in `packages/core/src/__tests__/config-loader.test.ts` (5 tests passing).
 - **Decisions made**:
@@ -690,12 +725,12 @@
 - **Open issues / next step**:
   - Next tasks: T0.5-T0.8 Prompt Analysis & Distillation in Lane E.
 
-## 2026-11-22 lead-architect Task T0.3 hx doctor and Environment Resolution (status: done)
+## 2026-11-22 lead-architect Task T0.3 fam doctor and Environment Resolution (status: done)
 - **What changed**:
   - Implemented `runDoctor()` and `formatDoctorTable()` in `packages/cli/src/doctor/index.ts`.
-  - Added CLI subcommand `hx doctor` with `--json` option in `packages/cli/src/bin/hx.ts`.
+  - Added CLI subcommand `fam doctor` with `--json` option in `packages/cli/src/bin/fam.ts`.
   - Added unit tests in `packages/cli/src/__tests__/doctor.test.ts`.
-  - Executed `hx doctor` and verified full environment report.
+  - Executed `fam doctor` and verified full environment report.
 - **Doctor Report Output**:
   ```
   STATUS   | COMPONENT                | DETAILS
@@ -725,7 +760,7 @@
   - Gemini model: `gemini-2.5-flash` configured as default fallback; key not currently in environment (mocking available for offline tests).
 - **Tests run + results**:
   - `pnpm run ci` passed (eslint 0 warnings, tsc -b passed, vitest 8/8 files, 24/24 tests passed, cargo check passed).
-  - `hx doctor` passed in terminal table and JSON mode.
+  - `fam doctor` passed in terminal table and JSON mode.
 - **Open issues / next step**:
   - Next task: T0.4 Config loader in Lane A.
 
@@ -734,8 +769,8 @@
   - Implemented core message types and schemas (`SystemMessage`, `UserMessage`, `AssistantMessage`, `ToolMessage`, `Part`, `ToolCall`, `ToolResult`) in `packages/shared/src/types/message.ts`.
   - Implemented tool schemas and descriptors (`ToolDescriptor`, `ToolAnnotations`, `ToolTier`) in `packages/shared/src/types/tool.ts`.
   - Implemented model adapter interfaces and capabilities (`ModelAdapter`, `ModelCaps`, `ChatRequest`, `ChatChunk`, `ChatUsage`) in `packages/shared/src/types/adapter.ts`.
-  - Implemented Zod configuration schemas (`GeneralConfig`, `ModelProfile`, `ModelsConfig`, `PolicyRule`, `PrivacyConfig`, `ServersConfig`, `HxConfig`) in `packages/shared/src/types/config.ts`.
-  - Implemented typed error taxonomy (`HxError`, `ModelError`, `ToolValidationError`, `ToolExecError`, `PermissionDenied`, `PrivacyBlocked`, `BudgetExceeded`, `LoopDetected`) in `packages/shared/src/errors/index.ts`.
+  - Implemented Zod configuration schemas (`GeneralConfig`, `ModelProfile`, `ModelsConfig`, `PolicyRule`, `PrivacyConfig`, `ServersConfig`, `FamConfig`) in `packages/shared/src/types/config.ts`.
+  - Implemented typed error taxonomy (`FamError`, `ModelError`, `ToolValidationError`, `ToolExecError`, `PermissionDenied`, `PrivacyBlocked`, `BudgetExceeded`, `LoopDetected`) in `packages/shared/src/errors/index.ts`.
   - Implemented structured logger with secret redaction (`redactSecrets`, `Logger`, `logger`) in `packages/shared/src/logger/index.ts`.
   - Implemented token estimator (`estimateTokens`, `estimateMessageTokens`) in `packages/shared/src/tokens/index.ts`.
   - Added unit test suites covering all shared modules (22 tests passing).
@@ -745,13 +780,13 @@
 - **Tests run + results**:
   - `pnpm run ci` passed cleanly (eslint, tsc -b, vitest 7/7 files, 22/22 tests, cargo check).
 - **Open issues / next step**:
-  - Next task: T0.3 `hx doctor` in Lane D.
+  - Next task: T0.3 `fam doctor` in Lane D.
 
 ## 2026-11-22 lead-architect Task T0.1 Monorepo Scaffold (status: done)
 - **What changed**:
   - Initialized pnpm monorepo workspace (`pnpm-workspace.yaml`, root `package.json`, `tsconfig.base.json`, `tsconfig.json`, `eslint.config.js`, `.prettierrc`, `vitest.config.ts`).
   - Initialized Cargo workspace (`Cargo.toml`) with members `servers/fs` and `servers/sandbox`.
-  - Created package skeletons: `@hx/shared`, `@hx/core`, `@hx/mcp-host`, `@hx/cli`, `@hx/evals`, `hx-fs`, `hx-sandbox`.
+  - Created package skeletons: `@fam/shared`, `@fam/core`, `@fam/mcp-host`, `@fam/cli`, `@fam/evals`, `fam-fs`, `fam-sandbox`.
 - **Decisions made**:
   - Used strict ESM and TypeScript project references.
   - Configured pnpm workspace build scripts and esbuild approvals.
@@ -769,7 +804,7 @@
   - Initialized git repository at `/home/krishna/Projects/harness`.
   - Populated `AGENTS.md`, `docs/DECISIONS.md`, and `docs/PROGRESS.md`.
 - **Decisions made**:
-  - Proceed with Phase 0 tasks in order: T0.1 (scaffold), T0.2 (shared contracts), T0.3 (hx doctor), T0.4 (config loader), T0.5-T0.8 (prompt analysis & distillation), T0.9 (ADR & fake MCP fixture).
+  - Proceed with Phase 0 tasks in order: T0.1 (scaffold), T0.2 (shared contracts), T0.3 (fam doctor), T0.4 (config loader), T0.5-T0.8 (prompt analysis & distillation), T0.9 (ADR & fake MCP fixture).
 - **Tests run + results**:
   - Environment inspection passed.
   - Ollama server started as daemon, local models verified via API.

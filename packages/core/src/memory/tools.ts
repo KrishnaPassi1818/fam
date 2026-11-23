@@ -1,4 +1,4 @@
-import type { ToolDescriptor } from '@hx/shared';
+import type { ToolDescriptor } from '@fam/shared';
 import type { MemoryService } from './service.js';
 import type { TodoManager, Scratchpad, SessionPersistence } from './working.js';
 

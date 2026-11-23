@@ -4,13 +4,13 @@ import path from 'path';
 import os from 'os';
 import { AgentLoop } from '../loop/index.js';
 import { ContextManager, BlobStore } from '../context/index.js';
-import type { ModelAdapter, ChatChunk, Message } from '@hx/shared';
+import type { ModelAdapter, ChatChunk, Message } from '@fam/shared';
 
 describe('60-Turn Soak Test (T4.7)', () => {
   let tmpBlobsDir: string;
 
   beforeEach(() => {
-    tmpBlobsDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hx-soak-blobs-'));
+    tmpBlobsDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fam-soak-blobs-'));
   });
 
   afterEach(() => {

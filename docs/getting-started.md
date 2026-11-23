@@ -1,12 +1,12 @@
-# 🚀 Getting Started with hx
+# 🚀 Getting Started with fam
 
-This guide will walk you through setting up, configuring, and using **`hx`**, the local-first CLI AI agent harness.
+This guide will walk you through setting up, configuring, and using **`fam`**, the local-first CLI AI agent harness.
 
 ---
 
 ## 📋 System Prerequisites
 
-`hx` is designed to run locally on developer laptops and workstations.
+`fam` is designed to run locally on developer laptops and workstations.
 
 ### Required Software
 
@@ -30,8 +30,8 @@ This guide will walk you through setting up, configuring, and using **`hx`**, th
 ### 1. Clone the Monorepo
 
 ```bash
-git clone https://github.com/KrishnaPassi1818/fam.git hx
-cd hx
+git clone https://github.com/KrishnaPassi1818/fam.git fam
+cd fam
 ```
 
 ### 2. Install TypeScript Dependencies
@@ -42,7 +42,7 @@ pnpm install
 
 ### 3. Build Packages and Rust Binaries
 
-Compile the TypeScript monorepo packages (`@hx/shared`, `@hx/core`, `@hx/mcp-host`, `@hx/cli`, `@hx/evals`, `servers/office`, `servers/web`) and the Cargo workspace (`hx-fs`, `hx-sandbox`, `crates/hx-tui`):
+Compile the TypeScript monorepo packages (`@fam/shared`, `@fam/core`, `@fam/mcp-host`, `@fam/cli`, `@fam/evals`, `servers/office`, `servers/web`) and the Cargo workspace (`fam-fs`, `fam-sandbox`, `crates/fam-tui`):
 
 ```bash
 pnpm build
@@ -53,7 +53,7 @@ cargo build
 
 ## 🤖 Setting Up Local Models
 
-`hx` relies on a tiered multi-model architecture. Pull the required models using Ollama:
+`fam` relies on a tiered multi-model architecture. Pull the required models using Ollama:
 
 ```bash
 # 1. General Assistant Worker (Runs in GPU VRAM)
@@ -71,18 +71,18 @@ ollama pull nomic-embed-text
 
 ---
 
-## 🩺 Verifying Your Environment (`hx doctor`)
+## 🩺 Verifying Your Environment (`fam doctor`)
 
 Run the built-in diagnostic tool to confirm that your hardware, runtimes, models, and tools are properly configured:
 
 ```bash
-node packages/cli/dist/bin/hx.js doctor
+node packages/cli/dist/bin/fam.js doctor
 ```
 
 Sample output:
 
 ```
-=== hx doctor environment inspection ===
+=== fam doctor environment inspection ===
 
 STATUS   | COMPONENT                | DETAILS
 --------------------------------------------------------------------------------
@@ -110,7 +110,7 @@ Verdict: All required dependencies are satisfied.
 Launch the full-screen terminal interface:
 
 ```bash
-node packages/cli/dist/bin/hx.js
+node packages/cli/dist/bin/fam.js
 ```
 
 Features in TUI Mode:
@@ -125,13 +125,13 @@ Features in TUI Mode:
 Run a prompt directly from the shell without opening the TUI:
 
 ```bash
-node packages/cli/dist/bin/hx.js "List the 5 most recently modified files in this repository"
+node packages/cli/dist/bin/fam.js "List the 5 most recently modified files in this repository"
 ```
 
 To automatically approve tool executions in non-interactive pipelines, pass `-y` / `--yes`:
 
 ```bash
-node packages/cli/dist/bin/hx.js -y "Check git status and summarize modified files"
+node packages/cli/dist/bin/fam.js -y "Check git status and summarize modified files"
 ```
 
 ---
@@ -140,49 +140,49 @@ node packages/cli/dist/bin/hx.js -y "Check git status and summarize modified fil
 
 ### Tutorial 1: General Assistant & Reasoning
 
-Ask `hx` to perform multi-step planning or structured math:
+Ask `fam` to perform multi-step planning or structured math:
 
 ```bash
-node packages/cli/dist/bin/hx.js "I have a monthly budget of ₹5000. I spent ₹1200 on groceries, ₹800 on transit, and ₹1000 on bills. How much do I have left, and what is my daily budget for the remaining 30 days?"
+node packages/cli/dist/bin/fam.js "I have a monthly budget of ₹5000. I spent ₹1200 on groceries, ₹800 on transit, and ₹1000 on bills. How much do I have left, and what is my daily budget for the remaining 30 days?"
 ```
 
-_`hx` will utilize its built-in arithmetic grounding tools to compute the exact figures without hallucination._
+_`fam` will utilize its built-in arithmetic grounding tools to compute the exact figures without hallucination._
 
 ### Tutorial 2: Repository Exploration & Coding
 
 Switch to the specialized coding role:
 
 ```bash
-node packages/cli/dist/bin/hx.js --role coder "Explore the src/ directory of packages/core and explain how ContextManager prevents context overflow"
+node packages/cli/dist/bin/fam.js --role coder "Explore the src/ directory of packages/core and explain how ContextManager prevents context overflow"
 ```
 
-_`hx` uses `fs_repo_map` (Tree-sitter AST extraction) and `fs_grep` to inspect symbols and files with minimal token consumption._
+_`fam` uses `fs_repo_map` (Tree-sitter AST extraction) and `fs_grep` to inspect symbols and files with minimal token consumption._
 
 ### Tutorial 3: Spreadsheet Analysis with In-Memory SQL
 
 Given an Excel sheet (`data/expenses.xlsx`), query it directly using SQL:
 
 ```bash
-node packages/cli/dist/bin/hx.js "In data/expenses.xlsx, what is the total amount spent grouped by category, ordered from highest to lowest?"
+node packages/cli/dist/bin/fam.js "In data/expenses.xlsx, what is the total amount spent grouped by category, ordered from highest to lowest?"
 ```
 
-_`hx` invokes the `office` MCP server, loads the worksheet into in-memory SQLite (`xlsx_query_sql`), executes the read-only query, and formats the output as a Markdown table._
+_`fam` invokes the `office` MCP server, loads the worksheet into in-memory SQLite (`xlsx_query_sql`), executes the read-only query, and formats the output as a Markdown table._
 
 ### Tutorial 4: Persistent Semantic Memory
 
-Teach `hx` a personal preference that survives restarts:
+Teach `fam` a personal preference that survives restarts:
 
 ```bash
-node packages/cli/dist/bin/hx.js "Remember that I prefer strict TypeScript with no default exports and 2-space indentation"
+node packages/cli/dist/bin/fam.js "Remember that I prefer strict TypeScript with no default exports and 2-space indentation"
 ```
 
 In a later session, ask:
 
 ```bash
-node packages/cli/dist/bin/hx.js "Write a small TypeScript utility function for slugifying strings"
+node packages/cli/dist/bin/fam.js "Write a small TypeScript utility function for slugifying strings"
 ```
 
-_`hx` automatically queries `~/.harness/db/memory.sqlite`, retrieves your preference, and shapes the code output according to your formatting preferences._
+_`fam` automatically queries `~/.fam/db/memory.sqlite`, retrieves your preference, and shapes the code output according to your formatting preferences._
 
 ---
 

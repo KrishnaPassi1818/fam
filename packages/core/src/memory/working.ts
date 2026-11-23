@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { resolvePath } from '../config/index.js';
-import type { Message } from '@hx/shared';
+import type { Message } from '@fam/shared';
 import type { TodoItem } from './types.js';
 
 export interface SessionStateData {
@@ -110,7 +110,7 @@ export class SessionPersistence {
   private readonly sessionsDir: string;
 
   constructor(sessionsDir?: string) {
-    this.sessionsDir = sessionsDir || resolvePath('~/.harness/sessions');
+    this.sessionsDir = sessionsDir || resolvePath('~/.fam/sessions');
     if (!fs.existsSync(this.sessionsDir)) {
       fs.mkdirSync(this.sessionsDir, { recursive: true });
     }

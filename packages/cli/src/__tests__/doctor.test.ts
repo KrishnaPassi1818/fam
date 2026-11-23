@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { runDoctor, formatDoctorTable, type DoctorReport } from '../doctor/index.js';
 
-describe('hx doctor', () => {
+describe('fam doctor', () => {
   it('runs doctor checks and returns valid structured report', async () => {
     const report = await runDoctor();
     expect(report.timestamp).toBeDefined();
@@ -39,7 +39,7 @@ describe('hx doctor', () => {
       ],
     };
     const table = formatDoctorTable(mockReport);
-    expect(table).toContain('=== hx doctor environment inspection ===');
+    expect(table).toContain('=== fam doctor environment inspection ===');
     expect(table).toContain('PASS');
     expect(table).toContain('WARN');
     expect(table).toContain('Operating System');

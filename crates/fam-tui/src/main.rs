@@ -4,7 +4,7 @@ use crossterm::{
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
-use hx_tui::{
+use fam_tui::{
     app::App,
     event::{Event, EventHandler},
     protocol::{FromTuiMessage, ToTuiMessage},
@@ -21,9 +21,9 @@ use std::{
 
 #[derive(Parser, Debug)]
 #[command(
-    name = "hx-tui",
+    name = "fam-tui",
     version,
-    about = "Ratatui TUI frontend for hx agent harness"
+    about = "Ratatui TUI frontend for fam agent harness"
 )]
 struct Args {
     /// Connect directly to standard input/output for IPC
@@ -100,7 +100,7 @@ fn main() -> Result<()> {
             }
         });
     } else {
-        // Direct stdio mode (e.g. hx spawning hx-tui)
+        // Direct stdio mode (e.g. fam spawning fam-tui)
         // Note: When stdio is used for IPC, terminal needs /dev/tty
         // Let's check if terminal is tty or if stdio reader should run
     }

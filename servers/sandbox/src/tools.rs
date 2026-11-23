@@ -160,7 +160,7 @@ pub async fn execute_run_code(args: Value) -> ToolCallResult {
         .duration_since(std::time::UNIX_EPOCH)
         .map(|d| d.as_nanos())
         .unwrap_or(0);
-    let tmp_file = std::env::temp_dir().join(format!("hx_code_{}_{}.{}", std::process::id(), now_nanos, extension));
+    let tmp_file = std::env::temp_dir().join(format!("fam_code_{}_{}.{}", std::process::id(), now_nanos, extension));
 
     if let Err(e) = tokio::fs::write(&tmp_file, code).await {
         return ToolCallResult::error(format!("Failed to write temporary script file: {e}"));

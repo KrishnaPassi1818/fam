@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from 'vitest';
 import { SessionDriver } from '../ui/session.js';
-import { findHxTuiBinary } from '../ui/ratatui-bridge.js';
+import { findFamTuiBinary } from '../ui/ratatui-bridge.js';
 import type { ToTuiMessage, TuiSessionConfig } from '../ui/types.js';
-import { loadConfig } from '@hx/core';
+import { loadConfig } from '@fam/core';
 
 const testConfig = loadConfig();
 
@@ -97,11 +97,11 @@ describe('Ratatui TUI Session Driver and Bridge', () => {
     }).not.toThrow();
   });
 
-  it('findHxTuiBinary finds compiled binary in target folder if built', () => {
-    const bin = findHxTuiBinary();
-    // In our test environment, we built hx-tui in target/debug
+  it('findFamTuiBinary finds compiled binary in target folder if built', () => {
+    const bin = findFamTuiBinary();
+    // In our test environment, we built fam-tui in target/debug
     if (bin) {
-      expect(bin).toContain('hx-tui');
+      expect(bin).toContain('fam-tui');
     }
   });
 });

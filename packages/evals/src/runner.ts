@@ -2,8 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import child_process from 'child_process';
-import { AgentLoop, type ToolExecutionHandler } from '@hx/core';
-import type { ModelAdapter, ToolDescriptor, ToolCall, ToolResult } from '@hx/shared';
+import { AgentLoop, type ToolExecutionHandler } from '@fam/core';
+import type { ModelAdapter, ToolDescriptor, ToolCall, ToolResult } from '@fam/shared';
 import type {
   TaskDefinition,
   TaskRunResult,
@@ -20,7 +20,7 @@ export class EvalRunner {
     customHandlers?: Record<string, ToolExecutionHandler>,
   ): Promise<TaskRunResult> {
     const startTime = Date.now();
-    const tmpWorkspace = fs.mkdtempSync(path.join(os.tmpdir(), `hx-eval-${task.id}-`));
+    const tmpWorkspace = fs.mkdtempSync(path.join(os.tmpdir(), `fam-eval-${task.id}-`));
 
     // 1. Setup fixtures in workspace
     if (task.fixtures) {

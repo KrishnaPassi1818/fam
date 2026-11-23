@@ -2,7 +2,7 @@
 
 **Model Context Protocol (MCP)** is the open standard that connects AI assistants to local and remote tools, data sources, and execution environments.
 
-In `hx`, **MCP is the non-negotiable architectural boundary**:
+In `fam`, **MCP is the non-negotiable architectural boundary**:
 
 - The agent core has **zero** built-in domain tools.
 - All capabilities—filesystem operations, shell execution, office document handling, and web search—are isolated MCP servers.
@@ -14,7 +14,7 @@ In `hx`, **MCP is the non-negotiable architectural boundary**:
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│                    hx Core (TypeScript)                    │
+│                    fam Core (TypeScript)                    │
 │                                                            │
 │   McpHost (Multi-Server Manager)                           │
 │   ├── McpConnection (StdioClientTransport / SSEClient)     │
@@ -44,7 +44,7 @@ In `hx`, **MCP is the non-negotiable architectural boundary**:
 
 ## 🏷️ Tool Naming & Small-Model Aliasing
 
-Small local models (e.g. `llama3.1:8b`, `qwen2.5-coder:7b`) struggle with complex tool namespaces containing dots or special characters. `hx` implements a two-tier identifier system:
+Small local models (e.g. `llama3.1:8b`, `qwen2.5-coder:7b`) struggle with complex tool namespaces containing dots or special characters. `fam` implements a two-tier identifier system:
 
 ### 1. Canonical Name
 
@@ -65,7 +65,7 @@ If two servers expose conflicting tool names, the registry bridge automatically 
 
 ## 📋 Tool Annotations & Execution Scheduling
 
-Every tool in `hx` carries annotations that govern how the **ToolExecutor** schedules calls:
+Every tool in `fam` carries annotations that govern how the **ToolExecutor** schedules calls:
 
 | Annotation        |   Type    | Impact on Execution                                                                                             |
 | :---------------- | :-------: | :-------------------------------------------------------------------------------------------------------------- |
@@ -78,11 +78,11 @@ Every tool in `hx` carries annotations that govern how the **ToolExecutor** sche
 
 ## 📦 Built-In MCP Servers
 
-`hx` ships with four built-in, production-grade MCP servers:
+`fam` ships with four built-in, production-grade MCP servers:
 
-### 1. `hx-fs` (Native Rust)
+### 1. `fam-fs` (Native Rust)
 
-Located at `servers/fs/` (compiled to `target/debug/hx-fs` or `target/release/hx-fs`).
+Located at `servers/fs/` (compiled to `target/debug/fam-fs` or `target/release/fam-fs`).
 
 - **Confinement Engine**: Confines operations to `--root` workspace; rejects directory traversal and symlink escapes.
 - **Tools**:
@@ -97,9 +97,9 @@ Located at `servers/fs/` (compiled to `target/debug/hx-fs` or `target/release/hx
   - `fs_trash(path)`: Safe deletion using OS trash bin.
   - `fs_repo_map(root?)`: Tree-sitter AST extraction for Rust, TypeScript, JavaScript, and Python.
 
-### 2. `hx-sandbox` (Native Rust)
+### 2. `fam-sandbox` (Native Rust)
 
-Located at `servers/sandbox/` (compiled to `target/debug/hx-sandbox`).
+Located at `servers/sandbox/` (compiled to `target/debug/fam-sandbox`).
 
 - **Isolation**: Command execution bounded by execution timeouts, memory caps, and workspace scoping.
 - **Tools**:
@@ -130,21 +130,21 @@ Located at `servers/web/` (`servers/web/dist/index.js`).
 
 ## ➕ Adding Custom Third-Party MCP Servers
 
-You can connect any standard MCP server to `hx` using the CLI or configuration file.
+You can connect any standard MCP server to `fam` using the CLI or configuration file.
 
 ### Method 1: Using the CLI
 
 ```bash
 # Add a local stdio MCP server (e.g. GitHub MCP server)
-hx mcp add github npx -y @modelcontextprotocol/server-github --auto-start
+fam mcp add github npx -y @modelcontextprotocol/server-github --auto-start
 
 # Add a remote HTTP/SSE MCP server
-hx mcp add analytics --transport http --url https://mcp.internal.corp/sse
+fam mcp add analytics --transport http --url https://mcp.internal.corp/sse
 ```
 
-### Method 2: Editing `~/.harness/servers.toml`
+### Method 2: Editing `~/.fam/servers.toml`
 
-Add your server entry to `~/.harness/servers.toml`:
+Add your server entry to `~/.fam/servers.toml`:
 
 ```toml
 [servers.github]
@@ -164,4 +164,4 @@ enabled = true
 
 ### First-Connect Approval Flow
 
-When a new third-party MCP server is connected for the first time, `hx` pauses and displays the server command, executable path, and discovered tool schemas. The user must approve the server before tools can be invoked.
+When a new third-party MCP server is connected for the first time, `fam` pauses and displays the server command, executable path, and discovered tool schemas. The user must approve the server before tools can be invoked.

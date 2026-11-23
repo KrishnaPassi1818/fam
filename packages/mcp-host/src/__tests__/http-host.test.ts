@@ -15,7 +15,7 @@ describe('McpHost HTTP/SSE Transport and Auth Integration', () => {
   let serverPort: number;
   let mcpServer: Server;
   let sseTransport: SSEServerTransport | null = null;
-  const EXPECTED_SECRET = 'hx_test_secret_key_9876';
+  const EXPECTED_SECRET = 'fam_test_secret_key_9876';
 
   beforeAll(async () => {
     process.env['TEST_MCP_AUTH_KEY'] = EXPECTED_SECRET;

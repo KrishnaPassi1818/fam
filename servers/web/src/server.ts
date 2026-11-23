@@ -9,7 +9,7 @@ import { fetchMarkdown } from './fetch.js';
 export function createWebServer(): Server {
   const server = new Server(
     {
-      name: 'hx-web',
+      name: 'fam-web',
       version: '0.1.0',
     },
     {

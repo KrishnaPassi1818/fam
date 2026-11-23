@@ -1,6 +1,6 @@
-# 📚 hx Documentation Hub
+# 📚 fam Documentation Hub
 
-Welcome to the comprehensive documentation repository for **`hx`**, the local-first CLI AI agent harness. This hub indexes all specifications, architectural blueprints, user manuals, and technical references.
+Welcome to the comprehensive documentation repository for **`fam`**, the local-first CLI AI agent harness. This hub indexes all specifications, architectural blueprints, user manuals, and technical references.
 
 ---
 
@@ -13,7 +13,7 @@ docs/
 ├── 🚀 User Guides
 │   ├── getting-started.md  # Complete setup, installation, and first-steps tutorial
 │   ├── cli.md              # Complete CLI commands, options, and TUI manual
-│   └── configuration.md    # Configuration reference for ~/.harness/*.toml
+│   └── configuration.md    # Configuration reference for ~/.fam/*.toml
 │
 ├── 🏛 Architecture & Design
 │   ├── architecture.md     # System architecture, process view, component contracts
@@ -41,13 +41,13 @@ docs/
 ### 1. User & Developer Guides
 
 - **[Getting Started Guide](getting-started.md)**:
-  Prerequisites, dependency verification, local model pulling via Ollama, environment validation with `hx doctor`, interactive Ratatui TUI sessions, one-shot commands, and 5 hands-on walkthroughs.
+  Prerequisites, dependency verification, local model pulling via Ollama, environment validation with `fam doctor`, interactive Ratatui TUI sessions, one-shot commands, and 5 hands-on walkthroughs.
 - **[CLI & TUI Manual](cli.md)**:
-  Comprehensive reference for the `hx` binary. Covers all flags (`--model`, `--role`, `--system`, `--local-only`, `-y`), subcommands (`doctor`, `eval`, `mcp`, `memory`, `replay`, `trace`), interactive Ratatui TUI navigation, and slash commands.
+  Comprehensive reference for the `fam` binary. Covers all flags (`--model`, `--role`, `--system`, `--local-only`, `-y`), subcommands (`doctor`, `eval`, `mcp`, `memory`, `replay`, `trace`), interactive Ratatui TUI navigation, and slash commands.
 - **[Configuration Reference](configuration.md)**:
-  Deep-dive into the configuration system (`~/.harness/`). Explains `default.toml`, `models.toml`, `policy.toml` (permission tiers), `privacy.toml` (entropy and path filters), `routing.toml` (fast-path rules & cascades), and `servers.toml`.
+  Deep-dive into the configuration system (`~/.fam/`). Explains `default.toml`, `models.toml`, `policy.toml` (permission tiers), `privacy.toml` (entropy and path filters), `routing.toml` (fast-path rules & cascades), and `servers.toml`.
 - **[MCP Integration Guide](mcp.md)**:
-  Guide to extending `hx` through the Model Context Protocol. Details the stdio and HTTP/SSE host, alias sanitization, annotations, built-in servers (`fs`, `sandbox`, `office`, `web`), and connecting custom third-party MCP servers.
+  Guide to extending `fam` through the Model Context Protocol. Details the stdio and HTTP/SSE host, alias sanitization, annotations, built-in servers (`fs`, `sandbox`, `office`, `web`), and connecting custom third-party MCP servers.
 
 ### 2. Architecture & System Specifications
 
@@ -81,7 +81,7 @@ docs/
 
 | If you want to...                              | Read this first                                                     |
 | :--------------------------------------------- | :------------------------------------------------------------------ |
-| Install and run `hx` on your machine           | [Getting Started Guide](getting-started.md)                         |
+| Install and run `fam` on your machine           | [Getting Started Guide](getting-started.md)                         |
 | Learn interactive slash commands & keybindings | [CLI & TUI Manual](cli.md)                                          |
 | Connect a new custom MCP server                | [MCP Integration Guide](mcp.md)                                     |
 | Configure permission tiers or model placement  | [Configuration Reference](configuration.md)                         |

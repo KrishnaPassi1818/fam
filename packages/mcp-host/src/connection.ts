@@ -20,6 +20,9 @@ export interface McpConnectionOptions {
 }
 
 function findWorkspaceRoot(startDir: string = process.cwd()): string {
+  if (process.env.FAM_ROOT && fs.existsSync(process.env.FAM_ROOT)) {
+    return process.env.FAM_ROOT;
+  }
   if (process.env.HARNESS_ROOT && fs.existsSync(process.env.HARNESS_ROOT)) {
     return process.env.HARNESS_ROOT;
   }
@@ -134,7 +137,7 @@ export class McpConnection {
       }
 
       this.client = new Client(
-        { name: `hx-${this.serverName}`, version: '0.1.0' },
+        { name: `fam-${this.serverName}`, version: '0.1.0' },
         { capabilities: {} },
       );
 

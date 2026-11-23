@@ -83,7 +83,7 @@ impl SandboxServer {
                         }
                     },
                     "serverInfo": {
-                        "name": "hx-sandbox",
+                        "name": "fam-sandbox",
                         "version": "0.1.0"
                     }
                 })),

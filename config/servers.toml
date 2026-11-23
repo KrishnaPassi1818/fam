@@ -2,14 +2,14 @@
 
 [servers.fs]
 transport = "stdio"
-command = "target/debug/hx-fs"
+command = "target/debug/fam-fs"
 args = ["--root", "${HOME}"]
 autoStart = true
 enabled = true
 
 [servers.sandbox]
 transport = "stdio"
-command = "target/debug/hx-sandbox"
+command = "target/debug/fam-sandbox"
 args = []
 autoStart = true
 enabled = true

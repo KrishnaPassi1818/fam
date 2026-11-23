@@ -13,10 +13,10 @@ import type { Message, ToolDescriptor } from '../packages/shared/src/index.js';
 
 async function main() {
   console.log('================================================================');
-  console.log('                 HX PHASE 4 EXIT GATE DEMO                      ');
+  console.log('                 FAM PHASE 4 EXIT GATE DEMO                      ');
   console.log('================================================================\n');
 
-  const tmpBase = fs.mkdtempSync(path.join(os.tmpdir(), 'hx-gate-p4-'));
+  const tmpBase = fs.mkdtempSync(path.join(os.tmpdir(), 'fam-gate-p4-'));
   const tmpBlobs = path.join(tmpBase, 'blobs');
   fs.mkdirSync(tmpBlobs, { recursive: true });
 

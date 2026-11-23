@@ -1,4 +1,4 @@
-import type { ToolDescriptor, ToolTier } from '@hx/shared';
+import type { ToolDescriptor, ToolTier } from '@fam/shared';
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 import type { RegisteredTool } from './types.js';
 import { toValidAlias } from './utils.js';

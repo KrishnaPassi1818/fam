@@ -3,13 +3,13 @@ import * as path from 'node:path';
 import * as os from 'node:os';
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { listServers, saveServerConfig, removeServerConfig, testServer } from '../mcp/index.js';
-import type { HxConfig } from '@hx/shared';
+import type { FamConfig } from '@fam/shared';
 
 describe('CLI MCP Server Management', () => {
   let tmpDir: string;
 
   beforeEach(() => {
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hx-cli-mcp-test-'));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fam-cli-mcp-test-'));
   });
 
   afterEach(() => {
@@ -20,13 +20,13 @@ describe('CLI MCP Server Management', () => {
     }
   });
 
-  it('lists configured servers from HxConfig', () => {
+  it('lists configured servers from FamConfig', () => {
     const fakeConfig = {
       servers: {
         servers: {
           fs: {
             transport: 'stdio' as const,
-            command: 'hx-fs',
+            command: 'fam-fs',
             args: ['--root', '.'],
             env: {},
             headers: {},
@@ -44,7 +44,7 @@ describe('CLI MCP Server Management', () => {
           },
         },
       },
-    } as unknown as HxConfig;
+    } as unknown as FamConfig;
 
     const list = listServers(fakeConfig);
     expect(list).toHaveLength(2);
@@ -81,8 +81,8 @@ describe('CLI MCP Server Management', () => {
     expect(updatedContent).not.toContain('custom_server');
   });
 
-  it('tests connection to the compiled Rust hx-fs server', async () => {
-    const binaryPath = path.resolve(__dirname, '../../../../target/debug/hx-fs');
+  it('tests connection to the compiled Rust fam-fs server', async () => {
+    const binaryPath = path.resolve(__dirname, '../../../../target/debug/fam-fs');
     if (!fs.existsSync(binaryPath)) {
       // If binary not built yet, skip
       return;
@@ -102,7 +102,7 @@ describe('CLI MCP Server Management', () => {
           },
         },
       },
-    } as unknown as HxConfig;
+    } as unknown as FamConfig;
 
     const result = await testServer('fs', testConfig);
     expect(result.success).toBe(true);

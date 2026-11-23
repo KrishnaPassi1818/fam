@@ -1,11 +1,12 @@
 use anyhow::Result;
-use hx_fs::{Confinement, FsServer};
+use fam_fs::{Confinement, FsServer};
 use std::env;
 use std::path::PathBuf;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let mut root = env::var("HX_FS_ROOT")
+    let mut root = env::var("FAM_FS_ROOT")
+        .or_else(|_| env::var("HX_FS_ROOT"))
         .map(PathBuf::from)
         .unwrap_or_else(|_| env::current_dir().unwrap_or_else(|_| PathBuf::from(".")));
 

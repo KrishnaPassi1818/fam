@@ -9,7 +9,7 @@ import {
 
 describe('MessageSchema', () => {
   it('validates a system message', () => {
-    const sys = { role: 'system', content: 'You are hx.' };
+    const sys = { role: 'system', content: 'You are fam.' };
     expect(SystemMessageSchema.parse(sys)).toEqual(sys);
     expect(MessageSchema.parse(sys)).toEqual(sys);
   });

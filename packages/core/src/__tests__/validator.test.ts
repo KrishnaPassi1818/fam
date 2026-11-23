@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { ToolValidator } from '../tools/validator.js';
-import type { ToolDescriptor } from '@hx/shared';
+import type { ToolDescriptor } from '@fam/shared';
 
 describe('ToolValidator (T3.1)', () => {
   const validator = new ToolValidator();

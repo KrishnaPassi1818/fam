@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { AgentLoop } from '../loop/index.js';
-import type { ModelAdapter, ChatRequest, ChatChunk, Message } from '@hx/shared';
+import type { ModelAdapter, ChatRequest, ChatChunk, Message } from '@fam/shared';
 
 describe('AgentLoop', () => {
   it('completes direct conversation turn without tool calls', async () => {
@@ -39,14 +39,14 @@ describe('AgentLoop', () => {
         if (turn === 1) {
           yield {
             delta: 'Invoking echo...',
-            toolCalls: [{ id: 'call_1', name: 'echo', args: { message: 'hx test' } }],
+            toolCalls: [{ id: 'call_1', name: 'echo', args: { message: 'fam test' } }],
           };
         } else {
           // Verify that tool result was included in messages
           const toolMsg = req.messages.find((m) => m.role === 'tool') as Extract<Message, { role: 'tool' }> | undefined;
           expect(toolMsg).toBeDefined();
-          expect(toolMsg?.content).toBe('hx test');
-          yield { delta: 'Echo verified: hx test' };
+          expect(toolMsg?.content).toBe('fam test');
+          yield { delta: 'Echo verified: fam test' };
         }
       },
       countTokens: () => 15,
@@ -64,14 +64,14 @@ describe('AgentLoop', () => {
     const toolResultEv = events.find((e) => e.type === 'tool_result');
     expect(toolResultEv).toBeDefined();
     if (toolResultEv?.type === 'tool_result') {
-      expect(toolResultEv.toolResult.content).toBe('hx test');
+      expect(toolResultEv.toolResult.content).toBe('fam test');
     }
 
     const finish = events.find((e) => e.type === 'finish');
     expect(finish).toBeDefined();
     if (finish?.type === 'finish') {
       expect(finish.steps).toBe(2);
-      expect(finish.response).toBe('Echo verified: hx test');
+      expect(finish.response).toBe('Echo verified: fam test');
     }
   });
 

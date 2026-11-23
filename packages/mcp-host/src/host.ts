@@ -1,4 +1,4 @@
-import type { ToolDescriptor } from '@hx/shared';
+import type { ToolDescriptor } from '@fam/shared';
 import type { McpServerConfig, McpToolCallOutput, RegisteredTool } from './types.js';
 import { McpConnection } from './connection.js';
 import { McpRegistryBridge } from './registry.js';

@@ -74,17 +74,17 @@
 | 51 | `preferences_info` | ~1533 | **ADAPT** | Adapt memory retention/privacy rules to SQLite/vector harness architecture |
 | 52 | `computer_use` | ~4 | **DROP** | Not applicable to local CLI harness architecture |
 | 53 | `skills` | ~427 | **DROP** | Not applicable to local CLI harness architecture |
-| 54 | `file_creation_advice` | ~1134 | **ADAPT** | Adapt file and code generation etiquette to hx fs and sandbox servers |
+| 54 | `file_creation_advice` | ~1134 | **ADAPT** | Adapt file and code generation etiquette to fam fs and sandbox servers |
 | 55 | `high_level_computer_use_explanation` | ~121 | **DROP** | Not applicable to local CLI harness architecture |
-| 56 | `file_handling_rules` | ~136 | **ADAPT** | Adapt file and code generation etiquette to hx fs and sandbox servers |
+| 56 | `file_handling_rules` | ~136 | **ADAPT** | Adapt file and code generation etiquette to fam fs and sandbox servers |
 | 57 | `notes_on_user_uploaded_files` | ~135 | **DROP** | Not applicable to local CLI harness architecture |
-| 58 | `producing_outputs` | ~125 | **ADAPT** | Adapt file and code generation etiquette to hx fs and sandbox servers |
-| 59 | `sharing_files` | ~246 | **ADAPT** | Adapt file and code generation etiquette to hx fs and sandbox servers |
+| 58 | `producing_outputs` | ~125 | **ADAPT** | Adapt file and code generation etiquette to fam fs and sandbox servers |
+| 59 | `sharing_files` | ~246 | **ADAPT** | Adapt file and code generation etiquette to fam fs and sandbox servers |
 | 60 | `artifact_usage_criteria` | ~84 | **DROP** | Vendor-specific branding, product feature, or proprietary UI widget |
 | 61 | `Use artifacts for` | ~139 | **DROP** | Vendor-specific branding, product feature, or proprietary UI widget |
 | 62 | `Do NOT use artifacts for` | ~584 | **DROP** | Vendor-specific branding, product feature, or proprietary UI widget |
 | 63 | `CRITICAL BROWSER STORAGE RESTRICTION` | ~153 | **DROP** | Not applicable to local CLI harness architecture |
-| 64 | `package_management` | ~326 | **ADAPT** | Adapt file and code generation etiquette to hx fs and sandbox servers |
+| 64 | `package_management` | ~326 | **ADAPT** | Adapt file and code generation etiquette to fam fs and sandbox servers |
 | 65 | `additional_skills_reminder` | ~269 | **DROP** | Not applicable to local CLI harness architecture |
 | 66 | `publishing_artifacts` | ~362 | **DROP** | Vendor-specific branding, product feature, or proprietary UI widget |
 | 67 | `Decks, designs and docs: use the ready-made form first` | ~1720 | **DROP** | Not applicable to local CLI harness architecture |
@@ -105,8 +105,8 @@
 | 82 | `Design guidance` | ~129 | **DROP** | Not applicable to local CLI harness architecture |
 | 83 | `Content safety` | ~112 | **ADAPT** | Safety, refusal posture and objective tone (neutralize vendor identity) |
 | 84 | `visualizer_examples` | ~376 | **DROP** | Vendor-specific branding, product feature, or proprietary UI widget |
-| 85 | `search_instructions` | ~95 | **ADAPT** | Adapt web search and citation etiquette to hx web MCP server |
-| 86 | `core_search_behaviors` | ~1132 | **ADAPT** | Adapt web search and citation etiquette to hx web MCP server |
+| 85 | `search_instructions` | ~95 | **ADAPT** | Adapt web search and citation etiquette to fam web MCP server |
+| 86 | `core_search_behaviors` | ~1132 | **ADAPT** | Adapt web search and citation etiquette to fam web MCP server |
 | 87 | `search_usage_guidelines` | ~360 | **DROP** | Not applicable to local CLI harness architecture |
 | 88 | `CRITICAL_COPYRIGHT_COMPLIANCE` | ~24 | **DROP** | Not applicable to local CLI harness architecture |
 | 89 | `claude_prioritizes_copyright_compliance` | ~42 | **DROP** | Not applicable to local CLI harness architecture |
@@ -122,8 +122,8 @@
 | 99 | `Critical NEVER search for images in following categories (blocked):` | ~1394 | **DROP** | Not applicable to local CLI harness architecture |
 | 100 | `Tools` | ~2 | **DROP** | Not applicable to local CLI harness architecture |
 | 101 | `Artifact` | ~5810 | **DROP** | Vendor-specific branding, product feature, or proprietary UI widget |
-| 102 | `bash_tool` | ~117 | **ADAPT** | Tool use conventions adapted to hx MCP tool schema |
-| 103 | `create_file` | ~210 | **ADAPT** | Tool use conventions adapted to hx MCP tool schema |
+| 102 | `bash_tool` | ~117 | **ADAPT** | Tool use conventions adapted to fam MCP tool schema |
+| 103 | `create_file` | ~210 | **ADAPT** | Tool use conventions adapted to fam MCP tool schema |
 | 104 | `image_search` | ~215 | **DROP** | Not applicable to local CLI harness architecture |
 | 105 | `memory_append` | ~657 | **ADAPT** | Adapt memory retention/privacy rules to SQLite/vector harness architecture |
 | 106 | `memory_delete` | ~321 | **ADAPT** | Adapt memory retention/privacy rules to SQLite/vector harness architecture |
@@ -135,15 +135,15 @@
 | 112 | `search_mcp_registry` | ~470 | **DROP** | Not applicable to local CLI harness architecture |
 | 113 | `search_plugins` | ~399 | **DROP** | Not applicable to local CLI harness architecture |
 | 114 | `search_skills` | ~306 | **DROP** | Not applicable to local CLI harness architecture |
-| 115 | `str_replace` | ~369 | **ADAPT** | Tool use conventions adapted to hx MCP tool schema |
+| 115 | `str_replace` | ~369 | **ADAPT** | Tool use conventions adapted to fam MCP tool schema |
 | 116 | `suggest_connectors` | ~476 | **DROP** | Vendor-specific branding, product feature, or proprietary UI widget |
 | 117 | `suggest_plugin_install` | ~845 | **DROP** | Vendor-specific branding, product feature, or proprietary UI widget |
 | 118 | `suggest_research` | ~1230 | **DROP** | Not applicable to local CLI harness architecture |
 | 119 | `suggest_skills` | ~337 | **DROP** | Not applicable to local CLI harness architecture |
-| 120 | `view` | ~435 | **ADAPT** | Tool use conventions adapted to hx MCP tool schema |
-| 121 | `web_fetch` | ~1046 | **ADAPT** | Adapt web search and citation etiquette to hx web MCP server |
-| 122 | `web_search` | ~109 | **ADAPT** | Adapt web search and citation etiquette to hx web MCP server |
-| 123 | `web_search_fast` | ~165 | **ADAPT** | Adapt web search and citation etiquette to hx web MCP server |
+| 120 | `view` | ~435 | **ADAPT** | Tool use conventions adapted to fam MCP tool schema |
+| 121 | `web_fetch` | ~1046 | **ADAPT** | Adapt web search and citation etiquette to fam web MCP server |
+| 122 | `web_search` | ~109 | **ADAPT** | Adapt web search and citation etiquette to fam web MCP server |
+| 123 | `web_search_fast` | ~165 | **ADAPT** | Adapt web search and citation etiquette to fam web MCP server |
 | 124 | `ask_user_input_v0` | ~901 | **DROP** | Not applicable to local CLI harness architecture |
 | 125 | `chart_display_v0` | ~2216 | **DROP** | Not applicable to local CLI harness architecture |
 | 126 | `comparison_card_display_v0` | ~710 | **DROP** | Not applicable to local CLI harness architecture |
@@ -152,7 +152,7 @@
 | 129 | `featured_card_display_v0` | ~539 | **DROP** | Not applicable to local CLI harness architecture |
 | 130 | `fetch_sports_data` | ~573 | **DROP** | Vendor-specific branding, product feature, or proprietary UI widget |
 | 131 | `itinerary_display_v0` | ~707 | **DROP** | Not applicable to local CLI harness architecture |
-| 132 | `link_preview_display_v0` | ~544 | **ADAPT** | Tool use conventions adapted to hx MCP tool schema |
+| 132 | `link_preview_display_v0` | ~544 | **ADAPT** | Tool use conventions adapted to fam MCP tool schema |
 | 133 | `message_compose_v1` | ~726 | **DROP** | Not applicable to local CLI harness architecture |
 | 134 | `options_card_display_v0` | ~615 | **DROP** | Not applicable to local CLI harness architecture |
 | 135 | `places_list_display_v0` | ~614 | **DROP** | Vendor-specific branding, product feature, or proprietary UI widget |
@@ -230,7 +230,7 @@
 | 207 | `mcp__visualize__show_widget` | ~793 | **DROP** | Vendor-specific branding, product feature, or proprietary UI widget |
 | 208 | `read_resource_link` | ~310 | **DROP** | Not applicable to local CLI harness architecture |
 | 209 | `anthropic_api_in_artifacts` | ~7 | **DROP** | Vendor-specific branding, product feature, or proprietary UI widget |
-| 210 | `overview` | ~79 | **ADAPT** | Tool use conventions adapted to hx MCP tool schema |
+| 210 | `overview` | ~79 | **ADAPT** | Tool use conventions adapted to fam MCP tool schema |
 | 211 | `api_details` | ~235 | **DROP** | Not applicable to local CLI harness architecture |
 | 212 | `structured_outputs_in_xml` | ~149 | **DROP** | Not applicable to local CLI harness architecture |
 | 213 | `tool_usage` | ~3 | **DROP** | Not applicable to local CLI harness architecture |
@@ -311,10 +311,10 @@
 
 1. **Memory Storage**:
    - *Prompt.md*: Employs a virtual filesystem of markdown files manipulated via string replacement.
-   - *hx*: Employs SQLite (`memory`, `memory_vec`, `sessions`) + bounded working memory (`todo`, `scratch`) to strictly enforce the ≤ 500 token memory budget.
+   - *fam*: Employs SQLite (`memory`, `memory_vec`, `sessions`) + bounded working memory (`todo`, `scratch`) to strictly enforce the ≤ 500 token memory budget.
 2. **Permission Checks**:
    - *Prompt.md*: Directs the model itself to decide what to ask the user.
-   - *hx*: Non-negotiable Rule S2: Permission tiers (0-4) are evaluated and enforced strictly inside the TypeScript executor outside model control.
+   - *fam*: Non-negotiable Rule S2: Permission tiers (0-4) are evaluated and enforced strictly inside the TypeScript executor outside model control.
 3. **Context Management & Budgeting**:
    - *Prompt.md*: Designed for 200k+ cloud context windows.
-   - *hx*: Optimized for 4k-8k local contexts. Large tool results are offloaded to blob storage; system prompts are strictly budgeted.
+   - *fam*: Optimized for 4k-8k local contexts. Large tool results are offloaded to blob storage; system prompts are strictly budgeted.

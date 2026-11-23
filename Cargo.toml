@@ -3,7 +3,7 @@ resolver = "2"
 members = [
   "servers/fs",
   "servers/sandbox",
-  "crates/hx-tui",
+  "crates/fam-tui",
 ]
 
 [workspace.package]

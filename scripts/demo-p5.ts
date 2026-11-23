@@ -16,7 +16,7 @@ import {
 
 async function main() {
   console.log('================================================================');
-  console.log('HX HARNESS — PHASE 5 EXIT GATE DEMO & VERIFICATION');
+  console.log('FAM HARNESS — PHASE 5 EXIT GATE DEMO & VERIFICATION');
   console.log('Subsystems: Router, Policy, Embeddings, Retriever, Scheduler');
   console.log('================================================================\n');
 

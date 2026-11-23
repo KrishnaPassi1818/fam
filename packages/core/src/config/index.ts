@@ -3,9 +3,10 @@ import path from 'path';
 import os from 'os';
 import { parse } from 'smol-toml';
 import {
-  HxConfigSchema,
-  type HxConfig,
-} from '@hx/shared';
+  FamConfigSchema,
+  type FamConfig,
+} from '@fam/shared';
+export { FamConfigSchema, type FamConfig, HxConfigSchema, type HxConfig } from '@fam/shared';
 
 export function resolvePath(p: string): string {
   if (p.startsWith('~/') || p === '~') {
@@ -14,7 +15,7 @@ export function resolvePath(p: string): string {
   return path.resolve(p);
 }
 
-export function ensureHarnessDirs(dataDir: string): void {
+export function ensureFamDirs(dataDir: string): void {
   const resolved = resolvePath(dataDir);
   const dirs = [
     resolved,
@@ -33,9 +34,11 @@ export function ensureHarnessDirs(dataDir: string): void {
   }
 }
 
+export const ensureHarnessDirs = ensureFamDirs;
+
 export interface LoadConfigOptions {
   configDir?: string; // Bundled defaults directory
-  dataDir?: string;   // User data directory (e.g. ~/.harness)
+  dataDir?: string;   // User data directory (e.g. ~/.fam)
   env?: Record<string, string | undefined>;
 }
 
@@ -49,13 +52,13 @@ function tryReadToml(filePath: string): Record<string, unknown> | null {
   }
 }
 
-export function loadConfig(options: LoadConfigOptions = {}): HxConfig {
+export function loadConfig(options: LoadConfigOptions = {}): FamConfig {
   const env = options.env || process.env;
-  const rawDataDir = env['HX_DATA_DIR'] || options.dataDir || '~/.harness';
+  const rawDataDir = env['FAM_DATA_DIR'] || env['HX_DATA_DIR'] || options.dataDir || '~/.fam';
   const dataDir = resolvePath(rawDataDir);
 
   // Initialize directory layout
-  ensureHarnessDirs(dataDir);
+  ensureFamDirs(dataDir);
 
   // Locate bundled defaults
   const bundledDir = options.configDir
@@ -124,13 +127,21 @@ export function loadConfig(options: LoadConfigOptions = {}): HxConfig {
 
   // Environment overrides
   const general = configCandidate['general'] as Record<string, unknown>;
-  if (env['HX_DEFAULT_MODEL']) general['defaultModel'] = env['HX_DEFAULT_MODEL'];
-  if (env['HX_DEFAULT_ROLE']) general['defaultRole'] = env['HX_DEFAULT_ROLE'];
-  if (env['HX_LOG_LEVEL']) general['logLevel'] = env['HX_LOG_LEVEL'];
-  if (env['HX_FALLBACK_MODEL']) general['fallbackModel'] = env['HX_FALLBACK_MODEL'];
+  if (env['FAM_DEFAULT_MODEL'] || env['HX_DEFAULT_MODEL']) {
+    general['defaultModel'] = env['FAM_DEFAULT_MODEL'] || env['HX_DEFAULT_MODEL'];
+  }
+  if (env['FAM_DEFAULT_ROLE'] || env['HX_DEFAULT_ROLE']) {
+    general['defaultRole'] = env['FAM_DEFAULT_ROLE'] || env['HX_DEFAULT_ROLE'];
+  }
+  if (env['FAM_LOG_LEVEL'] || env['HX_LOG_LEVEL']) {
+    general['logLevel'] = env['FAM_LOG_LEVEL'] || env['HX_LOG_LEVEL'];
+  }
+  if (env['FAM_FALLBACK_MODEL'] || env['HX_FALLBACK_MODEL']) {
+    general['fallbackModel'] = env['FAM_FALLBACK_MODEL'] || env['HX_FALLBACK_MODEL'];
+  }
   general['dataDir'] = dataDir;
 
-  const validation = HxConfigSchema.safeParse(configCandidate);
+  const validation = FamConfigSchema.safeParse(configCandidate);
   if (!validation.success) {
     const issues = validation.error.issues
       .map((i) => `- [${i.path.join('.')}]: ${i.message}`)

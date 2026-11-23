@@ -15,7 +15,7 @@ describe('Office Read Tools (T7.2)', () => {
   let tempDir: string;
 
   beforeEach(() => {
-    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hx_read_test_'));
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fam_read_test_'));
   });
 
   afterEach(() => {

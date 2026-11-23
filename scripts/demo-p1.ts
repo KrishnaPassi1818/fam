@@ -6,7 +6,7 @@ import type { Message } from '../packages/shared/src/index.js';
 
 async function main() {
   console.log('================================================================');
-  console.log('                 HX PHASE 1 EXIT GATE DEMO                      ');
+  console.log('                 FAM PHASE 1 EXIT GATE DEMO                      ');
   console.log('================================================================\n');
 
   const config = loadConfig();
@@ -72,7 +72,7 @@ async function main() {
   const messages: Message[] = [
     {
       role: 'user',
-      content: 'Call the echo tool with message "HX_GATE_SUCCESS". Do not answer directly without calling the echo tool.',
+      content: 'Call the echo tool with message "FAM_GATE_SUCCESS". Do not answer directly without calling the echo tool.',
     },
   ];
 

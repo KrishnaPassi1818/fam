@@ -9,7 +9,7 @@ import {
   type ToolDescriptor,
   ModelError,
   estimateMessageTokens,
-} from '@hx/shared';
+} from '@fam/shared';
 import { PrivacyGate } from '../privacy/index.js';
 
 export interface GeminiAdapterOptions {

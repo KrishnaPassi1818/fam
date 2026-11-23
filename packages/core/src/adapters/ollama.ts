@@ -8,7 +8,7 @@ import {
   type ToolDescriptor,
   ModelError,
   estimateMessageTokens,
-} from '@hx/shared';
+} from '@fam/shared';
 
 export interface OllamaAdapterOptions {
   host?: string;
@@ -52,7 +52,7 @@ export class OllamaAdapter implements ModelAdapter {
   private callCounter = 0;
 
   constructor(options: OllamaAdapterOptions) {
-    this.host = options.host || process.env['HX_OLLAMA_HOST'] || 'http://127.0.0.1:11434';
+    this.host = options.host || process.env['FAM_OLLAMA_HOST'] || process.env['HX_OLLAMA_HOST'] || 'http://127.0.0.1:11434';
     const cleanModel = options.model.replace(/^ollama:/, '');
     this.modelName = cleanModel;
     this.id = `ollama:${cleanModel}`;

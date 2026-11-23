@@ -1,5 +1,5 @@
 {
-  "name": "@hx/shared",
+  "name": "@fam/shared",
   "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.js",

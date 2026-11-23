@@ -9,13 +9,13 @@ import {
   formatMarkdownReport,
   type TaskDefinition,
 } from '../index.js';
-import type { ModelAdapter, ChatChunk } from '@hx/shared';
+import type { ModelAdapter, ChatChunk } from '@fam/shared';
 
 describe('Eval Framework Scaffold (T3.8)', () => {
   let tmpDir: string;
 
   beforeEach(() => {
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hx-evals-test-'));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fam-evals-test-'));
   });
 
   afterEach(() => {

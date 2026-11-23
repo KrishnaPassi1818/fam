@@ -13,7 +13,7 @@ describe('LibreOffice Manager & Conversions (T7.7)', () => {
   let tempDir: string;
 
   beforeEach(() => {
-    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hx_libreoffice_test_'));
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fam_libreoffice_test_'));
   });
 
   afterEach(() => {

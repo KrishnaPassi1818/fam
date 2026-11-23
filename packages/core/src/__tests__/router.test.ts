@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { Router } from '../router/index.js';
 import { detectPrivacyFastPath, estimateComplexity } from '../router/rules.js';
 import { RoutingPolicy } from '../router/policy.js';
-import { PrivacyBlocked } from '@hx/shared';
+import { PrivacyBlocked } from '@fam/shared';
 import { LABELED_ROUTING_PROMPTS } from '../router/fixtures.js';
 
 describe('Phase 5: Router & Routing Policy (T5.1 & T5.2)', () => {

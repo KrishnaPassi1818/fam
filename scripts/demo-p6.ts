@@ -16,11 +16,11 @@ import {
 
 async function main() {
   console.log('================================================================');
-  console.log('HX HARNESS — PHASE 6 EXIT GATE DEMO & VERIFICATION');
+  console.log('FAM HARNESS — PHASE 6 EXIT GATE DEMO & VERIFICATION');
   console.log('Subsystems: MemoryStore, Vector Retrieval, Working Memory, Persistence');
   console.log('================================================================\n');
 
-  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hx-p6-gate-'));
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fam-p6-gate-'));
   const dbPath = path.join(tmpDir, 'memory.sqlite');
   const sessDir = path.join(tmpDir, 'sessions');
 

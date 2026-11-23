@@ -1,9 +1,9 @@
 {
-  "name": "@hx/cli",
+  "name": "@fam/cli",
   "version": "0.1.0",
   "type": "module",
   "bin": {
-    "hx": "./dist/bin/hx.js"
+    "fam": "./dist/bin/fam.js"
   },
   "scripts": {
     "build": "tsc -b",
@@ -11,10 +11,10 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@hx/core": "workspace:*",
-    "@hx/evals": "workspace:*",
-    "@hx/mcp-host": "workspace:*",
-    "@hx/shared": "workspace:*",
+    "@fam/core": "workspace:*",
+    "@fam/evals": "workspace:*",
+    "@fam/mcp-host": "workspace:*",
+    "@fam/shared": "workspace:*",
     "commander": "^13.1.0",
     "smol-toml": "^1.3.1"
   },

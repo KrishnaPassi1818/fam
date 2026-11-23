@@ -7,7 +7,7 @@
 3. **Stay in scope.** Don't add features that aren't in tasks.md. If you think something is missing, add a proposed task under "Backlog" and continue.
 4. **Don't diverge silently.** If architecture.md is wrong or impractical, write an ADR in `docs/DECISIONS.md`, then proceed.
 5. **Verify, don't assume.** Run the build, lint, and tests for what you touched. Quote real output in PROGRESS.md. Never claim something works without running it. If you can't run it (missing tool or credentials), say so and mark the task `partial`.
-6. **Measure hardware claims.** Context sizes, VRAM usage, and tokens/s in config must come from measurement on this machine (`hx doctor` / benchmark script), not from guesses.
+6. **Measure hardware claims.** Context sizes, VRAM usage, and tokens/s in config must come from measurement on this machine (`fam doctor` / benchmark script), not from guesses.
 7. **Don't invent APIs.** For the MCP SDKs, rmcp, `@google/genai`, Ollama, and LibreOffice, check the installed package's types or docs before use. If unsure, write a small spike script to confirm behavior.
 8. **Commit small.** One logical change per commit. Conventional Commits (`feat(core): ...`). Never commit secrets, `.env`, or model files.
 9. **Ask when blocked.** If a decision needs the user (OS, API key, model name, destructive step), stop and ask with 2–3 concrete options and a recommendation.
@@ -33,7 +33,7 @@
 
 ### Testing
 - Unit tests for pure logic; integration tests for adapters (mockable), MCP host (against a real fixture server), executor (concurrency and timeouts).
-- Model-dependent tests are tagged `@live` and skipped unless `HX_LIVE=1`. The default test run needs no network or GPU.
+- Model-dependent tests are tagged `@live` and skipped unless `FAM_LIVE=1`. The default test run needs no network or GPU.
 - Each phase adds eval cases to `packages/evals` where applicable.
 - Regression: any bug fix adds a test.
 

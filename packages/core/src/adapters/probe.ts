@@ -3,7 +3,7 @@ import {
   type ModelCaps,
   type ToolDescriptor,
   type ChatRequest,
-} from '@hx/shared';
+} from '@fam/shared';
 
 const TEST_TOOLS: ToolDescriptor[] = [
   {

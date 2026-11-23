@@ -22,10 +22,10 @@ import {
 
 async function main() {
   console.log('================================================================');
-  console.log('                 HX PHASE 3 EXIT GATE DEMO                      ');
+  console.log('                 FAM PHASE 3 EXIT GATE DEMO                      ');
   console.log('================================================================\n');
 
-  const tmpBase = fs.mkdtempSync(path.join(os.tmpdir(), 'hx-gate-p3-'));
+  const tmpBase = fs.mkdtempSync(path.join(os.tmpdir(), 'fam-gate-p3-'));
   const tmpWs = path.join(tmpBase, 'workspace');
   const tmpBackup = path.join(tmpBase, 'backups');
   fs.mkdirSync(tmpWs, { recursive: true });
@@ -305,7 +305,7 @@ async function main() {
         } else if (content.includes('echo')) {
           yield {
             delta: 'echoing',
-            toolCalls: [{ id: `tc_${turn}`, name: 'echo', args: { message: 'hx-eval-echo-verified' } }],
+            toolCalls: [{ id: `tc_${turn}`, name: 'echo', args: { message: 'fam-eval-echo-verified' } }],
           };
         } else if (content.includes('time')) {
           yield {

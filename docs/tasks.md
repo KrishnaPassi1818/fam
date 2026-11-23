@@ -10,9 +10,9 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
   AC: `pnpm ci` passes on a clean checkout.
 - [x] **T0.2** · A · T0.1 · `packages/shared` contracts: Message, ToolCall, ToolResult, ToolDescriptor, ModelAdapter, ChatRequest/Chunk, Config schemas (zod), error classes, logger, token-count util.
   AC: types exported, unit tests for schema parsing, ADR "contracts frozen v1".
-- [x] **T0.3** · D · T0.1 · `hx doctor`: detect OS/shell, Node, Rust, Ollama (version, pulled models), GPU/VRAM via `nvidia-smi`, `soffice`, git, `GEMINI_API_KEY`.
+- [x] **T0.3** · D · T0.1 · `fam doctor`: detect OS/shell, Node, Rust, Ollama (version, pulled models), GPU/VRAM via `nvidia-smi`, `soffice`, git, `GEMINI_API_KEY`.
   AC: prints pass/warn/fail table, JSON output with `--json`. Record the actual report in PROGRESS.md. **Resolve the PRD open questions.**
-- [x] **T0.4** · A · T0.2 · Config loader: `~/.harness/` layout creation, TOML parse and zod validation, defaults from `config/*.toml`, env overrides.
+- [x] **T0.4** · A · T0.2 · Config loader: `~/.fam/` layout creation, TOML parse and zod validation, defaults from `config/*.toml`, env overrides.
   AC: missing files create defaults, invalid files give readable errors.
 - [x] **T0.5** · E · none · **Analyze `docs/reference/prompt.md`**. Read the whole file. Produce `docs/reference/prompt-analysis.md` with (a) estimated total token count, (b) a section inventory table: `# | section title/summary | tokens | KEEP/ADAPT/DROP | reason`, (c) a list of behavioral rules worth keeping grouped by theme (tone, formatting, ambiguity handling, honesty, safety, tool etiquette, injection handling, search/citation, code conventions), (d) a list of vendor-specific items that must be dropped (identity, product features, tool names/syntax, model names, cutoff claims), (e) notes on anything that conflicts with `core.md` rules.
   AC: every section of the file appears in the inventory. No verbatim copy of more than a short phrase.
@@ -34,14 +34,14 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
 - [x] **T1.2** · A · T0.2 · Gemini adapter: `@google/genai`, `systemInstruction`, function calling (single and parallel), usage, 429 backoff plus rate limiter, model name from config.
   AC: mocked tests; `@live` test if a key is present.
 - [x] **T1.3** · A · T1.1, T1.2 · Capability probe: detect and cache per-model caps (tools, parallel, json-format). **Specifically test qwen2.5-coder:7b tool calling and record the result.**
-  AC: results written to `~/.harness/models.toml` and PROGRESS.md.
+  AC: results written to `~/.fam/models.toml` and PROGRESS.md.
 - [x] **T1.4** · A · T0.7, T0.4 · Prompt builder: layers 1–6, model-tier mapping, budget enforcement and drop order, project-file hash approval store, `/system` data.
   AC: tests for ordering, budget trimming, prefix stability across turns (byte-identical stable layers).
 - [x] **T1.5** · A · T1.1, T1.4 · Agent loop v1: message history, sequential tool calls, limits (steps/tokens/time), loop detector, abort; built-in tools `echo`, `current_time`.
   AC: loop tests with a scripted fake adapter covering limit, abort, and repeat detection.
 - [x] **T1.6** · A · T0.2 · Tracer: JSONL writer, redaction, event types per architecture 4.10.
   AC: trace emitted for every loop step. Redaction test.
-- [x] **T1.7** · D · T1.5 · Ratatui Rust TUI: prompt input, streamed markdown output, tool-call lines, status bar, `/help /system /model /clear /exit`, flags `--model --system --append-system --system-file --role`. (Redesigned with Rust Ratatui `crates/hx-tui` and headless IPC bridge).
+- [x] **T1.7** · D · T1.5 · Ratatui Rust TUI: prompt input, streamed markdown output, tool-call lines, status bar, `/help /system /model /clear /exit`, flags `--model --system --append-system --system-file --role`. (Redesigned with Rust Ratatui `crates/fam-tui` and headless IPC bridge).
   AC: manual demo plus snapshot tests for the render components.
 - [x] **T1.8** · A/D · T1.1 · Benchmark script `pnpm bench:models`: for each local model, measure load time, tokens/s, VRAM (nvidia-smi), and max stable `num_ctx` (stepwise 4096→8192→…) without OOM or CPU spill. Write `models.toml`.
   AC: results table in PROGRESS.md, `models.toml` reflects measured values.
@@ -64,7 +64,7 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
   AC: tests for ambiguous match, no match, multi-block, CRLF/LF.
 - [x] **T2.7** · B · T2.4 · `repo_map` via tree-sitter (TS/JS, Python, Rust, Go at minimum), size-bounded output ranked by file importance.
   AC: snapshot test on a fixture repo, output ≤ configured token estimate.
-- [x] **T2.8** · F/D · T2.1 · `hx mcp list|add|remove|test`, first-connect approval UI showing the command and tools.
+- [x] **T2.8** · F/D · T2.1 · `fam mcp list|add|remove|test`, first-connect approval UI showing the command and tools.
   AC: manual demo, unit tests for the config edits.
 - [x] **T2.9** · A · T2.3, T2.5 · Wire registry tools into the loop (all tools presented for now; retrieval comes in P5). Demo: "find all TODOs and summarize by file".
   AC: gate demo passes with llama3.1; record the transcript. Connect one third-party MCP server by config only.
@@ -79,14 +79,14 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
   AC: policy tests, including deny overrides allow.
 - [x] **T3.4** · D · T3.3 · Approval UI: preview (diff/command/path), y/a/n/e keys, grouped parallel approvals, typed confirmation for tier 4.
   AC: component tests plus manual demo.
-- [x] **T3.5** · A · T3.3 · Undo/backup service: pre-write backups in `~/.harness/backups`, `/undo` restores the last change set.
+- [x] **T3.5** · A · T3.3 · Undo/backup service: pre-write backups in `~/.fam/backups`, `/undo` restores the last change set.
   AC: round-trip tests.
 - [x] **T3.6** · A · T1.2 · Privacy gate v1: path globs (`privacy.toml`), secret detectors (regex+entropy), taint propagation from tool results, block/redact/ask, fail-closed.
   AC: test with mock Gemini adapter asserting that no tainted content is ever sent.
-- [x] **T3.7** · A/D · T1.6 · Tracing complete (permission, route, escalate events); `hx replay <run>`; `hx trace stats`.
+- [x] **T3.7** · A/D · T1.6 · Tracing complete (permission, route, escalate events); `fam replay <run>`; `fam trace stats`.
   AC: replay renders a recorded trace.
 - [x] **T3.8** · E · T3.2 · Eval framework scaffold: task format (YAML: prompt, fixtures, checks), runner (per model), report (JSON + markdown), the first 5 tasks.
-  AC: `hx eval` runs and reports.
+  AC: `fam eval` runs and reports.
 
 ## Phase 4: Context manager
 
@@ -129,8 +129,8 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
 - [x] **T6.3** · A · T6.2 · Write path: `remember` tool, dedup/supersede, secret detection, scopes.
 - [x] **T6.4** · A · T6.2 · Read path: scoring, token cap, injection into the dynamic layer, privacy filtering for Gemini.
 - [x] **T6.5** · A · T4.4 · Extraction at session end with a confirm checklist (`memory.confirm_extracted`).
-- [x] **T6.6** · A · T3.2 · Working memory: `todo`, `scratch`, session persistence, `hx resume`, `history_search`.
-- [x] **T6.7** · D · T6.3 · `/memory list|search|forget|export|import`, `hx memory wipe`.
+- [x] **T6.6** · A · T3.2 · Working memory: `todo`, `scratch`, session persistence, `fam resume`, `history_search`.
+- [x] **T6.7** · D · T6.3 · `/memory list|search|forget|export|import`, `fam memory wipe`.
 - [x] **T6.8** · E · T6.4 · Memory eval cases and acceptance tests per memory.md section 9.
   AC (phase): all of memory.md section 9 passes.
 
@@ -179,7 +179,7 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
 - [ ] **T10.1** · C · T0.9 · `web` server: `web_search` (pluggable provider), `fetch_markdown` (readability), `fetch_many` (parallel, rate-limited), PDF fetch. All outputs marked untrusted.
 - [ ] **T10.2** · B/C · T0.9 · `system` server (decide the language in an ADR): clipboard, notify, open_app, sysinfo, screenshot; OS abstraction.
 - [ ] **T10.3** · B/C · T10.2 · Reminders/timers with a persistent scheduler (survives restarts), delivered via notification.
-- [ ] **T10.4** · D · T10.1 · Server presets (`hx mcp preset git|ffmpeg|calendar|email`) with the approval flow.
+- [ ] **T10.4** · D · T10.1 · Server presets (`fam mcp preset git|ffmpeg|calendar|email`) with the approval flow.
 - [ ] **T10.5** · E · T10.3 · Everyday evals (≥ 8).
   AC: gate in plan.md.
 
@@ -188,8 +188,8 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
 - [ ] **T11.1** · E · all · Expand to ≥ 30 evals, a per-model report, baselines, CI regression check.
 - [ ] **T11.2** · E · T11.1 · Injection test pack (web page, doc, MCP description attacks) with pass criteria.
 - [ ] **T11.3** · A · T11.1 · Chaos tests: server crash, Ollama down, Gemini 429/timeouts, disk full, huge outputs.
-- [ ] **T11.4** · A · T9.3 · `hx serve` (the harness as an MCP server).
-- [ ] **T11.5** · D · T11.1 · Installer/config wizard, README, user guide, `hx doctor` fixes.
+- [ ] **T11.4** · A · T9.3 · `fam serve` (the harness as an MCP server).
+- [ ] **T11.5** · D · T11.1 · Installer/config wizard, README, user guide, `fam doctor` fixes.
 - [ ] **T11.6** · E · T11.1 · Final prompt tuning per tier using eval results.
 - [ ] **T11.7** · all · T11.* · Check the PRD success metrics. Document gaps.
 

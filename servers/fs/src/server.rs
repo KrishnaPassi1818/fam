@@ -86,7 +86,7 @@ impl FsServer {
                         }
                     },
                     "serverInfo": {
-                        "name": "hx-fs",
+                        "name": "fam-fs",
                         "version": "0.1.0"
                     }
                 })),

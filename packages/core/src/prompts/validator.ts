@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { estimateTokens } from '@hx/shared';
+import { estimateTokens } from '@fam/shared';
 
 export interface PromptCheckResult {
   file: string;

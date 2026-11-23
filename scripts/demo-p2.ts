@@ -7,20 +7,20 @@ import type { Message } from '../packages/shared/src/index.js';
 
 async function main() {
   console.log('================================================================');
-  console.log('                 HX PHASE 2 EXIT GATE DEMO                      ');
+  console.log('                 FAM PHASE 2 EXIT GATE DEMO                      ');
   console.log('================================================================\n');
 
   const rootDir = process.cwd();
-  const binaryPath = path.resolve(rootDir, 'target/debug/hx-fs');
+  const binaryPath = path.resolve(rootDir, 'target/debug/fam-fs');
   const fixtureScript = path.resolve(rootDir, 'packages/mcp-host/fixtures/fake-mcp-server.ts');
   const tracesDir = path.join(os.homedir(), '.harness', 'traces');
 
   if (!fs.existsSync(binaryPath)) {
-    throw new Error(`Rust fs binary not found at ${binaryPath}. Run cargo build --package hx-fs first.`);
+    throw new Error(`Rust fs binary not found at ${binaryPath}. Run cargo build --package fam-fs first.`);
   }
 
   // STEP 1: Initialize MCP Host with Rust fs server and third-party server through config
-  console.log('[1/4] Starting MCP Host with Rust hx-fs and third-party fixture server...');
+  console.log('[1/4] Starting MCP Host with Rust fam-fs and third-party fixture server...');
   const mcpHost = new McpHost({
     servers: {
       fs: {

@@ -1,5 +1,5 @@
 {
-  "name": "@hx/core",
+  "name": "@fam/core",
   "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@google/genai": "^3.6.1",
-    "@hx/shared": "workspace:*",
+    "@fam/shared": "workspace:*",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
     "smol-toml": "^1.9.1",

@@ -1,5 +1,5 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
-use hx_tui::{
+use fam_tui::{
     app::{App, StatusInfo},
     protocol::{FromTuiMessage, ToTuiMessage},
     ui,
@@ -46,7 +46,7 @@ fn test_messages_rendering_and_streaming() {
     app.apply_backend_message(ToTuiMessage::Message {
         id: "m1".to_string(),
         role: "user".to_string(),
-        content: "How do I build hx?".to_string(),
+        content: "How do I build fam?".to_string(),
         model: None,
     });
     app.apply_backend_message(ToTuiMessage::Chunk {
@@ -58,7 +58,7 @@ fn test_messages_rendering_and_streaming() {
     let view = terminal.backend().to_string();
 
     assert!(
-        view.contains("User > How do I build hx?"),
+        view.contains("User > How do I build fam?"),
         "Expected user message"
     );
     assert!(

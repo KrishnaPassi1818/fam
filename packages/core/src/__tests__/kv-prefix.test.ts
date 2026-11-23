@@ -36,7 +36,7 @@ describe('KV-Cache Prefix Stability Verification (T4.6)', () => {
     expect(turn2.dynamicSuffix).toContain('/workspace/repo-b');
   });
 
-  it.runIf(process.env['HX_LIVE'] === '1')('verifies live Ollama prompt evaluation speed on second turn with stable prefix [@live]', async () => {
+  it.runIf(process.env['FAM_LIVE'] === '1')('verifies live Ollama prompt evaluation speed on second turn with stable prefix [@live]', async () => {
     const adapter = new OllamaAdapter({
       model: 'qwen2.5:1.5b',
       numGpu: 0, // CPU placement

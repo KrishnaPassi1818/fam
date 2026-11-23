@@ -9,7 +9,7 @@ describe('PPTX Presentation Tools (T7.6)', () => {
   let tempDir: string;
 
   beforeEach(() => {
-    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hx_pptx_test_'));
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fam_pptx_test_'));
   });
 
   afterEach(() => {

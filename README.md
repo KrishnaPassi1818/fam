@@ -1,14 +1,14 @@
-# ⚡ hx — Local-First CLI AI Agent Harness
+# ⚡ fam — Local-First CLI AI Agent Harness
 
 <div align="center">
 
 ```
-██╗  ██╗██╗  ██╗
-██║  ██║╚██╗██╔╝
-███████║ ╚███╔╝
-██╔══██║ ██╔██╗
-██║  ██║██╔╝ ██╗
-╚═╝  ╚═╝╚═╝  ╚═╝
+███████╗ █████╗ ███╗   ███╗
+██╔════╝██╔══██╗████╗ ████║
+█████╗  ███████║██╔████╔██║
+██╔══╝  ██╔══██║██║╚██╔╝██║
+██║     ██║  ██║██║ ╚═╝ ██║
+╚═╝     ╚═╝  ╚═╝╚═╝     ╚═╝
 ```
 
 **An extensible, local-first AI agent harness engineered for small models (≤8B) to punch well above their weight.**  
@@ -30,11 +30,11 @@ _Combines local Ollama models and cloud Gemini with native Rust Ratatui TUI, Mod
 
 ## 📖 Overview
 
-**`hx`** is a high-performance CLI AI agent harness designed to run locally on developer hardware (e.g., AMD Ryzen 7 + NVIDIA RTX 4050 6GB VRAM, 24GB RAM). It operates fully offline for daily coding, system operations, document automation, and research tasks using local models via **Ollama**, with zero-friction escalation to **Google Gemini** for long-context planning when desired.
+**`fam`** is a high-performance CLI AI agent harness designed to run locally on developer hardware (e.g., AMD Ryzen 7 + NVIDIA RTX 4050 6GB VRAM, 24GB RAM). It operates fully offline for daily coding, system operations, document automation, and research tasks using local models via **Ollama**, with zero-friction escalation to **Google Gemini** for long-context planning when desired.
 
 ### Core Philosophy
 
-1. **The Harness Matters More Than the Model**: Small local models (7B–8B) fail when asked to do unassisted multi-step reasoning. `hx` provides active context management, tool retrieval, schema repair, automated retries, and strict verification to make ≤8B models perform like frontier models.
+1. **The Harness Matters More Than the Model**: Small local models (7B–8B) fail when asked to do unassisted multi-step reasoning. `fam` provides active context management, tool retrieval, schema repair, automated retries, and strict verification to make ≤8B models perform like frontier models.
 2. **MCP is the Core Boundary**: The agent orchestration core never contains domain tools. All capabilities—filesystem operations, sandboxed shell execution, office document handling, and web search—are isolated **Model Context Protocol (MCP)** servers running as separate processes.
 3. **Small-Context First (4k–8k)**: Every component operates inside tight local context windows using 4-phase context management (large output blob offloading, tool stubbing, rolling turn compaction, and KV prefix stability).
 4. **Safety & Recoverability by Default**: Actions are gated by a 5-tier permission policy. Modifying operations automatically snapshot pre-write backups with one-command `/undo` rollback.
@@ -44,17 +44,17 @@ _Combines local Ollama models and cloud Gemini with native Rust Ratatui TUI, Mod
 
 ## 🏛 Architecture
 
-`hx` separates concerns across a native **Rust Ratatui TUI frontend**, a TypeScript orchestration core, and isolated **Rust & TypeScript MCP servers**:
+`fam` separates concerns across a native **Rust Ratatui TUI frontend**, a TypeScript orchestration core, and isolated **Rust & TypeScript MCP servers**:
 
 ```
-                       ┌──────────────────────────── hx (Node.js / TS) ────────────────────────────┐
+                       ┌──────────────────────────── fam (Node.js / TS) ───────────────────────────┐
 ┌──────────────────┐   │                                                                           │
 │ User / Developer │   │  SessionDriver ──▶ PromptBuilder ──▶ Router ──▶ ModelScheduler            │
 └────────┬─────────┘   │         │               │               │              │                  │
          │             │         ▼               ▼               ▼              ▼                  │
          ▼             │    MemoryService   6-Layer Stack   Rules + 1.5B   GPU/CPU Mutex           │
 ┌──────────────────┐   │   (SQLite+Vector)  (Token-Budget)  (Sub-ms Fast)  (Zero VRAM Spill)       │
-│      hx-tui      │   │         │                                              │                  │
+│     fam-tui      │   │         │                                              │                  │
 │  (Ratatui Rust)  │◀──┼──NDJSON─┴──────────────────────────────────────────────┴───────────────┐ │
 │  Dual-Buffer TUI │   │  IPC                                                                   │ │
 └──────────────────┘   │                                                                        │ │
@@ -73,7 +73,7 @@ _Combines local Ollama models and cloud Gemini with native Rust Ratatui TUI, Mod
                        └─────────────────────────────────────────────────────┼──────────────────┘ │
                                                                 stdio / HTTP │
                      ┌───────────────────┬───────────────────┬───────────────┴───┬───────────────────┐
-                     │   hx-fs (Rust)    │ hx-sandbox (Rust) │    office (TS)    │     web (TS)      │
+                     │   fam-fs (Rust)   │fam-sandbox (Rust) │    office (TS)    │     web (TS)      │
                      │ Confinement, Grep,│ Bubblewrap/Jobs,  │ Word, Excel, PPTX,│ DuckDuckGo/SearXNG│
                      │ AST Map, Trash    │ Scoped Execution  │ SQLite SQL, soffice│ Readability Fetch │
                      └───────────────────┴───────────────────┴───────────────────┴───────────────────┘
@@ -90,7 +90,7 @@ _Combines local Ollama models and cloud Gemini with native Rust Ratatui TUI, Mod
 - **Semantic Embeddings**: `nomic-embed-text` for vector tool retrieval and memory indexing.
 - **Cloud Escalation**: Seamless handoff to **Google Gemini** (Gemini 2.5 Flash / Pro) for large planning DAGs or context > 8k tokens.
 
-### 🖥️ Native Rust Ratatui TUI (`crates/hx-tui`)
+### 🖥️ Native Rust Ratatui TUI (`crates/fam-tui`)
 
 - **Flicker-Free Rendering**: Native Rust terminal UI built with `ratatui 0.30` and `crossterm 0.29`, communicating over a strict NDJSON IPC protocol.
 - **Rich Interactive Elements**: Live token streaming cursor (`▌`), animated spinners (`⠋`), persistent status bar with context meter (`ctx 2.4k/8k`), tokens/s telemetry, and interactive approval modals.
@@ -100,24 +100,24 @@ _Combines local Ollama models and cloud Gemini with native Rust Ratatui TUI, Mod
 - **Zero-Code Extensibility**: Host compliant with the official Model Context Protocol (MCP) standard over `stdio` and streamable `HTTP/SSE`.
 - **Model-Safe Namespacing**: Automatic dot-to-underscore alias translation (`fs.read_file` → `fs_read_file`) ensuring 100% compatibility with 7B/8B small-model grammar constraints.
 - **Out-of-the-Box Servers**:
-  - `hx-fs` (Rust): Confinement-guaranteed filesystem tools, `grep`, `glob`, search/replace fuzzy patcher, and tree-sitter repository map.
-  - `hx-sandbox` (Rust): Secure command and code execution with CPU/memory limits and workspace boundaries.
+  - `fam-fs` (Rust): Confinement-guaranteed filesystem tools, `grep`, `glob`, search/replace fuzzy patcher, and tree-sitter repository map.
+  - `fam-sandbox` (Rust): Secure command and code execution with CPU/memory limits and workspace boundaries.
   - `office` (TypeScript): Full manipulation of `.docx`, `.xlsx`, `.pptx`, and `.pdf` files, in-memory SQL on spreadsheets (`xlsx_query_sql`), and headless LibreOffice (`soffice`) batch conversion.
   - `web` (TypeScript): Web search and Markdown content extraction with readability filtering.
 
 ### 🛡️ 5-Tier Permission Gate & Automatic Undo
 
 - **Tier 0 (Read-Only)**: Automatically approved within workspace root.
-- **Tier 1 (Workspace Writes)**: Pre-write snapshotting to `~/.harness/backups/` and auto-approval with instant `/undo` capability.
+- **Tier 1 (Workspace Writes)**: Pre-write snapshotting to `~/.fam/backups/` and auto-approval with instant `/undo` capability.
 - **Tier 2 (Destructive/External)**: Interactive diff preview modal requiring explicit user confirmation (`y`/`n`).
 - **Tier 3 (Shell & System)**: Command execution previews with shell safety guards.
 - **Tier 4 (Critical/Irreversible)**: Hardened operations requiring typed confirmation (`CONFIRM`).
 
 ### 🧠 Persistent Semantic Memory & Working Memory
 
-- **Hybrid Vector Store**: SQLite-backed semantic memory (`~/.harness/db/memory.sqlite`) with vector similarity search via `sqlite-vec` / cosine fallback.
+- **Hybrid Vector Store**: SQLite-backed semantic memory (`~/.fam/db/memory.sqlite`) with vector similarity search via `sqlite-vec` / cosine fallback.
 - **Smart Lifecycles**: Automatic deduplication, contradiction superseding, and 30-day recency decay.
-- **Working Memory**: Dynamic task checklists (`/todo`), 2KB bounded scratchpads, and session restore (`hx resume`).
+- **Working Memory**: Dynamic task checklists (`/todo`), 2KB bounded scratchpads, and session restore (`fam resume`).
 
 ### 🔒 Fail-Closed Privacy Gate
 
@@ -128,7 +128,7 @@ _Combines local Ollama models and cloud Gemini with native Rust Ratatui TUI, Mod
 
 ## ⚡ Hardware & Benchmarks
 
-`hx` is engineered and continuously benchmarked on consumer laptop hardware:
+`fam` is engineered and continuously benchmarked on consumer laptop hardware:
 
 - **Processor**: AMD Ryzen 7 7435HS (16 vCPUs @ 3.10 GHz, 24 GB DDR5 RAM)
 - **Graphics**: NVIDIA GeForce RTX 4050 Laptop GPU (6 GB VRAM)
@@ -168,8 +168,8 @@ All 25 end-to-end benchmark tasks pass with **100% pass rate** using local model
 
 ```bash
 # Clone the repository
-git clone https://github.com/KrishnaPassi1818/fam.git hx
-cd hx
+git clone https://github.com/KrishnaPassi1818/fam.git
+cd fam
 
 # Install TypeScript dependencies
 pnpm install
@@ -195,12 +195,12 @@ ollama pull qwen2.5:1.5b
 ollama pull nomic-embed-text
 ```
 
-### 3. Verify Environment (`hx doctor`)
+### 3. Verify Environment (`fam doctor`)
 
 Run the built-in diagnostic tool to verify all runtimes, models, and hardware capabilities:
 
 ```bash
-node packages/cli/dist/bin/hx.js doctor
+node packages/cli/dist/bin/fam.js doctor
 ```
 
 _(Optional)_ If you wish to enable Google Gemini cloud escalation, export your API key:
@@ -209,26 +209,26 @@ _(Optional)_ If you wish to enable Google Gemini cloud escalation, export your A
 export GEMINI_API_KEY="your-gemini-api-key"
 ```
 
-### 4. Launch `hx`
+### 4. Launch `fam`
 
 #### Interactive Mode (Ratatui TUI)
 
 ```bash
 # Launch interactive terminal session
-node packages/cli/dist/bin/hx.js
+node packages/cli/dist/bin/fam.js
 
 # Or start directly with a specific role or model
-node packages/cli/dist/bin/hx.js --role coder --model qwen2.5-coder:7b
+node packages/cli/dist/bin/fam.js --role coder --model qwen2.5-coder:7b
 ```
 
 #### One-Shot CLI Mode
 
 ```bash
 # Ask a quick question or request a task
-node packages/cli/dist/bin/hx.js "Analyze this repository and list all TODO comments in a markdown table"
+node packages/cli/dist/bin/fam.js "Analyze this repository and list all TODO comments in a markdown table"
 
 # Perform spreadsheet calculations with in-memory SQL
-node packages/cli/dist/bin/hx.js "What is the total expenditure in monthly_expenses.xlsx grouped by category?"
+node packages/cli/dist/bin/fam.js "What is the total expenditure in monthly_expenses.xlsx grouped by category?"
 ```
 
 ---
@@ -238,7 +238,7 @@ node packages/cli/dist/bin/hx.js "What is the total expenditure in monthly_expen
 ### Command-Line Arguments
 
 ```
-hx [options] [prompt]
+fam [options] [prompt]
 
 Options:
   --model <model>        Force a specific model (e.g. llama3.1:8b, qwen2.5-coder:7b)
@@ -255,20 +255,20 @@ Options:
 
 ### Subcommands
 
-| Command                       | Description                                                                    |
-| :---------------------------- | :----------------------------------------------------------------------------- |
-| `hx doctor [--json]`          | Inspect system environment, hardware, GPU VRAM, models, and dependencies       |
-| `hx mcp list [--json]`        | List registered MCP servers, transport type, and autostart status              |
-| `hx mcp test <name>`          | Connect to an MCP server, query tool definitions, and measure latency          |
-| `hx mcp add <name> [cmd]`     | Register a new MCP server in `~/.harness/servers.toml`                         |
-| `hx mcp remove <name>`        | Unregister an MCP server from configuration                                    |
-| `hx memory list [--project]`  | List all stored semantic memories (or current project only)                    |
-| `hx memory search <query>`    | Perform semantic vector search across long-term memory                         |
-| `hx memory forget <id>`       | Delete a specific memory item by its identifier                                |
-| `hx memory wipe`              | Wipe all stored memories and session records from SQLite                       |
-| `hx eval [--suite] [--model]` | Run automated evaluation suites and generate performance scoreboards           |
-| `hx trace stats <run>`        | Calculate token consumption, latencies, and tool frequencies from JSONL traces |
-| `hx replay <run>`             | Replay a recorded agent execution step-by-step                                 |
+| Command                        | Description                                                                    |
+| :----------------------------- | :----------------------------------------------------------------------------- |
+| `fam doctor [--json]`          | Inspect system environment, hardware, GPU VRAM, models, and dependencies       |
+| `fam mcp list [--json]`        | List registered MCP servers, transport type, and autostart status              |
+| `fam mcp test <name>`          | Connect to an MCP server, query tool definitions, and measure latency          |
+| `fam mcp add <name> [cmd]`     | Register a new MCP server in `~/.fam/servers.toml`                             |
+| `fam mcp remove <name>`        | Unregister an MCP server from configuration                                    |
+| `fam memory list [--project]`  | List all stored semantic memories (or current project only)                    |
+| `fam memory search <query>`    | Perform semantic vector search across long-term memory                         |
+| `fam memory forget <id>`       | Delete a specific memory item by its identifier                                |
+| `fam memory wipe`              | Wipe all stored memories and session records from SQLite                       |
+| `fam eval [--suite] [--model]` | Run automated evaluation suites and generate performance scoreboards           |
+| `fam trace stats <run>`        | Calculate token consumption, latencies, and tool frequencies from JSONL traces |
+| `fam replay <run>`             | Replay a recorded agent execution step-by-step                                 |
 
 ### Interactive TUI Slash Commands
 
@@ -290,11 +290,11 @@ While in the interactive Ratatui TUI, control the agent session using slash comm
 ## 📂 Repository Layout
 
 ```
-harness/
+fam/
 ├── Cargo.toml                  # Cargo workspace configuration
 ├── package.json                # pnpm monorepo workspace configuration
 ├── crates/
-│   └── hx-tui/                 # Native Rust Ratatui + Crossterm TUI frontend
+│   └── fam-tui/                # Native Rust Ratatui + Crossterm TUI frontend
 ├── packages/
 │   ├── shared/                 # Core schemas, Zod types, logger, error taxonomy
 │   ├── core/                   # Agent loop, model adapters, context manager, memory
@@ -335,7 +335,7 @@ For in-depth technical documentation, refer to the guides in the [`docs/`](docs/
 
 ### Running the Test Suite
 
-`hx` includes comprehensive unit, integration, and end-to-end tests across both TypeScript and Rust:
+`fam` includes comprehensive unit, integration, and end-to-end tests across both TypeScript and Rust:
 
 ```bash
 # Run all TypeScript tests via Vitest

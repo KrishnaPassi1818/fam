@@ -202,7 +202,7 @@ describe('Phase 6: Memory System (T6.1–T6.8)', () => {
     });
 
     it('persists and restores sessions via SessionPersistence', () => {
-      const tempDir = path.join(os.tmpdir(), `hx-sess-test-${Date.now()}`);
+      const tempDir = path.join(os.tmpdir(), `fam-sess-test-${Date.now()}`);
       const persistence = new SessionPersistence(tempDir);
 
       const sessionData = {

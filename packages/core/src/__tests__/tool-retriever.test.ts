@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import type { ToolDescriptor } from '@hx/shared';
+import type { ToolDescriptor } from '@fam/shared';
 import { ToolRetriever } from '../tools/retriever.js';
 import { EmbeddingService } from '../tools/embedding.js';
 import { handleFindTools } from '../tools/meta/find-tools.js';

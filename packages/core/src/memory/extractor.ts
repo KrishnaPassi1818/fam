@@ -1,4 +1,4 @@
-import type { Message } from '@hx/shared';
+import type { Message } from '@fam/shared';
 import type { ExtractedCandidate } from './types.js';
 import { detectPrivacyFastPath } from '../router/rules.js';
 

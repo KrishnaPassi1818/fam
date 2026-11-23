@@ -11,7 +11,7 @@ describe('Office Safety Layer (T7.1)', () => {
   let tempDir: string;
 
   beforeEach(() => {
-    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hx_safety_test_'));
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fam_safety_test_'));
   });
 
   afterEach(() => {

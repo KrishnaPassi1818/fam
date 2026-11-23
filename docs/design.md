@@ -6,20 +6,20 @@ Covers UX, prompt system, tool design, and per-subsystem behavior. Architecture 
 
 ### Commands
 ```
-hx                         interactive session (default role: assistant)
-hx "do X"                  one-shot
-hx --role coder            role selection
-hx --model llama3.1:8b     force a model (disables routing)
-hx --system "..."          replace role layer
-hx --append-system "..."   append to the prompt
-hx --system-file f.md
-hx --local-only            never use Gemini
-hx resume [session]
-hx replay <run>            hx trace stats
-hx eval [--suite] [--model]
-hx mcp list|add|remove|test
-hx doctor                  environment check (Ollama, models, VRAM, soffice, git, API key)
-hx serve                   expose harness as an MCP server (P3)
+fam                         interactive session (default role: assistant)
+fam "do X"                  one-shot
+fam --role coder            role selection
+fam --model llama3.1:8b     force a model (disables routing)
+fam --system "..."          replace role layer
+fam --append-system "..."   append to the prompt
+fam --system-file f.md
+fam --local-only            never use Gemini
+fam resume [session]
+fam replay <run>            fam trace stats
+fam eval [--suite] [--model]
+fam mcp list|add|remove|test
+fam doctor                  environment check (Ollama, models, VRAM, soffice, git, API key)
+fam serve                   expose harness as an MCP server (P3)
 ```
 ### Slash commands
 `/help /system [edit] /role <r> /model <m> /models /tools [search] /mcp /memory [list|forget|add] /todo /context /compact /undo /diff /approve-all (session only, tier ≤2) /local /cloud /trace /clear /exit`
@@ -37,7 +37,7 @@ hx serve                   expose harness as an MCP server (P3)
 1. `core.md`: non-removable harness rules (tool protocol, untrusted-data rule, safety).
 2. Model profile: `prompts/profiles/<family>.md`
 3. Role: `prompts/roles/<role>.<tier>.md` (tier = `full` | `medium` | `min`)
-4. User global: `~/.harness/SYSTEM.md`
+4. User global: `~/.fam/SYSTEM.md`
 5. Project: `HARNESS.md` or `AGENTS.md` in the cwd. **Requires first-use approval (hash stored)**; cannot override layer 1.
 6. Dynamic (last): date/time, OS, cwd, git branch, retrieved memories, active tool hints.
 

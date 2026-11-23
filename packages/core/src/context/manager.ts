@@ -1,4 +1,4 @@
-import type { Message, ToolDescriptor, ModelAdapter } from '@hx/shared';
+import type { Message, ToolDescriptor, ModelAdapter } from '@fam/shared';
 import { ContextBudgeter, type ModelBudgetAllocation, type ContextAccounting } from './budget.js';
 import { BlobStore } from './blobs.js';
 import { ToolResultStubber } from './stubbing.js';

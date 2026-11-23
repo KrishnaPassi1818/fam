@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { PrivacyGate } from '../privacy/index.js';
 import { GeminiAdapter } from '../adapters/gemini.js';
-import { PrivacyBlocked, type Message } from '@hx/shared';
+import { PrivacyBlocked, type Message } from '@fam/shared';
 
 describe('PrivacyGate (T3.6)', () => {
   it('detects local-only paths via path globs', () => {

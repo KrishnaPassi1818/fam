@@ -11,7 +11,7 @@ export interface OfficeBackupResult {
 }
 
 /**
- * Creates a pre-write backup of an existing office file in ~/.harness/backups/office/
+ * Creates a pre-write backup of an existing office file in ~/.fam/backups/office/
  */
 export async function createPreWriteBackup(
   filePath: string,
@@ -26,7 +26,7 @@ export async function createPreWriteBackup(
     return null;
   }
 
-  const dir = backupDir || path.join(os.homedir(), '.harness', 'backups', 'office');
+  const dir = backupDir || path.join(os.homedir(), '.fam', 'backups', 'office');
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }

@@ -15,7 +15,7 @@ describe('XLSX Write Tools (T7.4)', () => {
   let xlsxPath: string;
 
   beforeEach(async () => {
-    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hx_xlsx_write_test_'));
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fam_xlsx_write_test_'));
     const csvPath = path.join(tempDir, 'init.csv');
     fs.writeFileSync(csvPath, 'Item,Price,Qty\nApple,1.5,10\nBanana,0.8,20\n', 'utf-8');
     xlsxPath = path.join(tempDir, 'groceries.xlsx');

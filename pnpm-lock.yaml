@@ -196,16 +196,16 @@ importers:
 
   packages/cli:
     dependencies:
-      '@hx/core':
+      '@fam/core':
         specifier: workspace:*
         version: link:../core
-      '@hx/evals':
+      '@fam/evals':
         specifier: workspace:*
         version: link:../evals
-      '@hx/mcp-host':
+      '@fam/mcp-host':
         specifier: workspace:*
         version: link:../mcp-host
-      '@hx/shared':
+      '@fam/shared':
         specifier: workspace:*
         version: link:../shared
       commander:
@@ -227,12 +227,12 @@ importers:
 
   packages/core:
     dependencies:
+      '@fam/shared':
+        specifier: workspace:*
+        version: link:../shared
       '@google/genai':
         specifier: ^3.6.1
         version: 3.6.1(@modelcontextprotocol/sdk@1.32.2(supports-color@7.2.0)(zod@3.25.76))(supports-color@7.2.0)
-      '@hx/shared':
-        specifier: workspace:*
-        version: link:../shared
       ajv:
         specifier: ^8.20.0
         version: 8.20.0
@@ -258,17 +258,17 @@ importers:
 
   packages/evals:
     dependencies:
-      '@hx/core':
+      '@fam/core':
         specifier: workspace:*
         version: link:../core
-      '@hx/shared':
+      '@fam/shared':
         specifier: workspace:*
         version: link:../shared
       yaml:
         specifier: ^2.9.1
         version: 2.9.1
     devDependencies:
-      '@hx/office':
+      '@fam/office':
         specifier: workspace:*
         version: link:../../servers/office
       '@types/node':
@@ -283,7 +283,7 @@ importers:
 
   packages/mcp-host:
     dependencies:
-      '@hx/shared':
+      '@fam/shared':
         specifier: workspace:*
         version: link:../shared
       '@modelcontextprotocol/sdk':
@@ -318,7 +318,7 @@ importers:
 
   servers/office:
     dependencies:
-      '@hx/shared':
+      '@fam/shared':
         specifier: workspace:*
         version: link:../../packages/shared
       '@modelcontextprotocol/sdk':
@@ -349,7 +349,7 @@ importers:
         specifier: ^3.24.1
         version: 3.25.76
     devDependencies:
-      '@hx/mcp-host':
+      '@fam/mcp-host':
         specifier: workspace:*
         version: link:../../packages/mcp-host
       '@types/node':
@@ -364,7 +364,7 @@ importers:
 
   servers/web:
     dependencies:
-      '@hx/shared':
+      '@fam/shared':
         specifier: workspace:*
         version: link:../../packages/shared
       '@modelcontextprotocol/sdk':
@@ -374,7 +374,7 @@ importers:
         specifier: ^3.24.1
         version: 3.25.76
     devDependencies:
-      '@hx/mcp-host':
+      '@fam/mcp-host':
         specifier: workspace:*
         version: link:../../packages/mcp-host
       '@types/node':

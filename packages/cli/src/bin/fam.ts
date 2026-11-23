@@ -1,19 +1,19 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import { Command } from 'commander';
-import { VERSION } from '@hx/shared';
-import { loadConfig, Tracer, MemoryService, AgentLoop, PermissionGate } from '@hx/core';
-import { McpHost } from '@hx/mcp-host';
+import { VERSION } from '@fam/shared';
+import { loadConfig, Tracer, MemoryService, AgentLoop, PermissionGate } from '@fam/core';
+import { McpHost } from '@fam/mcp-host';
 import { runDoctor, formatDoctorTable } from '../doctor/index.js';
 import { listServers, testServer, saveServerConfig, removeServerConfig } from '../mcp/index.js';
-import { loadAllTasks, EvalRunner, saveEvalReport, formatMarkdownReport } from '@hx/evals';
+import { loadAllTasks, EvalRunner, saveEvalReport, formatMarkdownReport } from '@fam/evals';
 import { createAdapter, launchRatatuiTui, runHeadlessBridge } from '../ui/index.js';
 
 const program = new Command();
 
 program
-  .name('hx')
-  .description('hx: local-first CLI AI agent harness')
+  .name('fam')
+  .description('fam: local-first CLI AI agent harness')
   .version(VERSION);
 
 program
@@ -42,7 +42,7 @@ program
     try {
       const traceFile = Tracer.findTraceFile(run);
       if (!traceFile) {
-        process.stderr.write(`Error: Trace run '${run}' not found in ~/.harness/traces/\n`);
+        process.stderr.write(`Error: Trace run '${run}' not found in ~/.fam/traces/\n`);
         process.exit(1);
       }
       const events = await Tracer.readTrace(traceFile);
@@ -66,7 +66,7 @@ traceCmd
     try {
       const traceFile = Tracer.findTraceFile(run);
       if (!traceFile) {
-        process.stderr.write(`Error: Trace run '${run}' not found in ~/.harness/traces/\n`);
+        process.stderr.write(`Error: Trace run '${run}' not found in ~/.fam/traces/\n`);
         process.exit(1);
       }
 
@@ -218,7 +218,7 @@ mcpCmd
         autoStart: options.autoStart,
         enabled: true,
       });
-      process.stdout.write(`Added MCP server '${name}' to ~/.harness/servers.toml\n`);
+      process.stdout.write(`Added MCP server '${name}' to ~/.fam/servers.toml\n`);
     } catch (err) {
       process.stderr.write(`Failed to add MCP server: ${err}\n`);
       process.exit(1);
@@ -232,9 +232,9 @@ mcpCmd
     try {
       const removed = removeServerConfig(name);
       if (removed) {
-        process.stdout.write(`Removed MCP server '${name}' from ~/.harness/servers.toml\n`);
+        process.stdout.write(`Removed MCP server '${name}' from ~/.fam/servers.toml\n`);
       } else {
-        process.stdout.write(`Server '${name}' not found in ~/.harness/servers.toml\n`);
+        process.stdout.write(`Server '${name}' not found in ~/.fam/servers.toml\n`);
       }
     } catch (err) {
       process.stderr.write(`Failed to remove MCP server: ${err}\n`);
@@ -306,7 +306,7 @@ memoryCmd
 
 memoryCmd
   .command('wipe')
-  .description('Wipe all stored memories and sessions from ~/.harness/db/memory.sqlite')
+  .description('Wipe all stored memories and sessions from ~/.fam/db/memory.sqlite')
   .action(() => {
     try {
       const memService = new MemoryService();
@@ -327,7 +327,7 @@ program
   .option('--system-file <path>', 'Read system prompt override from file')
   .option('--local-only', 'Never use Gemini API or external network models', false)
   .option('-y, --yes', 'Automatically approve all tool execution permissions', false)
-  .option('--headless', 'Run harness in headless IPC bridge mode for TUI', false)
+  .option('--headless', 'Run fam in headless IPC bridge mode for TUI', false)
   .action(async (promptArg: string | undefined, options: {
     model?: string;
     role?: 'assistant' | 'coder' | 'router';

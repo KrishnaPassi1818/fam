@@ -1,7 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
-import { redactSecrets } from '@hx/shared';
+import { redactSecrets } from '@fam/shared';
 
 export type TraceEventType =
   | 'session_start'
@@ -62,8 +62,9 @@ export class Tracer {
 
     const baseDir =
       options.traceDir ||
+      process.env['FAM_TRACES_DIR'] ||
       process.env['HX_TRACES_DIR'] ||
-      path.join(os.homedir(), '.harness', 'traces');
+      path.join(os.homedir(), '.fam', 'traces');
 
     this.traceDir = path.join(baseDir, this.sessionId);
     this.filePath = path.join(this.traceDir, `${this.runId}.jsonl`);
@@ -116,8 +117,9 @@ export class Tracer {
     }
     const root =
       baseDir ||
+      process.env['FAM_TRACES_DIR'] ||
       process.env['HX_TRACES_DIR'] ||
-      path.join(os.homedir(), '.harness', 'traces');
+      path.join(os.homedir(), '.fam', 'traces');
 
     if (!fs.existsSync(root)) return null;
 

@@ -1,4 +1,4 @@
-import type { ToolDescriptor } from '@hx/shared';
+import type { ToolDescriptor } from '@fam/shared';
 
 export const LABELED_ROUTING_PROMPTS = [
   // Coding (15 prompts)

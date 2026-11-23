@@ -9,8 +9,8 @@ describe('Config Loader', () => {
   let tmpConfigDir: string;
 
   beforeEach(() => {
-    tmpDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hx-data-test-'));
-    tmpConfigDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hx-config-test-'));
+    tmpDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fam-data-test-'));
+    tmpConfigDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fam-config-test-'));
   });
 
   afterEach(() => {
@@ -53,8 +53,8 @@ describe('Config Loader', () => {
       configDir: tmpConfigDir,
       dataDir: tmpDataDir,
       env: {
-        HX_DEFAULT_MODEL: 'gemini:gemini-2.5-pro',
-        HX_LOG_LEVEL: 'debug',
+        FAM_DEFAULT_MODEL: 'gemini:gemini-2.5-pro',
+        FAM_LOG_LEVEL: 'debug',
       },
     });
 

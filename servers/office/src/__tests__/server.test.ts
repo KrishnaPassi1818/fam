@@ -2,7 +2,7 @@ import * as path from 'node:path';
 import * as fs from 'node:fs';
 import * as os from 'node:os';
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { McpHost } from '@hx/mcp-host';
+import { McpHost } from '@fam/mcp-host';
 
 describe('Office MCP Server Protocol Integration (T7.8)', () => {
   let host: McpHost | null = null;
@@ -10,7 +10,7 @@ describe('Office MCP Server Protocol Integration (T7.8)', () => {
   const officeEntry = path.resolve(__dirname, '../../dist/index.js');
 
   beforeEach(() => {
-    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hx_office_mcp_test_'));
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fam_office_mcp_test_'));
   });
 
   afterEach(async () => {

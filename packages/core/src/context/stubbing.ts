@@ -1,4 +1,4 @@
-import type { Message } from '@hx/shared';
+import type { Message } from '@fam/shared';
 
 export interface StubbingOptions {
   recentToKeep?: number;

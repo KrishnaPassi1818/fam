@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { GeminiAdapter, GeminiRateLimiter } from '../adapters/gemini.js';
-import type { ChatRequest, Message } from '@hx/shared';
+import type { ChatRequest, Message } from '@fam/shared';
 
 describe('GeminiAdapter', () => {
   it('instantiates with proper capabilities and model ID', () => {

@@ -1,4 +1,4 @@
-Continue building "hx". Follow docs/rules.md section 1 exactly.
+Continue building "fam". Follow docs/rules.md section 1 exactly.
 1. Read rules.md, the current phase in plan.md, tasks.md, and the last 5 entries of docs/PROGRESS.md.
 2. Take the next unblocked task(s) in the lane I assign: <LANE>. (If none is assigned, choose the next unblocked task in task-ID order.)
 3. Implement, test, and verify with real command output. Update tasks.md and PROGRESS.md, then commit.

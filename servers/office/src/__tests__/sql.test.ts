@@ -10,7 +10,7 @@ describe('xlsx_query_sql (T7.3)', () => {
   let xlsxPath: string;
 
   beforeEach(async () => {
-    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'hx_sql_test_'));
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fam_sql_test_'));
     const csvPath = path.join(tempDir, 'sales.csv');
     fs.writeFileSync(
       csvPath,

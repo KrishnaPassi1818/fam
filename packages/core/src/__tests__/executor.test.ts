@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { ToolExecutor } from '../tools/executor.js';
 import { PermissionGate } from '../tools/permission.js';
-import type { ToolCall, ToolDescriptor } from '@hx/shared';
+import type { ToolCall, ToolDescriptor } from '@fam/shared';
 
 describe('ToolExecutor and PermissionGate (T3.2, T3.3)', () => {
   it('executes read-only tools concurrently (measured timing)', async () => {

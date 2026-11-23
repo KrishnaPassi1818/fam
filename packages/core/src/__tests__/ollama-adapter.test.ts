@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { OllamaAdapter } from '../adapters/ollama.js';
-import type { ChatRequest, Message } from '@hx/shared';
+import type { ChatRequest, Message } from '@fam/shared';
 
 describe('OllamaAdapter', () => {
   it('instantiates with expected default caps and properties', () => {
@@ -139,8 +139,8 @@ describe('OllamaAdapter', () => {
     vi.restoreAllMocks();
   });
 
-  // Real live test against local Ollama if HX_LIVE=1 or service active
-  it.runIf(process.env['HX_LIVE'] === '1')('connects to real Ollama and streams response [@live]', async () => {
+  // Real live test against local Ollama if FAM_LIVE=1 or service active
+  it.runIf(process.env['FAM_LIVE'] === '1')('connects to real Ollama and streams response [@live]', async () => {
     const adapter = new OllamaAdapter({ model: 'qwen2.5:1.5b' });
     const msgs: Message[] = [{ role: 'user', content: 'Reply with the single word: "PONG"' }];
 

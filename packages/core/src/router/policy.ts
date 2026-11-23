@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { parse } from 'smol-toml';
-import { PrivacyBlocked, type RoutingConfig, type RoutingRule } from '@hx/shared';
+import { PrivacyBlocked, type RoutingConfig, type RoutingRule } from '@fam/shared';
 import type { FastPathDecision } from './rules.js';
 import { resolvePath } from '../config/index.js';
 
@@ -67,8 +67,8 @@ export class RoutingPolicy {
   }
 
   private loadDefault(): RoutingConfig {
-    // Try ~/.harness/routing.toml then bundled config/routing.toml
-    const userPath = resolvePath('~/.harness/routing.toml');
+    // Try ~/.fam/routing.toml then bundled config/routing.toml
+    const userPath = resolvePath('~/.fam/routing.toml');
     if (fs.existsSync(userPath)) {
       return this.loadFromFile(userPath);
     }

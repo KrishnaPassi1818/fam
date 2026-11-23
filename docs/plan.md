@@ -21,16 +21,16 @@ Lanes interact only through the contracts in `packages/shared` and MCP schemas. 
 **Goal**: repo skeleton, toolchain, frozen contracts, environment facts, and distilled prompts.
 - Monorepo (pnpm + cargo), lint/format/test/CI scripts.
 - `packages/shared`: Message/ToolCall/ToolDescriptor/ModelAdapter/Config types (zod).
-- `hx doctor` skeleton: detect OS, Ollama, pulled models, GPU/VRAM (`nvidia-smi`), soffice, git, API key.
+- `fam doctor` skeleton: detect OS, Ollama, pulled models, GPU/VRAM (`nvidia-smi`), soffice, git, API key.
 - **Prompt analysis (lane E)**: analyze `docs/reference/prompt.md`, then produce the tiered prompts.
-- **Exit gate**: `pnpm build && pnpm test && cargo build` pass. `hx doctor` prints a full environment report, which is recorded in PROGRESS.md. `prompt-analysis.md` and the 5 prompt files exist within token budgets.
+- **Exit gate**: `pnpm build && pnpm test && cargo build` pass. `fam doctor` prints a full environment report, which is recorded in PROGRESS.md. `prompt-analysis.md` and the 5 prompt files exist within token budgets.
 
 ### Phase 1: Adapters, loop, CLI MVP (vertical slice)
 **Goal**: chat with any of the 4 models in the terminal with streaming, one built-in echo/time tool, and traces.
 - Ollama and Gemini adapters, capability probing, token counting calibration.
 - Prompt builder (layers, budgets, `/system`).
 - Agent loop with limits and loop detection (single tool calls).
-- Ratatui Rust TUI: native frontend (`crates/hx-tui`), IPC bridge, streaming, status bar, slash basics.
+- Ratatui Rust TUI: native frontend (`crates/fam-tui`), IPC bridge, streaming, status bar, slash basics.
 - Tracer (JSONL).
 - Benchmark script: measure VRAM, tokens/s, max stable `num_ctx` for each model, then write `models.toml`.
 - Probe: does qwen2.5-coder:7b support Ollama native tool calls? Record the result and set `caps.tools`.
@@ -40,7 +40,7 @@ Lanes interact only through the contracts in `packages/shared` and MCP schemas. 
 **Goal**: real tools via MCP.
 - MCP host (stdio, then streamable HTTP), registry bridge, namespacing, aliasing, `list_changed`, lazy start, reconnect.
 - Rust `fs` server with all tools in architecture 4.11 (repo_map via tree-sitter for TS/JS/Py/Rust/Go at minimum).
-- `hx mcp list/add/test`. First-connect approval for third-party servers.
+- `fam mcp list/add/test`. First-connect approval for third-party servers.
 - **Exit gate**: agent can "find all TODOs in this repo and summarize by file" using `fs` over MCP with llama3.1. A third-party MCP server (e.g. the reference filesystem or fetch server) connects through config alone.
 
 ### Phase 3: Executor, permissions, approvals
@@ -48,7 +48,7 @@ Lanes interact only through the contracts in `packages/shared` and MCP schemas. 
 - Validator/repair (ajv), parallel scheduler (read-only concurrency, write serialization, path conflicts), timeouts, partial failures.
 - Permission tiers, policy file, approval modal, session "always" grants, dry-run previews, undo (backups).
 - Privacy gate v1 (path globs and secret detectors).
-- Tracing completed (permission/route events). `hx replay`.
+- Tracing completed (permission/route events). `fam replay`.
 - **Exit gate**: concurrency tests prove reads run in parallel and writes serialize. A malformed call is repaired in ≤ 2 rounds in a recorded test. A tier-2 action blocks until approved. Secret in a file never reaches the Gemini adapter (test with a mock).
 
 ### Phase 4: Context manager
@@ -66,7 +66,7 @@ Lanes interact only through the contracts in `packages/shared` and MCP schemas. 
 
 ### Phase 6: Memory
 **Goal**: implement memory.md part A.
-- SQLite schema, embeddings, write/read paths, dedup/supersede, extraction at session end, working-memory tools (todo/scratch), session persistence and `hx resume`, `/memory`.
+- SQLite schema, embeddings, write/read paths, dedup/supersede, extraction at session end, working-memory tools (todo/scratch), session persistence and `fam resume`, `/memory`.
 - **Exit gate**: the memory acceptance tests in memory.md section 9 pass.
 
 ### Phase 7: Office server
@@ -98,7 +98,7 @@ Lanes interact only through the contracts in `packages/shared` and MCP schemas. 
 ### Phase 11: Evals, hardening, packaging
 - Full eval suite (≥ 30 tasks across coding/office/web/system/memory/privacy), per-model report, regression baselines.
 - Fuzz tool-arg validation, injection test pack (malicious web page/doc/MCP description), chaos tests (server crash, Ollama down, rate-limit).
-- `hx serve` (harness as an MCP server), packaging (single install script, config wizard), user docs/README, prompt tuning pass per tier.
+- `fam serve` (harness as an MCP server), packaging (single install script, config wizard), user docs/README, prompt tuning pass per tier.
 - **Exit gate**: the PRD success metrics section 7 are met or gaps documented with a plan.
 
 ## 4. Dependency graph

@@ -65,7 +65,7 @@ update last_used_at/use_count
 - Keep a link to the full transcript on disk. A `history_search(query)` tool can fetch older details.
 
 ## 8. User controls
-`/memory list|search|forget <id>|export|import`, `hx memory wipe`. Everything is local files. Nothing leaves the machine except content the privacy gate allows in prompts.
+`/memory list|search|forget <id>|export|import`, `fam memory wipe`. Everything is local files. Nothing leaves the machine except content the privacy gate allows in prompts.
 
 ## 9. Acceptance tests
 - Preference stated in session 1 is applied in session 2 (eval case).

@@ -1,4 +1,4 @@
-import type { ToolDescriptor } from '@hx/shared';
+import type { ToolDescriptor } from '@fam/shared';
 import type { ToolRetriever } from '../retriever.js';
 import type { Intent } from '../../router/types.js';
 

@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import * as fs from 'node:fs';
 import { loadAllTasks, EvalRunner, type TaskDefinition } from '../index.js';
-import type { ModelAdapter, ChatChunk, ToolDescriptor } from '@hx/shared';
-import type { ToolExecutionHandler } from '@hx/core';
+import type { ModelAdapter, ChatChunk, ToolDescriptor } from '@fam/shared';
+import type { ToolExecutionHandler } from '@fam/core';
 
 import {
   docx_read,
@@ -26,7 +26,7 @@ import {
   recalc,
   render_preview,
   uno_script,
-} from '@hx/office';
+} from '@fam/office';
 
 describe('Office Evaluation Suite (T7.9)', () => {
   const allTasks = loadAllTasks();

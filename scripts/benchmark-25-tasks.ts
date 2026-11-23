@@ -15,8 +15,8 @@ interface TaskResult {
 }
 
 const ROOT_DIR = process.cwd();
-const CLI_PATH = path.join(ROOT_DIR, 'packages/cli/dist/bin/hx.js');
-const TEST_WORKSPACE = path.join(ROOT_DIR, 'hx-benchmark-workspace');
+const CLI_PATH = path.join(ROOT_DIR, 'packages/cli/dist/bin/fam.js');
+const TEST_WORKSPACE = path.join(ROOT_DIR, 'fam-benchmark-workspace');
 
 const mathLibBuggy = `def add(a, b):
     return a + b
@@ -39,7 +39,7 @@ if __name__ == '__main__':
     unittest.main()
 `;
 
-function runHx(
+function runFam(
   prompt: string,
   options: {
     cwd?: string;
@@ -144,7 +144,7 @@ async function setupBenchmarkEnvironment() {
 
 async function main() {
   console.log('================================================================');
-  console.log('HX HARNESS — 25 BENCHMARK TASKS VERIFICATION SUITE');
+  console.log('FAM HARNESS — 25 BENCHMARK TASKS VERIFICATION SUITE');
   console.log('Categories: General, Filesystem, Coding, Office, Research & Memory');
   console.log('================================================================\n');
 
@@ -160,7 +160,7 @@ async function main() {
 
   // Task 01: General Conversation and Planning
   console.log('  Running Task 01 — General Conversation and Planning...');
-  const t1 = runHx(
+  const t1 = runFam(
     "I'm planning to learn backend development over the next 30 days. I already know basic Java and SQL. Create a realistic learning roadmap with weekly goals, daily study topics and practical exercises. Keep it achievable for someone who can study 3 hours per day.",
   );
   const t1Pass =
@@ -183,7 +183,7 @@ async function main() {
 
   // Task 02: Mathematical Reasoning
   console.log('  Running Task 02 — Mathematical Reasoning...');
-  const t2 = runHx(
+  const t2 = runFam(
     'I purchased 5 items for ₹250, ₹450, ₹120, ₹800 and ₹380. Calculate the total, average price and the amount I would save if I received a 12% discount on the total. Explain the calculation.',
   );
   const t2Pass =
@@ -206,7 +206,7 @@ async function main() {
 
   // Task 03: Information Organization
   console.log('  Running Task 03 — Information Organization...');
-  const t3 = runHx(
+  const t3 = runFam(
     'Organize the following into categories and identify duplicates:\nBuy groceries, complete Java assignment, purchase groceries, call Rahul, revise DBMS, submit Java assignment, pay electricity bill, revise DBMS, book train tickets.',
   );
   const t3Pass =
@@ -225,7 +225,7 @@ async function main() {
 
   // Task 04: Multi-step Reasoning
   console.log('  Running Task 04 — Multi-step Reasoning...');
-  const t4 = runHx(
+  const t4 = runFam(
     'I have ₹5,000 for the next 30 days. My fixed expenses are ₹1,200, transportation is ₹800 and I want to save at least ₹1,000. Calculate my remaining daily spending budget and suggest how I should manage it.',
   );
   const t4Pass =
@@ -252,7 +252,7 @@ async function main() {
 
   // Task 05: Directory Exploration
   console.log('  Running Task 05 — Directory Exploration...');
-  const t5 = runHx(
+  const t5 = runFam(
     "Explore my current project directory. Show me the folder structure, identify the programming languages and frameworks being used, locate configuration files and give me a brief explanation of the project architecture. Don't modify anything.",
     { cwd: ROOT_DIR },
   );
@@ -271,14 +271,14 @@ async function main() {
 
   // Task 06: File Creation
   console.log('  Running Task 06 — File Creation...');
-  const t6 = runHx(
-    'Create a folder named hx-test inside my workspace. Inside it, create three files: README.md, notes.txt and config.json. Add appropriate sample content to each file and show me the final directory structure.',
+  const t6 = runFam(
+    'Create a folder named fam-test inside my workspace. Inside it, create three files: README.md, notes.txt and config.json. Add appropriate sample content to each file and show me the final directory structure.',
     { cwd: TEST_WORKSPACE },
   );
-  const hxTestDir = path.join(TEST_WORKSPACE, 'hx-test');
-  const readmePath = path.join(hxTestDir, 'README.md');
-  const notesPath = path.join(hxTestDir, 'notes.txt');
-  const configPath = path.join(hxTestDir, 'config.json');
+  const famTestDir = path.join(TEST_WORKSPACE, 'fam-test');
+  const readmePath = path.join(famTestDir, 'README.md');
+  const notesPath = path.join(famTestDir, 'notes.txt');
+  const configPath = path.join(famTestDir, 'config.json');
 
   let validJson = false;
   if (fs.existsSync(configPath)) {
@@ -292,7 +292,7 @@ async function main() {
     }
   }
 
-  const t6Pass = fs.existsSync(hxTestDir) && fs.existsSync(readmePath) && fs.existsSync(notesPath);
+  const t6Pass = fs.existsSync(famTestDir) && fs.existsSync(readmePath) && fs.existsSync(notesPath);
   results.push({
     id: 'Task 06',
     name: 'File Creation',
@@ -305,7 +305,7 @@ async function main() {
 
   // Task 07: File Search
   console.log('  Running Task 07 — File Search...');
-  const t7 = runHx(
+  const t7 = runFam(
     'Search my project for all TODO and FIXME comments. Group the results by filename, include line numbers and summarize which issues appear most important.',
     { cwd: ROOT_DIR },
   );
@@ -326,11 +326,11 @@ async function main() {
   // Task 08: File Modification
   console.log('  Running Task 08 — File Modification...');
   if (!fs.existsSync(readmePath)) {
-    fs.mkdirSync(hxTestDir, { recursive: true });
+    fs.mkdirSync(famTestDir, { recursive: true });
     fs.writeFileSync(readmePath, '# Test Project\n\nInitial documentation content.\n', 'utf-8');
   }
-  const t8 = runHx(
-    'Open the README.md file in my hx-test directory. Add a section titled "Development Setup" containing instructions for installing Node.js dependencies and running tests. Preserve all existing content.',
+  const t8 = runFam(
+    'Open the README.md file in my fam-test directory. Add a section titled "Development Setup" containing instructions for installing Node.js dependencies and running tests. Preserve all existing content.',
     { cwd: TEST_WORKSPACE },
   );
   const updatedReadme = fs.existsSync(readmePath) ? fs.readFileSync(readmePath, 'utf-8') : '';
@@ -354,7 +354,7 @@ async function main() {
 
   // Task 09: Duplicate Detection
   console.log('  Running Task 09 — Duplicate Detection...');
-  const t9 = runHx(
+  const t9 = runFam(
     'Find potentially duplicate files in my test workspace. Compare file sizes and content hashes. Do not delete anything. Give me a report of the duplicates you find.',
     { cwd: TEST_WORKSPACE },
   );
@@ -379,7 +379,7 @@ async function main() {
 
   // Task 10: Build a Simple Application
   console.log('  Running Task 10 — Build a Simple Application...');
-  const t10 = runHx(
+  const t10 = runFam(
     'Create a simple command-line calculator using Python. Support addition, subtraction, multiplication and division. Handle invalid input and division by zero. Include a README and unit tests. Run the tests before finishing.',
     { cwd: disposableRepo, role: 'coder' },
   );
@@ -406,7 +406,7 @@ async function main() {
 
   // Task 11: Debug Existing Code
   console.log('  Running Task 11 — Debug Existing Code...');
-  const t11 = runHx(
+  const t11 = runFam(
     'Inspect this repository and identify bugs in the existing implementation. Find at least one reproducible bug, explain its root cause, implement a fix and write a regression test. Run the relevant test suite.',
     { cwd: disposableRepo, role: 'coder' },
   );
@@ -429,7 +429,7 @@ async function main() {
 
   // Task 12: REST API Development
   console.log('  Running Task 12 — REST API Development...');
-  const t12 = runHx(
+  const t12 = runFam(
     'Build a REST API for a simple task management application using FastAPI and SQLite. Include CRUD operations, input validation, appropriate HTTP status codes and tests. Organize the code into sensible modules.',
     { cwd: disposableRepo, role: 'coder' },
   );
@@ -450,7 +450,7 @@ async function main() {
 
   // Task 13: Code Review
   console.log('  Running Task 13 — Code Review...');
-  const t13 = runHx(
+  const t13 = runFam(
     'Perform a code review of this repository. Identify security vulnerabilities, performance issues, poor coding practices and architectural problems. Rank findings by severity and provide file references. Do not modify the code.',
     { cwd: disposableRepo, role: 'coder' },
   );
@@ -479,7 +479,7 @@ async function main() {
 
   // Task 14: Code Refactoring
   console.log('  Running Task 14 — Code Refactoring...');
-  const t14 = runHx(
+  const t14 = runFam(
     'Find a module in this project that has excessive responsibilities or duplicated logic. Refactor it into smaller, maintainable components while preserving existing functionality. Run the existing tests and explain the changes.',
     { cwd: disposableRepo, role: 'coder' },
   );
@@ -505,7 +505,7 @@ async function main() {
 
   // Task 15: Git Operations
   console.log('  Running Task 15 — Git Operations...');
-  const t15 = runHx(
+  const t15 = runFam(
     'Inspect the Git status and recent commit history of this repository. Explain the current changes, identify uncommitted modifications and suggest a sensible commit message for the current work. Do not commit anything.',
     { cwd: disposableRepo },
   );
@@ -530,7 +530,7 @@ async function main() {
   // Task 16: Excel Workbook Generation
   console.log('  Running Task 16 — Excel Workbook Generation...');
   const xlsxTarget = path.join(TEST_WORKSPACE, 'monthly_expenses.xlsx');
-  const t16 = runHx(
+  const t16 = runFam(
     'Create an Excel workbook named monthly_expenses.xlsx with 10 sample expense records. Include date, category, description and amount columns. Add a total expense formula, category-wise summary and a chart. Save the workbook and verify that it can be opened.',
     { cwd: TEST_WORKSPACE },
   );
@@ -560,7 +560,7 @@ async function main() {
   console.log('  Running Task 17 — Word Document Generation...');
   const docxTarget = path.join(TEST_WORKSPACE, 'Software Development Project Proposal.docx');
   const docxAlt = path.join(TEST_WORKSPACE, 'project_proposal.docx');
-  const t17 = runHx(
+  const t17 = runFam(
     'Create a professionally formatted DOCX document titled "Software Development Project Proposal". Include an introduction, problem statement, objectives, proposed solution, technology stack, development timeline and conclusion. Use proper headings and a table for the timeline.',
     { cwd: TEST_WORKSPACE },
   );
@@ -578,7 +578,7 @@ async function main() {
 
   // Task 18: PDF Processing
   console.log('  Running Task 18 — PDF Processing...');
-  const t18 = runHx(
+  const t18 = runFam(
     'Find a PDF in my test workspace, extract its text, identify its main headings and generate a concise summary in a new Markdown file. Preserve the original PDF without modification.',
     { cwd: TEST_WORKSPACE },
   );
@@ -609,7 +609,7 @@ async function main() {
 
   // Task 19: Cross-format Workflow
   console.log('  Running Task 19 — Cross-format Workflow...');
-  const t19 = runHx(
+  const t19 = runFam(
     'Create a sample student performance dataset in Excel, analyze the average marks of each subject, identify the highest-performing student and generate a short DOCX report containing the findings and a summary table.',
     { cwd: TEST_WORKSPACE },
   );
@@ -637,7 +637,7 @@ async function main() {
 
   // Task 20: Web Research
   console.log('  Running Task 20 — Web Research...');
-  const t20 = runHx(
+  const t20 = runFam(
     'Research the latest developments in local LLM inference and model quantization. Find at least five credible sources, summarize the major developments and provide source links. Clearly distinguish verified information from your own analysis.',
   );
   const urlCount = (t20.stdout.match(/(?:https?:\/\/|[a-zA-Z0-9-]+\.[a-z]{2,}\/)[^\s)"]+/g) || []).length;
@@ -673,7 +673,7 @@ async function main() {
 
   // Task 21: Technical Comparison
   console.log('  Running Task 21 — Technical Comparison...');
-  const t21 = runHx(
+  const t21 = runFam(
     'Compare Ollama, LM Studio and llama.cpp for running local language models on a laptop with an NVIDIA RTX 4050 6GB GPU. Compare ease of use, performance, quantization support, API availability, resource consumption and developer experience. Give a practical recommendation.',
   );
   const t21Pass =
@@ -697,7 +697,7 @@ async function main() {
 
   // Task 22: Persistent Memory: Store Preferences
   console.log('  Running Task 22 — Persistent Memory: Store Preferences...');
-  const t22 = runHx(
+  const t22 = runFam(
     'Remember these preferences for future conversations:\nI prefer concise technical explanations.\nI primarily use Java and Python.\nI prefer local-first tools over cloud services when practical.\nStore these as separate user preferences.',
   );
   const memService = new MemoryService();
@@ -718,7 +718,7 @@ async function main() {
 
   // Task 23: Persistent Memory: Retrieve Preferences
   console.log('  Running Task 23 — Persistent Memory: Retrieve Preferences (New Session)...');
-  const t23 = runHx(
+  const t23 = runFam(
     'What programming languages do I primarily use, and what are my preferences regarding technical explanations and cloud services?',
   );
   const t23Pass =
@@ -742,7 +742,7 @@ async function main() {
 
   // Task 24: Multi-step Research and Document Creation
   console.log('  Running Task 24 — Multi-step Research and Document Creation...');
-  const t24 = runHx(
+  const t24 = runFam(
     'Research three popular open-source vector databases suitable for local AI applications. Compare their architecture, storage requirements, filtering capabilities, deployment complexity and licensing. Create a Markdown comparison report with source links and a final recommendation for a laptop-based AI agent project.',
     { cwd: TEST_WORKSPACE, timeoutMs: 240000 },
   );
@@ -782,7 +782,7 @@ async function main() {
   // Task 25: Autonomous Error Recovery
   console.log('  Running Task 25 — Autonomous Error Recovery...');
   fs.writeFileSync(path.join(disposableRepo, 'math_lib.py'), mathLibBuggy, 'utf-8');
-  const t25 = runHx(
+  const t25 = runFam(
     'Run the tests in my disposable test repository. If any tests fail, inspect the errors, identify the root cause, fix the implementation if the issue is genuinely in the code, and rerun the tests.\nDo not delete failing tests, weaken assertions or suppress errors just to get a successful result.\nSummarize everything you changed.',
     { cwd: disposableRepo, role: 'coder' },
   );
@@ -821,9 +821,9 @@ async function main() {
     console.log('\nAll 25 tasks passed! Cleaning up benchmark workspace, test files, and logs...');
     try {
       fs.rmSync(TEST_WORKSPACE, { recursive: true, force: true });
-      const hxTestInRoot = path.join(ROOT_DIR, 'hx-test');
-      if (fs.existsSync(hxTestInRoot)) {
-        fs.rmSync(hxTestInRoot, { recursive: true, force: true });
+      const famTestInRoot = path.join(ROOT_DIR, 'fam-test');
+      if (fs.existsSync(famTestInRoot)) {
+        fs.rmSync(famTestInRoot, { recursive: true, force: true });
       }
       const strayFiles = [
         'student_performance.xlsx',

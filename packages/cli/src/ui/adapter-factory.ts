@@ -1,9 +1,9 @@
-import { OllamaAdapter, GeminiAdapter } from '@hx/core';
-import type { ModelAdapter, HxConfig, ModelProfile } from '@hx/shared';
+import { OllamaAdapter, GeminiAdapter } from '@fam/core';
+import type { ModelAdapter, FamConfig, ModelProfile } from '@fam/shared';
 
 export interface CreateAdapterOptions {
   modelId: string;
-  config: HxConfig;
+  config: FamConfig;
   localOnly?: boolean;
 }
 
@@ -31,7 +31,7 @@ export function createAdapter(options: CreateAdapterOptions): ModelAdapter {
 
   return new OllamaAdapter({
     model: modelId,
-    host: process.env['HX_OLLAMA_HOST'] || 'http://127.0.0.1:11434',
+    host: process.env['FAM_OLLAMA_HOST'] || process.env['HX_OLLAMA_HOST'] || 'http://127.0.0.1:11434',
     numGpu,
     numCtx: profile?.numCtx,
   });

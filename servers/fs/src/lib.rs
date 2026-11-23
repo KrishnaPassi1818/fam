@@ -163,7 +163,7 @@ mod tests {
         // initialize
         let init_resp = server.handle_request("initialize", None, json!(1));
         assert!(init_resp.error.is_none());
-        assert_eq!(init_resp.result.unwrap()["serverInfo"]["name"], "hx-fs");
+        assert_eq!(init_resp.result.unwrap()["serverInfo"]["name"], "fam-fs");
 
         // tools/list
         let list_resp = server.handle_request("tools/list", None, json!(2));

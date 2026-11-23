@@ -7,7 +7,7 @@ import {
   LoopDetected,
   BudgetExceeded,
   ModelError,
-} from '@hx/shared';
+} from '@fam/shared';
 import { PromptBuilder, type BuildPromptOptions } from '../prompts/builder.js';
 import { Tracer } from '../trace/index.js';
 import { ToolExecutor, type ToolHandler } from '../tools/executor.js';
