@@ -20,6 +20,8 @@ pub struct ListDirArgs {
     #[serde(default)]
     pub path: Option<String>,
     #[serde(default)]
+    pub base_dir: Option<String>,
+    #[serde(default)]
     pub recursive: Option<bool>,
     #[serde(default)]
     pub max_depth: Option<usize>,
@@ -28,6 +30,14 @@ pub struct ListDirArgs {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct FileInfoArgs {
     pub path: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct FileHashArgs {
+    #[serde(default)]
+    pub path: Option<String>,
+    #[serde(default)]
+    pub paths: Option<Vec<String>>,
 }
 
 pub fn tool_definitions() -> Vec<ToolDefinition> {
@@ -55,13 +65,14 @@ pub fn tool_definitions() -> Vec<ToolDefinition> {
         ToolDefinition {
             name: "list_dir".into(),
             description:
-                "List directory contents with file metadata (size, type, modification time).".into(),
+                "List directory contents with file metadata (size, type). Set recursive=false for normal directory listing."
+                    .into(),
             input_schema: json!({
                 "type": "object",
                 "properties": {
                     "path": { "type": "string", "description": "Directory path (defaults to root if omitted)" },
-                    "recursive": { "type": "boolean", "description": "Whether to list recursively" },
-                    "max_depth": { "type": "integer", "description": "Maximum directory depth when recursive" }
+                    "recursive": { "type": "boolean", "description": "Whether to list recursively (default false). Keep false unless deep recursion is needed." },
+                    "max_depth": { "type": "integer", "description": "Maximum directory depth when recursive (default 1)" }
                 }
             }),
             annotations: Some(crate::protocol::ToolAnnotation {
@@ -74,7 +85,7 @@ pub fn tool_definitions() -> Vec<ToolDefinition> {
         ToolDefinition {
             name: "file_info".into(),
             description:
-                "Get detailed file metadata: size, type, timestamps, permissions, and line count."
+                "Get detailed file metadata: size, type, timestamps, permissions, SHA-256 hash, and line count."
                     .into(),
             input_schema: json!({
                 "type": "object",
@@ -82,6 +93,25 @@ pub fn tool_definitions() -> Vec<ToolDefinition> {
                     "path": { "type": "string", "description": "Path to inspect" }
                 },
                 "required": ["path"]
+            }),
+            annotations: Some(crate::protocol::ToolAnnotation {
+                read_only_hint: Some(true),
+                destructive_hint: Some(false),
+                idempotent_hint: Some(true),
+                open_world_hint: Some(false),
+            }),
+        },
+        ToolDefinition {
+            name: "file_hash".into(),
+            description:
+                "Compute SHA-256 content hashes and sizes for one or more files to compare duplicates."
+                    .into(),
+            input_schema: json!({
+                "type": "object",
+                "properties": {
+                    "path": { "type": "string", "description": "Single file path" },
+                    "paths": { "type": "array", "items": { "type": "string" }, "description": "List of file paths" }
+                }
             }),
             annotations: Some(crate::protocol::ToolAnnotation {
                 read_only_hint: Some(true),
@@ -175,12 +205,13 @@ struct DirEntryInfo {
 }
 
 pub fn execute_list_dir(conf: &Confinement, args: ListDirArgs) -> ToolCallResult {
-    let target_dir = match &args.path {
+    let p_opt = args.path.as_deref().or(args.base_dir.as_deref());
+    let target_dir = match p_opt {
         Some(p) => match conf.resolve(p) {
             Ok(resolved) => resolved,
             Err(e) => return ToolCallResult::error(e.to_string()),
         },
-        None => conf.root().to_path_buf(),
+        None => conf.resolve(".").unwrap_or_else(|_| conf.root().to_path_buf()),
     };
 
     if !target_dir.is_dir() {
@@ -195,9 +226,26 @@ pub fn execute_list_dir(conf: &Confinement, args: ListDirArgs) -> ToolCallResult
         return ToolCallResult::error(e.to_string());
     }
 
+    let total_found = entries.len();
+    let max_entries = 100;
+    let truncated = total_found > max_entries;
+    if truncated {
+        entries.truncate(max_entries);
+    }
+
+    let mut lines = Vec::new();
+    for e in &entries {
+        let kind = if e.is_dir { "DIR" } else { "FILE" };
+        lines.push(format!("{kind:<5} {:>10} B  {}", e.size, e.name));
+    }
+    let text_view = lines.join("\n");
+
     let res_json = json!({
         "dir": conf.relative_display(&target_dir).to_string_lossy(),
-        "total_entries": entries.len(),
+        "total_entries": total_found,
+        "returned_entries": entries.len(),
+        "truncated": truncated,
+        "listing": text_view,
         "entries": entries
     });
 
@@ -226,6 +274,12 @@ fn walk_dir(
         let is_file = ft.is_file();
         let is_symlink = ft.is_symlink();
 
+        let fname = entry.file_name();
+        let fname_str = fname.to_string_lossy();
+        if is_dir && (fname_str == ".git" || fname_str == "node_modules" || fname_str == "target") {
+            continue;
+        }
+
         let size = if is_file {
             entry.metadata().map(|m| m.len()).unwrap_or(0)
         } else {
@@ -233,7 +287,7 @@ fn walk_dir(
         };
 
         entries.push(DirEntryInfo {
-            name: entry.file_name().to_string_lossy().to_string(),
+            name: fname_str.to_string(),
             path: conf.relative_display(&p).to_string_lossy().to_string(),
             is_dir,
             is_file,
@@ -266,10 +320,15 @@ pub fn execute_file_info(conf: &Confinement, args: FileInfoArgs) -> ToolCallResu
     let size = meta.len();
 
     let mut line_count = None;
-    if is_file && size < 10 * 1024 * 1024 {
-        // under 10MB, count lines if text
+    let mut sha256 = None;
+    if is_file && size < 100 * 1024 * 1024 {
         if let Ok(bytes) = fs::read(&resolved) {
-            if !bytes.iter().take(8192).any(|&b| b == 0) {
+            use sha2::{Digest, Sha256};
+            let mut hasher = Sha256::new();
+            hasher.update(&bytes);
+            sha256 = Some(format!("{:x}", hasher.finalize()));
+
+            if size < 10 * 1024 * 1024 && !bytes.iter().take(8192).any(|&b| b == 0) {
                 if let Ok(s) = std::str::from_utf8(&bytes) {
                     line_count = Some(s.lines().count());
                 }
@@ -290,9 +349,55 @@ pub fn execute_file_info(conf: &Confinement, args: FileInfoArgs) -> ToolCallResu
         "is_symlink": is_symlink,
         "size_bytes": size,
         "line_count": line_count,
+        "sha256": sha256,
         "modified_epoch_sec": modified,
         "readonly": meta.permissions().readonly(),
     });
 
     ToolCallResult::success(res_json.to_string())
+}
+
+pub fn execute_file_hash(conf: &Confinement, args: FileHashArgs) -> ToolCallResult {
+    use sha2::{Digest, Sha256};
+
+    let mut target_paths = Vec::new();
+    if let Some(p) = args.path {
+        target_paths.push(p);
+    }
+    if let Some(ps) = args.paths {
+        target_paths.extend(ps);
+    }
+
+    if target_paths.is_empty() {
+        return ToolCallResult::error("Must provide 'path' or 'paths' to file_hash");
+    }
+
+    let mut results = Vec::new();
+    for p_str in target_paths {
+        let resolved = match conf.resolve(&p_str) {
+            Ok(p) => p,
+            Err(e) => {
+                results.push(json!({ "path": p_str, "error": e.to_string() }));
+                continue;
+            }
+        };
+
+        match fs::read(&resolved) {
+            Ok(bytes) => {
+                let mut hasher = Sha256::new();
+                hasher.update(&bytes);
+                let hash_hex = format!("{:x}", hasher.finalize());
+                results.push(json!({
+                    "path": conf.relative_display(&resolved).to_string_lossy(),
+                    "size_bytes": bytes.len(),
+                    "sha256": hash_hex
+                }));
+            }
+            Err(e) => {
+                results.push(json!({ "path": p_str, "error": e.to_string() }));
+            }
+        }
+    }
+
+    ToolCallResult::success(json!({ "hashes": results }).to_string())
 }

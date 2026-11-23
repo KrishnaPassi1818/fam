@@ -14,6 +14,8 @@ pub struct GlobArgs {
     pub pattern: String,
     #[serde(default)]
     pub base_dir: Option<String>,
+    #[serde(default)]
+    pub path: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -76,12 +78,13 @@ pub fn tool_definitions() -> Vec<ToolDefinition> {
 }
 
 pub fn execute_glob(conf: &Confinement, args: GlobArgs) -> ToolCallResult {
-    let base = match &args.base_dir {
+    let p_opt = args.base_dir.as_deref().or(args.path.as_deref());
+    let base = match p_opt {
         Some(p) => match conf.resolve(p) {
             Ok(resolved) => resolved,
             Err(e) => return ToolCallResult::error(e.to_string()),
         },
-        None => conf.root().to_path_buf(),
+        None => conf.resolve(".").unwrap_or_else(|_| conf.root().to_path_buf()),
     };
 
     let pattern = match Pattern::new(&args.pattern) {

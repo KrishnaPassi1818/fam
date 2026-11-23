@@ -86,6 +86,7 @@ mod tests {
             tools::search::GlobArgs {
                 pattern: "*.rs".into(),
                 base_dir: None,
+                path: None,
             },
         );
         assert_eq!(glob_res.is_error, Some(false));

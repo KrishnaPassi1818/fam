@@ -5,13 +5,24 @@ use std::path::PathBuf;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let mut root = env::current_dir()?;
+    let mut root = env::var("HX_FS_ROOT")
+        .map(PathBuf::from)
+        .unwrap_or_else(|_| env::current_dir().unwrap_or_else(|_| PathBuf::from(".")));
 
     let args: Vec<String> = env::args().collect();
     let mut i = 1;
     while i < args.len() {
         if args[i] == "--root" && i + 1 < args.len() {
-            root = PathBuf::from(&args[i + 1]);
+            let root_arg = &args[i + 1];
+            if root_arg == "~" || root_arg.starts_with("~/") {
+                if let Ok(home) = env::var("HOME") {
+                    root = PathBuf::from(home).join(root_arg.trim_start_matches("~/"));
+                } else {
+                    root = PathBuf::from(root_arg);
+                }
+            } else {
+                root = PathBuf::from(root_arg);
+            }
             i += 2;
         } else {
             i += 1;

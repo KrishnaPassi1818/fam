@@ -34,6 +34,10 @@ pub fn dispatch_tool_call(
             Ok(a) => read::execute_file_info(conf, a),
             Err(e) => ToolCallResult::error(format!("Invalid arguments for file_info: {e}")),
         },
+        "file_hash" | "read_hash" | "hash" => match serde_json::from_value(args) {
+            Ok(a) => read::execute_file_hash(conf, a),
+            Err(e) => ToolCallResult::error(format!("Invalid arguments for file_hash: {e}")),
+        },
         "glob" => match serde_json::from_value(args) {
             Ok(a) => search::execute_glob(conf, a),
             Err(e) => ToolCallResult::error(format!("Invalid arguments for glob: {e}")),
