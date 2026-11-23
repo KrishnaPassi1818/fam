@@ -1,3 +1,8 @@
-fn main() {
-    println!("hx-sandbox server v0.1.0");
+use anyhow::Result;
+use hx_sandbox::SandboxServer;
+
+#[tokio::main]
+async fn main() -> Result<()> {
+    let server = SandboxServer::new();
+    server.run_stdio().await
 }
