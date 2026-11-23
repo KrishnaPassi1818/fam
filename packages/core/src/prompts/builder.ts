@@ -211,7 +211,8 @@ export class PromptBuilder {
     if (ctx.cwd) dynamicParts.push(`- Working directory: ${ctx.cwd}`);
     if (ctx.gitBranch) dynamicParts.push(`- Git branch: ${ctx.gitBranch}`);
     if (ctx.memories && ctx.memories.length > 0) {
-      dynamicParts.push('\n## Relevant Memory');
+      dynamicParts.push('\n## Relevant Memory (Stored User Facts & Preferences)');
+      dynamicParts.push('The following facts are already stored in user memory. Use these facts to answer questions directly without calling remember:');
       for (const mem of ctx.memories) {
         dynamicParts.push(`- ${mem}`);
       }

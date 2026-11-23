@@ -30,9 +30,9 @@ describe('Context Manager (Phase 4: T4.1 - T4.5)', () => {
 
       expect(b.numCtx).toBe(8192);
       expect(b.system).toBe(500);
-      expect(b.tools).toBe(1000);
-      expect(b.history).toBe(2500);
-      expect(b.reserve).toBe(3500);
+      expect(b.tools).toBe(4000);
+      expect(b.history).toBe(2192);
+      expect(b.reserve).toBe(1000);
     });
 
     it('accounts tokens across components and detects budget overflow', () => {

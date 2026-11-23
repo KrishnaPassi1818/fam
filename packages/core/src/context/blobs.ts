@@ -22,7 +22,7 @@ export class BlobStore {
       options?.blobsDir ||
       process.env['HX_BLOBS_DIR'] ||
       path.join(os.homedir(), '.harness', 'blobs');
-    this.thresholdChars = options?.thresholdChars ?? 2000;
+    this.thresholdChars = options?.thresholdChars ?? 8000;
 
     if (!fs.existsSync(this.blobsDir)) {
       fs.mkdirSync(this.blobsDir, { recursive: true });
@@ -46,8 +46,9 @@ export class BlobStore {
     const totalLines = lines.length;
     const firstLine = lines[0] ? lines[0].slice(0, 120) : '';
     const lastLine = lines[lines.length - 1] ? lines[lines.length - 1]!.slice(0, 120) : '';
+    const preview = lines.slice(0, 12).join('\n');
 
-    const summary = `[Blob offloaded: ${handle} (${content.length} chars, ${totalLines} lines). Use blob_read(handle="${handle}", start_line, end_line) or blob_grep(handle="${handle}", pattern) to inspect.]`;
+    const summary = `[Blob offloaded: ${handle} (${content.length} chars, ${totalLines} lines).\nPreview:\n${preview}\n... Use blob_read(handle="${handle}", start_line, end_line) or blob_grep(handle="${handle}", pattern) to inspect.]`;
 
     return {
       handle,

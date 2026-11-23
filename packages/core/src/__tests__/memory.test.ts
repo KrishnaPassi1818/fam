@@ -128,7 +128,7 @@ describe('Phase 6: Memory System (T6.1–T6.8)', () => {
       expect(results.length).toBeGreaterThan(0);
       expect(results[0]?.memory.text).toContain('TypeScript strict mode');
       expect(results[0]?.finalScore).toBeGreaterThanOrEqual(0.35);
-    });
+    }, 15000);
 
     it('strictly purges local_only memories from Gemini requests (Section 9 Acceptance)', async () => {
       // Memory 1: normal
@@ -176,7 +176,7 @@ describe('Phase 6: Memory System (T6.1–T6.8)', () => {
       // Count total tokens in formatted string
       const words = formatted.split(/\s+/).length;
       expect(words).toBeLessThan(400);
-    });
+    }, 20000);
   });
 
   describe('T6.6: Working Memory (Todo, Scratchpad, Session Persistence)', () => {

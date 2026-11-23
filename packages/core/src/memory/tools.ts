@@ -5,8 +5,9 @@ import type { TodoManager, Scratchpad, SessionPersistence } from './working.js';
 export const REMEMBER_DESCRIPTOR: ToolDescriptor = {
   name: 'core.remember',
   alias: 'remember',
-  description: 'Store an important fact, user preference, or project convention into long-term permanent memory.',
-  shortDescription: 'Store long-term memory.',
+  description:
+    'Write/save a new fact into memory. NEVER call this tool to retrieve or check memory (stored memories are already provided in your prompt). ONLY call this tool when the user commands: "Remember that..." or "Store this preference...".',
+  shortDescription: 'Save new fact to memory. Never call to retrieve.',
   category: 'core',
   tier: 0,
   timeoutMs: 5000,

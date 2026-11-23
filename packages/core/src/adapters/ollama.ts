@@ -136,37 +136,111 @@ export class OllamaAdapter implements ModelAdapter {
     const codeBlockMatch = trimmed.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
     const candidate = codeBlockMatch && codeBlockMatch[1] ? codeBlockMatch[1].trim() : trimmed;
 
-    try {
-      const parsed = JSON.parse(candidate);
-      if (parsed && typeof parsed === 'object') {
-        if (typeof parsed.name === 'string' && parsed.args && typeof parsed.args === 'object') {
-          calls.push({
-            id: `call_${++this.callCounter}_${Date.now().toString(36)}`,
-            name: parsed.name,
-            args: parsed.args,
-          });
-        } else if (typeof parsed.tool === 'string' && parsed.arguments && typeof parsed.arguments === 'object') {
-          calls.push({
-            id: `call_${++this.callCounter}_${Date.now().toString(36)}`,
-            name: parsed.tool,
-            args: parsed.arguments,
-          });
-        } else if (Array.isArray(parsed)) {
-          for (const item of parsed) {
-            if (item && typeof item === 'object' && typeof item.name === 'string') {
-              calls.push({
-                id: `call_${++this.callCounter}_${Date.now().toString(36)}`,
-                name: item.name,
-                args: item.args || item.arguments || {},
-              });
-            }
+    // Scan for top-level JSON objects
+    const jsonObjects: string[] = [];
+    let depth = 0;
+    let startIdx = -1;
+    let inString = false;
+    let escape = false;
+
+    for (let i = 0; i < candidate.length; i++) {
+      const char = candidate[i];
+      if (inString) {
+        if (escape) {
+          escape = false;
+        } else if (char === '\\') {
+          escape = true;
+        } else if (char === '"') {
+          inString = false;
+        }
+      } else {
+        if (char === '"') {
+          inString = true;
+        } else if (char === '{') {
+          if (depth === 0) startIdx = i;
+          depth++;
+        } else if (char === '}') {
+          depth--;
+          if (depth === 0 && startIdx !== -1) {
+            jsonObjects.push(candidate.slice(startIdx, i + 1));
+            startIdx = -1;
           }
         }
       }
-    } catch {
-      // Not a valid fallback JSON tool call
     }
-    return calls;
+
+    for (const jsonStr of jsonObjects) {
+      let parsed: unknown = null;
+      try {
+        parsed = JSON.parse(jsonStr);
+      } catch {
+        // Fallback: fix unescaped control characters/newlines inside string literals or malformed empty objects
+        try {
+          const sanitized = jsonStr
+            .replace(/:\s*\{"\s*\}\}/g, ': {}')
+            .replace(/"([^"\\]*(?:\\.[^"\\]*)*)"/gs, (match) => {
+              return match
+                .replace(/\n/g, '\\n')
+                .replace(/\r/g, '\\r')
+                .replace(/\t/g, '\\t');
+            });
+          parsed = JSON.parse(sanitized);
+        } catch {
+          // Skip malformed individual json
+        }
+      }
+
+      if (parsed && typeof parsed === 'object') {
+        const pObj = parsed as Record<string, unknown>;
+        const name = typeof pObj.name === 'string' ? pObj.name : typeof pObj.tool === 'string' ? pObj.tool : undefined;
+        if (name) {
+          const rawArgs = pObj.args || pObj.parameters || pObj.arguments || {};
+          const args = typeof rawArgs === 'object' && rawArgs !== null ? rawArgs : { value: rawArgs };
+          calls.push({
+            id: `call_${++this.callCounter}_${Date.now().toString(36)}`,
+            name,
+            args: args as Record<string, unknown>,
+          });
+        }
+      }
+    }
+
+    if (calls.length === 0) {
+      try {
+        const parsed = JSON.parse(candidate);
+        if (Array.isArray(parsed)) {
+          for (const item of parsed) {
+            if (item && typeof item === 'object') {
+              const itemName = typeof item.name === 'string' ? item.name : typeof item.tool === 'string' ? item.tool : undefined;
+              if (itemName) {
+                const rawArgs = item.args || item.parameters || item.arguments || {};
+                const args = typeof rawArgs === 'object' && rawArgs !== null ? rawArgs : { value: rawArgs };
+                calls.push({
+                  id: `call_${++this.callCounter}_${Date.now().toString(36)}`,
+                  name: itemName,
+                  args: args as Record<string, unknown>,
+                });
+              }
+            }
+          }
+        }
+      } catch {
+        // Ignore
+      }
+    }
+
+    // Deduplicate calls with identical name and arguments within the same turn
+    const seen = new Set<string>();
+    const uniqueCalls: ToolCall[] = [];
+    for (const call of calls) {
+      const key = `${call.name}:${JSON.stringify(call.args)}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        uniqueCalls.push(call);
+      }
+    }
+
+    return uniqueCalls;
   }
 
   async *chat(req: ChatRequest, signal?: AbortSignal): AsyncIterable<ChatChunk> {
@@ -229,6 +303,8 @@ export class OllamaAdapter implements ModelAdapter {
     let accumulatedText = '';
     let buffer = '';
 
+    let nativeToolCallsReceived = false;
+
     try {
       while (true) {
         const { done, value } = await reader.read();
@@ -262,6 +338,7 @@ export class OllamaAdapter implements ModelAdapter {
 
           const toolCalls: ToolCall[] = [];
           if (message?.tool_calls && message.tool_calls.length > 0) {
+            nativeToolCallsReceived = true;
             for (const tc of message.tool_calls) {
               const callId = tc.id || `call_${++this.callCounter}_${Date.now().toString(36)}`;
               let parsedArgs = tc.function.arguments;
@@ -311,7 +388,7 @@ export class OllamaAdapter implements ModelAdapter {
       }
 
       // Check fallback tool calls if no native tool calls were received and output looks like a call
-      if (accumulatedText.length > 0 && !this.caps.tools) {
+      if (accumulatedText.length > 0 && !nativeToolCallsReceived) {
         const fallbacks = this.parseFallbackToolCalls(accumulatedText);
         if (fallbacks.length > 0) {
           yield {

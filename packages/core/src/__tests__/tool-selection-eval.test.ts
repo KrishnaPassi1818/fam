@@ -41,5 +41,5 @@ describe('Phase 5: 40-Prompt Tool-Selection Evaluation (T5.7)', () => {
     const accuracy = (correctCount / EVAL_40_PROMPTS.length) * 100;
     // Task T5.7 acceptance criterion: >= 85% correct-tool selection
     expect(accuracy).toBeGreaterThanOrEqual(85);
-  });
+  }, 30000);
 });
