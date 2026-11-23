@@ -2,7 +2,8 @@
 import fs from 'node:fs';
 import { Command } from 'commander';
 import { VERSION } from '@hx/shared';
-import { loadConfig, Tracer, MemoryService, AgentLoop } from '@hx/core';
+import { loadConfig, Tracer, MemoryService, AgentLoop, PermissionGate } from '@hx/core';
+import { McpHost } from '@hx/mcp-host';
 import { runDoctor, formatDoctorTable } from '../doctor/index.js';
 import { listServers, testServer, saveServerConfig, removeServerConfig } from '../mcp/index.js';
 import { loadAllTasks, EvalRunner, saveEvalReport, formatMarkdownReport } from '@hx/evals';
@@ -325,6 +326,7 @@ program
   .option('--append-system <text>', 'Append custom instructions to the prompt')
   .option('--system-file <path>', 'Read system prompt override from file')
   .option('--local-only', 'Never use Gemini API or external network models', false)
+  .option('-y, --yes', 'Automatically approve all tool execution permissions', false)
   .option('--headless', 'Run harness in headless IPC bridge mode for TUI', false)
   .action(async (promptArg: string | undefined, options: {
     model?: string;
@@ -333,6 +335,7 @@ program
     appendSystem?: string;
     systemFile?: string;
     localOnly?: boolean;
+    yes?: boolean;
     headless?: boolean;
   }) => {
     try {
@@ -368,21 +371,54 @@ program
         });
         const profile = config.models.models[modelId];
         const tier = (profile as unknown as { tier?: string })?.tier || (modelId.includes('gemini') ? 'full' : modelId.includes('1.5b') ? 'min' : 'medium');
+
+        let tools = undefined;
+        let toolHandlers = undefined;
+        let mcpHost: McpHost | undefined;
+
+        if (config.servers?.servers) {
+          try {
+            mcpHost = new McpHost({
+              servers: config.servers.servers,
+            });
+            await mcpHost.initAutoStartServers();
+            tools = await mcpHost.getTools(true);
+            toolHandlers = await mcpHost.getToolHandlers();
+          } catch (err) {
+            process.stderr.write(`Warning: Failed to initialize MCP servers: ${err instanceof Error ? err.message : String(err)}\n`);
+          }
+        }
+
+        const memoryService = new MemoryService();
+        const permissionGate = new PermissionGate();
+        if (options.yes || isOneShot) {
+          permissionGate.grantSession('*');
+        }
+
         const loop = new AgentLoop({
           adapter,
           tracer: new Tracer(),
+          memoryService,
+          permissionGate,
           role: options.role || 'assistant',
           tier: tier as 'full' | 'medium' | 'min',
           userGlobalPrompt: systemOverride,
           projectPrompt: options.appendSystem,
+          tools,
+          toolHandlers,
         });
 
         for await (const event of loop.run([{ role: 'user', content: promptArg! }])) {
           if (event.type === 'chunk') {
             process.stdout.write(event.delta);
+          } else if (event.type === 'tool_call') {
+            process.stderr.write(`[tool: ${event.toolCall.name}]\n`);
           } else if (event.type === 'finish') {
             process.stdout.write('\n');
           }
+        }
+        if (mcpHost) {
+          await mcpHost.shutdown();
         }
         process.exit(0);
       }

@@ -1,3 +1,5 @@
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js';
@@ -15,6 +17,24 @@ export interface McpConnectionOptions {
   config: McpServerConfig;
   onListChanged?: () => void;
   onError?: (err: Error) => void;
+}
+
+function findWorkspaceRoot(startDir: string = process.cwd()): string {
+  if (process.env.HARNESS_ROOT && fs.existsSync(process.env.HARNESS_ROOT)) {
+    return process.env.HARNESS_ROOT;
+  }
+  let current = path.resolve(startDir);
+  while (true) {
+    if (fs.existsSync(path.join(current, 'pnpm-workspace.yaml')) || fs.existsSync(path.join(current, 'Cargo.toml'))) {
+      return current;
+    }
+    const parent = path.dirname(current);
+    if (parent === current) {
+      break;
+    }
+    current = parent;
+  }
+  return startDir;
 }
 
 export class McpConnection {
@@ -52,14 +72,43 @@ export class McpConnection {
           throw new Error(`MCP server '${this.serverName}' requires 'command' for stdio transport.`);
         }
 
+        const harnessRoot = findWorkspaceRoot();
+        let resolvedCommand = expandEnvVars(this.config.command);
+        if (!path.isAbsolute(resolvedCommand) && !fs.existsSync(resolvedCommand)) {
+          const repoPath = path.resolve(process.cwd(), resolvedCommand);
+          if (fs.existsSync(repoPath)) {
+            resolvedCommand = repoPath;
+          } else {
+            const fallbackPath = path.resolve(harnessRoot, resolvedCommand);
+            if (fs.existsSync(fallbackPath)) {
+              resolvedCommand = fallbackPath;
+            }
+          }
+        }
+
+        const expandedArgs = (this.config.args || []).map((arg) => {
+          const expanded = expandEnvVars(arg);
+          if (
+            !path.isAbsolute(expanded) &&
+            !expanded.startsWith('-') &&
+            !fs.existsSync(expanded)
+          ) {
+            const candidate = path.resolve(harnessRoot, expanded);
+            if (fs.existsSync(candidate)) {
+              return candidate;
+            }
+          }
+          return expanded;
+        });
+
         const expandedEnv: Record<string, string> = {
           ...process.env as Record<string, string>,
           ...expandRecordEnvVars(this.config.env),
         };
 
         this.transport = new StdioClientTransport({
-          command: this.config.command,
-          args: this.config.args || [],
+          command: resolvedCommand,
+          args: expandedArgs,
           env: expandedEnv,
           stderr: 'pipe',
         });

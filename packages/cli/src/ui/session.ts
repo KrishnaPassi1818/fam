@@ -1,4 +1,4 @@
-import type { Message, ModelAdapter, ModelProfile } from '@hx/shared';
+import type { Message, ModelAdapter, ModelProfile, ToolDescriptor } from '@hx/shared';
 import {
   AgentLoop,
   Tracer,
@@ -6,7 +6,9 @@ import {
   ContextManager,
   BackupService,
   MemoryService,
+  type ToolExecutionHandler,
 } from '@hx/core';
+import { McpHost } from '@hx/mcp-host';
 import { createAdapter } from './adapter-factory.js';
 import type { FromTuiMessage, ToTuiMessage, TuiSessionConfig } from './types.js';
 
@@ -27,6 +29,11 @@ export class SessionDriver {
   private usedTokens = 0;
   private sendToTui: (msg: ToTuiMessage) => void;
   private onExit?: () => void;
+
+  private mcpHost: McpHost | null = null;
+  private tools: ToolDescriptor[] = [];
+  private toolHandlers: Record<string, ToolExecutionHandler> = {};
+  private mcpInitPromise: Promise<void> | null = null;
 
   constructor(
     options: TuiSessionConfig,
@@ -52,6 +59,8 @@ export class SessionDriver {
     const isLocal = !this.model.startsWith('gemini') && !this.model.includes('gemini');
     const tier = this.getTier();
 
+    void this.initMcp();
+
     this.sendToTui({
       type: 'init',
       model: this.model,
@@ -61,6 +70,27 @@ export class SessionDriver {
       cwd: process.cwd(),
       role: this.role,
     });
+  }
+
+  public async initMcp(): Promise<void> {
+    if (this.mcpInitPromise) return this.mcpInitPromise;
+    this.mcpInitPromise = (async () => {
+      try {
+        if (!this.config.servers?.servers) return;
+        this.mcpHost = new McpHost({
+          servers: this.config.servers.servers,
+        });
+        await this.mcpHost.initAutoStartServers();
+        this.tools = await this.mcpHost.getTools(true);
+        this.toolHandlers = await this.mcpHost.getToolHandlers();
+      } catch (err) {
+        this.sendToTui({
+          type: 'warning',
+          message: `MCP initialization warning: ${err instanceof Error ? err.message : String(err)}`,
+        });
+      }
+    })();
+    return this.mcpInitPromise;
   }
 
   private initAdapter(): void {
@@ -136,14 +166,20 @@ export class SessionDriver {
       return;
     }
 
+    await this.initMcp();
+
     const tier = this.getTier() as 'full' | 'medium' | 'min';
+    const memoryService = new MemoryService();
     const loop = new AgentLoop({
       adapter: this.adapter,
       tracer: this.tracer,
+      memoryService,
       role: this.role,
       tier,
       userGlobalPrompt: this.systemOverride,
       projectPrompt: this.appendSystem,
+      tools: this.tools,
+      toolHandlers: this.toolHandlers,
     });
 
     const startTime = Date.now();
@@ -491,6 +527,9 @@ export class SessionDriver {
   }
 
   public exit(): void {
+    if (this.mcpHost) {
+      void this.mcpHost.shutdown();
+    }
     this.sendToTui({ type: 'exit' });
     if (this.onExit) {
       this.onExit();
