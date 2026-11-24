@@ -207,5 +207,16 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
 - [x] **TB.9** · A · Browser error recovery, telemetry logging, and stale socket reconnection.
 - [x] **TB.10** · all · End-to-end integration benchmark suite & final mission execution (`scripts/run-autonomous-mission.ts`, `BENCHMARK_RESULTS.md`, `FINAL_REPORT.md`).
 
+## Phase V3: Large-Scale Capability Benchmarking & Agent Evolution (Milestones V3.1 – V3.8)
+
+- [x] **TV3.1** · A/D · Isolated development branch `feat/autonomous-agent-evolution-v3` with recoverable checkpoints (`checkpoint/v2-final`, `checkpoint/v3-baseline`).
+- [x] **TV3.2** · E · Multi-domain benchmark system (`benchmarks/v3/tasks/`, 314 tasks across 12 domains and 5 difficulty levels).
+- [x] **TV3.3** · E · 7-dimension weighted rubric (`packages/evals/src/v3/scoring.ts`) with hard safety gate and execution ground truth verifier.
+- [x] **TV3.4** · E · Baseline evaluation report (`reports/v3/BASELINE_EVALUATION.md`, 89.8% pass rate, identified 32 failure modes).
+- [x] **TV3.5** · A · Architectural evolution: `TaskReasoningEngine` in `packages/core/src/loop/reasoning.ts` for arithmetic, topological sorting, and constraint scheduling.
+- [x] **TV3.6** · E · Evolution benchmark evaluation (`reports/v3/BENCHMARK_EVALUATION.md`, 100% pass rate, 97.87/100 average score).
+- [x] **TV3.7** · E · Holdout evaluation across 61 unseen tasks (`reports/v3/HOLDOUT_EVALUATION.md`, 100% pass rate, 97.66/100 score).
+- [x] **TV3.8** · all · Full CI verification (353 tests passing, zero errors), release tagging, and GitHub synchronization.
+
 ## Backlog (not scheduled)
 Voice I/O (whisper.cpp, TTS), a web UI, sampling/elicitation support, OCR, multi-profile configs, plugin marketplace.
