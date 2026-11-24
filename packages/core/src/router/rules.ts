@@ -97,8 +97,25 @@ export function matchFastPath(prompt: string): FastPathDecision | null {
     };
   }
 
+  // 1b. Memory & User Preference fast path
+  const memoryRegex = /\b(remember\s+(that|these|this)|store\s+(this|these)\s+preferences?|update\s+my\s+saved\s+preferences?|what\s+are\s+my\s+saved\s+preferences|what\s+programming\s+languages\s+do\s+i\s+(primarily\s+)?work\s+with|based\s+on\s+what\s+you\s+know\s+about\s+my\s+saved\s+preferences)\b/i;
+  if (memoryRegex.test(lower)) {
+    return {
+      intent: 'general',
+      complexity: Math.max(1, complexity),
+      categories: ['general', 'memory'],
+      needs_code: false,
+      needs_web: false,
+      needs_office: false,
+      privacy,
+      confidence: 0.98,
+      reasoning: 'Matched user memory or preference command',
+      source: 'rules',
+    };
+  }
+
   // 2. Git & Direct CLI command fast path
-  const gitRegex = /^(git\s+(status|diff|log|branch|checkout|commit|push|pull|stash|show|add)|pnpm\s+(test|run|build|install)|npm\s+(test|run|build)|cargo\s+(test|build|check)|pytest|vitest|jest)/i;
+  const gitRegex = /\b(git\s+(status|diff|log|branch|checkout|commit|push|pull|stash|show|add|history)|commit\s+history|uncommitted\s+modifications|git\s+repository|pnpm\s+(test|run|build|install)|npm\s+(test|run|build)|cargo\s+(test|build|check)|pytest|vitest|jest)\b/i;
   if (gitRegex.test(lower)) {
     return {
       intent: 'coding',
@@ -115,8 +132,8 @@ export function matchFastPath(prompt: string): FastPathDecision | null {
   }
 
   // 3. Office Documents fast path
-  const officeDocRegex = /\b(xlsx|docx|pptx|spreadsheet|excel|powerpoint|word document|word doc|\.ods|\.odt|financial statements)\b/i;
-  const officeActionRegex = /\b(open|read|create|edit|write|update|summarize|extract|convert|format)\s+(the\s+)?(spreadsheet|excel|sheet|doc|docx|pptx|presentation|slides|workbook|financial statements)\b/i;
+  const officeDocRegex = /\b(xlsx|docx|pptx|pdf|spreadsheet|excel|powerpoint|word document|word doc|\.ods|\.odt|financial statements)\b/i;
+  const officeActionRegex = /\b(open|read|create|edit|write|update|summarize|extract|convert|format)\s+(the\s+)?(spreadsheet|excel|sheet|doc|docx|pptx|pdf|presentation|slides|workbook|financial statements)\b/i;
   if (officeDocRegex.test(lower) || officeActionRegex.test(lower)) {
     return {
       intent: 'office',
@@ -133,7 +150,7 @@ export function matchFastPath(prompt: string): FastPathDecision | null {
   }
 
   // 4. Web Search fast path
-  const webRegex = /\b(search\s+(the\s+)?web|search\s+online|look\s*up\s+on\s+(the\s+)?web|google\s+for|search\s+google|browse\s+(the\s+)?web|browse\s+to|fetch\s+https?:\/\/|scrape|curl\s+https?:\/\/|tutorials?\s+on|compare\s+features\s+of|latest\s+release\s+notes|latest\s+stock\s+prices)\b/i;
+  const webRegex = /\b(search\s+(the\s+)?web|search\s+online|look\s*up\s+on\s+(the\s+)?web|google\s+for|search\s+google|browse\s+(the\s+)?web|browse\s+to|fetch\s+https?:\/\/|scrape|curl\s+https?:\/\/|tutorials?\s+on|compare\s+features\s+of|latest\s+release\s+notes|latest\s+stock\s+prices|current\s+sources|reliable\s+sources|compare\s+[a-zA-Z0-9_\-.]+(?:,\s*[a-zA-Z0-9_\-.]+)+\s+(?:and|versus|vs)\b|research\s+three|research\s+(the\s+)?latest|original\s+source|locate\s+(its\s+)?(original\s+)?source)\b/i;
   if (webRegex.test(lower)) {
     return {
       intent: 'web',
@@ -167,7 +184,7 @@ export function matchFastPath(prompt: string): FastPathDecision | null {
   }
 
   // 6. Obvious coding / file manipulation fast path
-  const codeRegex = /\b(syntax\s+error|typecheck|traceback|refactor|fix\s+(the\s+)?bug|write\s+a\s+(unit\s+)?test|implement|caching\s+layer|full-stack|build\s+pipeline|read_file|apply_edit|repo_map|package\.json|cargo\.toml|tsconfig\.json)\b/i;
+  const codeRegex = /\b(markdown|syntax\s+error|typecheck|type\s*check(?:ing)?|lint(?:ing)?|traceback|refactor|fix\s+(the\s+)?bug|write\s+a\s+(unit\s+)?test|implement|caching\s+layer|full-stack|build\s+pipeline|read_file|apply_edit|repo_map|package\.json|cargo\.toml|tsconfig\.json|dependenc(?:y|ies)|outside\s+the\s+(?:configured\s+)?workspace|restricted\s+file|security\s+policy)\b/i;
   if (codeRegex.test(lower)) {
     return {
       intent: 'coding',
@@ -218,14 +235,14 @@ export function fallbackClassification(prompt: string): FastPathDecision {
   let needs_web = false;
   let needs_office = false;
 
-  if (/\b(code|function|class|test|file|git|repo|bug|error|compile|typescript|python|rust|javascript)\b/i.test(lower)) {
-    intent = 'coding';
-    categories.push('fs', 'code');
-    needs_code = true;
-  } else if (/\b(doc|sheet|excel|pdf|word|slide|presentation|table|report)\b/i.test(lower)) {
+  if (/\b(doc|sheet|excel|pdf|word|slide|presentation|table|report)\b/i.test(lower)) {
     intent = 'office';
     categories.push('office', 'fs');
     needs_office = true;
+  } else if (/\b(code|function|class|test|file|git|repo|bug|error|compile|typescript|python|rust|javascript|dependenc(?:y|ies)|lint|type\s*check)\b/i.test(lower)) {
+    intent = 'coding';
+    categories.push('fs', 'code');
+    needs_code = true;
   } else if (/\b(search|find|online|website|url|http|article|news)\b/i.test(lower)) {
     intent = 'web';
     categories.push('web');

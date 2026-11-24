@@ -42,11 +42,29 @@ export interface LoadConfigOptions {
   env?: Record<string, string | undefined>;
 }
 
+function expandEnvVars(value: unknown): unknown {
+  if (typeof value === 'string') {
+    return value.replace(/\$\{([A-Z0-9_]+)\}/gi, (_, varName) => process.env[varName] || '');
+  }
+  if (Array.isArray(value)) {
+    return value.map(expandEnvVars);
+  }
+  if (typeof value === 'object' && value !== null) {
+    const res: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value)) {
+      res[k] = expandEnvVars(v);
+    }
+    return res;
+  }
+  return value;
+}
+
 function tryReadToml(filePath: string): Record<string, unknown> | null {
   if (!fs.existsSync(filePath)) return null;
   const content = fs.readFileSync(filePath, 'utf-8');
   try {
-    return parse(content) as Record<string, unknown>;
+    const parsed = parse(content) as Record<string, unknown>;
+    return expandEnvVars(parsed) as Record<string, unknown>;
   } catch (err) {
     throw new Error(`Failed to parse TOML file at ${filePath}: ${err instanceof Error ? err.message : String(err)}`);
   }

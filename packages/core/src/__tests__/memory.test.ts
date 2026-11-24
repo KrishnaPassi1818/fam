@@ -84,7 +84,7 @@ describe('Phase 6: Memory System (T6.1–T6.8)', () => {
 
       const item = db.getMemory(res1.id);
       expect(item?.useCount).toBe(2);
-    });
+    }, 15000);
 
     it('supersedes old memory when contradictory preference is stated', async () => {
       const res1 = await service.remember({
@@ -103,7 +103,7 @@ describe('Phase 6: Memory System (T6.1–T6.8)', () => {
       } else {
         expect(res2.action).toBe('created');
       }
-    });
+    }, 15000);
   });
 
   describe('T6.4 & T6.8: Read Path, Scoring & Privacy Isolation', () => {

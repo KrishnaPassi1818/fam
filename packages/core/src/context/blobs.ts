@@ -30,6 +30,12 @@ export class BlobStore {
     }
   }
 
+  public hasBlobs(): boolean {
+    if (!fs.existsSync(this.blobsDir)) return false;
+    const files = fs.readdirSync(this.blobsDir);
+    return files.some((f) => f.startsWith('blob_') && f.endsWith('.txt'));
+  }
+
   public shouldOffload(content: string): boolean {
     return content.length >= this.thresholdChars;
   }

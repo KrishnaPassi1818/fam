@@ -87,8 +87,8 @@ export class MemoryService {
       if (oldMem.embedding && embedding.length > 0) {
         const sim = cosineSimilarity(embedding, oldMem.embedding);
 
-        // Near-identical match (> 0.9 similarity)
-        if (sim >= 0.90) {
+        // Related match (>= 0.78 similarity indicates an update or refined preference)
+        if (sim >= 0.78) {
           // If it updates or contradicts the old memory, supersede it
           const newId = `mem_${now}_${Math.random().toString(36).substring(2, 7)}`;
           this.db.markSuperseded(oldMem.id, newId);

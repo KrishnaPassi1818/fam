@@ -236,14 +236,17 @@ export class PromptBuilder {
     ];
 
     // Budget enforcement and drop order:
-    // Drop order: dynamic hints -> project -> user -> profile -> role trimmed
-    // Core is NEVER dropped.
+    // Drop order: dynamic hints -> project -> user -> profile
+    // Note: Core is NEVER dropped. Dynamic context with stored user memories is preserved.
     let currentTokens = layers.reduce((acc, l) => acc + (l.dropped ? 0 : l.tokens), 0);
-
     const dropSequence = [5, 4, 3, 1]; // indices in layers: dynamic, project, user, profile
     for (const idx of dropSequence) {
       const layer = layers[idx];
       if (layer && !layer.dropped && currentTokens > budget) {
+        // Do not drop dynamic layer if it contains critical user memories
+        if (layer.name === 'dynamic' && ctx.memories && ctx.memories.length > 0) {
+          continue;
+        }
         layer.dropped = true;
         currentTokens -= layer.tokens;
       }
