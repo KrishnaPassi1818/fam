@@ -6,6 +6,12 @@ use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 
 pub struct SandboxServer;
 
+impl Default for SandboxServer {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl SandboxServer {
     pub fn new() -> Self {
         Self

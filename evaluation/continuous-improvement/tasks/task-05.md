@@ -6,7 +6,7 @@
 ---
 
 ## 2. Execution Environment
-- **Evaluation ID:** `task-05`
+- **Evaluation ID:** `task-05-qwen35`
 - **Execution Mode:** Local-only (`--local-only --yes`)
 - **Working Directory:** `/home/krishna/Projects/harness/fam-evaluation/workspace`
 - **Harness:** `fam` (`packages/cli/dist/bin/fam.js`)
@@ -15,52 +15,43 @@
 ---
 
 ## 3. Model & Role
-- **Model:** `ollama:llama3.1:8b`
+- **Model:** `ollama:qwen3.5:4b`
 - **Role:** `assistant` (medium tier)
 
 ---
 
 ## 4. Execution Summary
-- **Steps:** 2
-- **Duration:** 159,628 ms (159.6s)
-- **Total Output Tokens:** 1,328
-- **Prompt Token Count:** 590
+- **Steps:** 1
+- **Duration:** 28,420 ms (28.4s)
+- **Total Output Tokens:** 620
 - **Exit Code:** 0
+- **Tool Invocations:** 0 (Direct markdown explanation)
 
 ---
 
 ## 5. Tool-Call Sequence
-1. Step 1: `web_web_search`
-   - Arguments: `{"query": "www.example.com", "limit": 1}`
-   - Result: Returned `http://www.example.com/` domain metadata.
-2. Step 2: Full technical conceptual explanation and walkthrough directly to user.
+None needed. Direct conversational explanation.
 
 ---
 
 ## 6. Actual Output and Artifacts
-- **High-level Summary:** Clear 8-step lifecycle from browser navigation to server response.
-- **DNS Resolution:** Explained recursive query translating human-readable hostname to IP address `93.184.216.34`.
-- **TCP Connection:** Explained three-way handshake establishing reliable, ordered segment transmission.
-- **TLS Handshake:** Detailed certificate exchange, symmetric key generation, and cryptographic protection.
-- **HTTP Methods:** Accurately detailed `GET`, `POST`, `PUT`, `DELETE`.
-- **Status Codes:** Accurately explained `200 OK`, `404 Not Found`, `500 Internal Server Error`.
-- **Headers:** Covered `Content-Type`, `Accept`, `Authorization`.
-- **Practical Example:** Traced complete workflow for visiting `http://www.example.com`.
+- **Structure:**
+  - Simple high-level explanation.
+  - Deep-dive into foundational protocols:
+    1. DNS (Domain Name Resolution, resolver lookup).
+    2. TCP (Reliable transport, 3-way handshake).
+    3. TLS (Encryption, secure channel, certificates).
+    4. HTTP Methods (GET, POST, PUT, DELETE).
+    5. Status Codes (200 OK, 404 Not Found, 500 Server Error).
+    6. Headers (User-Agent, Accept).
+  - Practical end-to-end walkthrough accessing `www.example.com`.
 
 ---
 
 ## 7. Independent Verification
-
-| Required Concept | Covered Accurately | Quality Assessment |
-|---|---|---|
-| Simple explanation | Yes | 8-step browser-to-server lifecycle |
-| DNS lookup | Yes | Recursive resolution & IP caching |
-| TCP connection | Yes | Reliable delivery & segment ordering |
-| TLS handshake | Yes | Key exchange & certificate validation |
-| HTTP methods | Yes | GET, POST, PUT, DELETE |
-| Status codes | Yes | 2xx, 4xx, 5xx |
-| HTTP headers | Yes | Content-Type, Authorization, Accept |
-| Practical example | Yes | Step-by-step example.com walkthrough |
+- All required concepts covered: DNS, TCP, TLS, Methods, Status Codes, Headers.
+- Clear progression from layman-accessible explanation to network layers.
+- Real-world practical example detailing the full request-response lifecycle.
 
 ---
 
@@ -68,14 +59,19 @@
 
 | Evaluation Dimension | Max | Awarded | Rationale |
 |---|---|---|---|
-| Understanding user intent | 10 | 10 | Fully addressed every requested technical concept and example. |
-| Planning and decomposition | 10 | 9 | Logical progression from high-level summary to technical deep-dive. |
-| Tool selection and tool-call quality | 15 | 9 | Invoked unrequested `web_web_search` for `example.com` before generating explanation. |
-| Tool argument correctness | 10 | 10 | Tool call arguments were valid. |
-| Execution correctness | 15 | 15 | Complete technical accuracy across all network layers and HTTP protocol standards. |
-| Independent verification | 10 | 10 | Verified against standard HTTP/1.1 and TLS RFC specifications. |
-| Context and token efficiency | 10 | 8 | 1,328 generated tokens, detailed but within budget. |
-| Latency and resource efficiency | 5 | 3 | 159.6s duration due to web search and lengthy local generation. |
-| Safety and privacy | 10 | 10 | No safety or permission boundary violations. |
-| Final response quality | 5 | 5 | Outstanding technical clarity and structure. |
-| **Total** | **100** | **89** | **Performance Level: Good (80–89)** |
+| Understanding user intent | 10 | 10 | Addressed every requested technical concept and format constraint. |
+| Planning and decomposition | 10 | 10 | Logical pedagogical progression from simple overview to technical layers. |
+| Tool selection and tool-call quality | 15 | 15 | Avoided unneeded web search or file calls for standard technical knowledge. |
+| Tool argument correctness | 10 | 10 | N/A (no tools needed). |
+| Execution correctness | 15 | 15 | Factually and architecturally sound explanation of network protocols. |
+| Independent verification | 10 | 10 | Verified protocol sequence: DNS -> TCP -> TLS -> HTTP Req -> HTTP Resp -> Close. |
+| Context and token efficiency | 10 | 9 | Complete explanation in single turn within 620 tokens. |
+| Latency and resource efficiency | 5 | 4 | 28.4s on RTX 4050 Laptop GPU. |
+| Safety and privacy | 10 | 10 | Zero leaks, local execution. |
+| Final response quality | 5 | 5 | Clean markdown formatting with bolded headers and concise bullet points. |
+| **Total** | **100** | **98** | **Performance Level: Excellent (90–100)** |
+
+---
+
+## 9. Identified Weaknesses & Failure Classification
+- **Classification:** None (`SUCCESS`).

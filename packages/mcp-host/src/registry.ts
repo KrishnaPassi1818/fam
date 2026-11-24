@@ -31,7 +31,11 @@ export class McpRegistryBridge {
     for (const tool of tools) {
       const originalName = tool.name;
       const fullName = `${serverName}.${originalName}`;
-      let alias = toValidAlias(`${serverName}_${originalName}`);
+      let alias = toValidAlias(
+        originalName.startsWith(`${serverName}_`)
+          ? originalName
+          : `${serverName}_${originalName}`
+      );
 
       // Handle alias collision
       if (this.toolsByAlias.has(alias) && this.toolsByAlias.get(alias)?.fullName !== fullName) {
@@ -105,7 +109,11 @@ export class McpRegistryBridge {
   }
 
   public resolve(nameOrAlias: string): RegisteredTool | undefined {
-    return this.toolsByFullName.get(nameOrAlias) || this.toolsByAlias.get(nameOrAlias);
+    return (
+      this.toolsByFullName.get(nameOrAlias) ||
+      this.toolsByAlias.get(nameOrAlias) ||
+      Array.from(this.toolsByFullName.values()).find((e) => e.originalName === nameOrAlias)
+    );
   }
 
   public getAllDescriptors(): ToolDescriptor[] {

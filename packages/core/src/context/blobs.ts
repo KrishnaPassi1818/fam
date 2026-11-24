@@ -16,6 +16,7 @@ export interface BlobMetadata {
 export class BlobStore {
   private readonly blobsDir: string;
   private readonly thresholdChars: number;
+  private readonly sessionHandles = new Set<string>();
 
   constructor(options?: { blobsDir?: string; thresholdChars?: number }) {
     this.blobsDir =
@@ -31,9 +32,7 @@ export class BlobStore {
   }
 
   public hasBlobs(): boolean {
-    if (!fs.existsSync(this.blobsDir)) return false;
-    const files = fs.readdirSync(this.blobsDir);
-    return files.some((f) => f.startsWith('blob_') && f.endsWith('.txt'));
+    return this.sessionHandles.size > 0;
   }
 
   public shouldOffload(content: string): boolean {
@@ -48,6 +47,7 @@ export class BlobStore {
     if (!fs.existsSync(filePath)) {
       fs.writeFileSync(filePath, content, 'utf-8');
     }
+    this.sessionHandles.add(handle);
 
     const lines = content.split('\n');
     const totalLines = lines.length;

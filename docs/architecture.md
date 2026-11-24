@@ -77,20 +77,44 @@ interface ToolCall { id: string; name: string; args: unknown }
 - **Fallback tool-call parser** for models that emit calls as JSON in text.
 
 ### 4.2 Agent loop (`core/loop`)
+The agent loop is governed by an explicit `AgentStateMachine` (`packages/core/src/loop/state-machine.ts`) tracking 13 formal execution states:
+- `IDLE`: Initial state before execution starts.
+- `UNDERSTANDING`: Analyzing user request and intent.
+- `PLANNING`: Constructing execution plan or DAG.
+- `DISCOVERING_TOOLS`: Selecting relevant tools via router/retriever.
+- `REASONING`: Invoking model adapter with context.
+- `WAITING_FOR_PERMISSION`: Awaiting user authorization for Tier 2/3 tools.
+- `EXECUTING`: Running approved tool calls via `ToolExecutor`.
+- `OBSERVING`: Processing tool results and updating conversation context.
+- `RECOVERING`: Handling tool errors, repetition traps, or repair attempts.
+- `VERIFYING`: Executing automated tests, syntax checks, or outcome verification.
+- `COMPLETED`: Successful task termination.
+- `FAILED`: Unrecoverable failure or budget exhaustion.
+- `CANCELLED`: User or signal abortion.
+
 ```
 while !done:
+  stateMachine.transition(UNDERSTANDING -> PLANNING -> DISCOVERING_TOOLS -> REASONING)
   prompt  = PromptBuilder.build(...)
   tools   = ToolRetriever.select(turn)
   ctx     = ContextManager.fit(history, prompt, tools, model)
   resp    = adapter.chat(ctx)
-  if resp.toolCalls: results = Executor.run(calls); history += results; continue
+  if resp.toolCalls:
+    stateMachine.transition(EXECUTING)
+    results = Executor.run(calls)   // Backs up files via BackupService before writes
+    stateMachine.transition(OBSERVING)
+    history += results
+    continue
   verdict = Verifier.check(resp)       // optional, by task type
-  if verdict.fail && attempts < N: feedback → continue
+  if verdict.fail && attempts < N:
+    stateMachine.transition(RECOVERING)
+    feedback → continue
   if verdict.fail: Escalator.next()    // bigger model
+  stateMachine.transition(COMPLETED)
   done
-guards: maxSteps, maxTokens, maxWallMs, repetition detector, abort signal
+guards: maxSteps, maxTokens, maxWallMs, repetition detector (>=3 repetitions), abort signal
 ```
-Loop detection: hash of (tool, normalized args) repeated ≥3 → inject a "you are repeating yourself" message, then escalate.
+Loop detection: hash of (tool, normalized args) repeated ≥3 → halts loop or injects correction feedback, preventing model runaway.
 
 ### 4.3 Tool registry and MCP host (`mcp-host`)
 - `McpHost` spawns servers from config (`stdio` or `http`), lazily on first use or first retrieval hit. It handles `initialize`, `tools/list`, `list_changed`, reconnect with backoff, and server health.

@@ -5,7 +5,8 @@
     "rootDir": "./src"
   },
   "references": [
-    { "path": "../shared" }
+    { "path": "../shared" },
+    { "path": "../mcp-host" }
   ],
   "include": ["src/**/*"]
 }

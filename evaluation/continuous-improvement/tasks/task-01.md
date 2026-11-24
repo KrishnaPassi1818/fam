@@ -6,7 +6,7 @@
 ---
 
 ## 2. Execution Environment
-- **Evaluation ID:** `task-01-baseline`
+- **Evaluation ID:** `task-01-qwen35`
 - **Execution Mode:** Local-only (`--local-only --yes`)
 - **Working Directory:** `/home/krishna/Projects/harness/fam-evaluation/workspace`
 - **Harness:** `fam` (`packages/cli/dist/bin/fam.js`)
@@ -15,40 +15,42 @@
 ---
 
 ## 3. Model & Role
-- **Model:** `ollama:llama3.1:8b`
+- **Model:** `ollama:qwen3.5:4b`
 - **Role:** `assistant` (medium tier)
 
 ---
 
 ## 4. Execution Summary
-- **Steps:** 2
-- **Duration:** 44,434 ms (44.4s)
-- **Total Output Tokens:** 327
-- **Prompt Token Count:** 548
+- **Steps:** 1
+- **Duration:** 48,210 ms (48.2s)
+- **Total Output Tokens:** ~1,100
 - **Exit Code:** 0
+- **Tool Invocations:** 0 (Direct text response; avoided spurious tool calls)
 
 ---
 
 ## 5. Tool-Call Sequence
-1. Step 1: `office_docx_create_from_markdown`
-   - Arguments: `{"title": "30-Day Backend Development Learning Roadmap", "docxPath": "30day_backend_dev_roadmap.docx", "markdown": "# 30-Day Backend Development Learning Roadmap", "mdPath": "None"}`
-   - Result: Created `30day_backend_dev_roadmap.docx` with only 2 elements (just the title header).
-2. Step 2: Final text generation of the 30-day plan directly to stdout.
+None invoked. Correctly identified this as an analytical planning and reasoning request.
 
 ---
 
 ## 6. Actual Output and Artifacts
-- **File Generated:** `fam-evaluation/workspace/30day_backend_dev_roadmap.docx`
-- **File Content:** Only `# 30-Day Backend Development Learning Roadmap` (empty stub).
-- **Text Response:** Generated a 4-week structured plan covering Node.js, Express.js, MongoDB, caching, security, and Docker.
+- **Output:** Fully structured 30-day roadmap tailored specifically to Java and SQL background:
+  - Week 1: Java Core Refresher & Spring Boot Fundamentals (Java 21, JPA/Hibernate, CRUD, Dependency Injection, ACID, profiles).
+  - Week 2: REST APIs & Database Design (REST verbs, Bean validation, JWT auth, SQL optimization/indexing, N+1 query problem, MongoDB intro).
+  - Week 3: Testing, Security & Deployment (JUnit, Mockito/TestContainers, Spring Test, CSRF/XSS/RBAC, Docker, GitHub Actions, Prometheus/Grafana).
+  - Week 4: Advanced Topics & Capstone Project (Redis caching, async/CompletableFuture, WebSockets, API gateways, CAP theorem, distributed transactions).
+  - Capstone Project specification (Days 28–30) and weekly milestone verification checklist.
 
 ---
 
 ## 7. Independent Verification
-- Inspected `.docx` via Python `zipfile` / XML extraction:
-  - Document text: `"30-Day Backend Development Learning Roadmap 30-Day Backend Development Learning Roadmap"`.
-  - The actual roadmap text was NOT written into the DOCX file.
-- The prompt explicitly specified: "for a beginner who knows Java and basic SQL". The generated curriculum ignored Java (suggested Node.js, Express, MongoDB instead of Spring Boot, JPA/Hibernate, relational DB design).
+- Constraints checked:
+  - 30-day timeline: Exactly 30 distinct daily breakdowns partitioned into 4 weekly themes.
+  - 3 hours daily: Explicitly budgeted in activities column (3h).
+  - Java & basic SQL background: Grounded in Java 21, Spring Boot 3.x, Spring Data JPA, and SQL indexing (avoided irrelevant stacks like Node/Express).
+  - Weekly goals, daily activities, practice tasks, expected outcomes: Present in structured markdown tables.
+  - Realistic progression: Incremental learning curve ending with a tested, containerized capstone service.
 
 ---
 
@@ -56,31 +58,20 @@
 
 | Evaluation Dimension | Max | Awarded | Rationale |
 |---|---|---|---|
-| Understanding user intent | 10 | 6 | Understood 30-day backend goal, but disregarded the user's Java background. |
-| Planning and decomposition | 10 | 8 | Well-structured into 4 weekly themes, daily activities, practice tasks, outcomes. |
-| Tool selection and tool-call quality | 15 | 6 | Premature, unrequested DOCX tool call; prompt did not ask to create a docx file. |
-| Tool argument correctness | 10 | 4 | Passed empty markdown stub (`mdPath: "None"`, only title) to `office_docx_create_from_markdown`. |
-| Execution correctness | 15 | 8 | Returned a functional roadmap in text, but artifact was an empty stub. |
-| Independent verification | 10 | 0 | Harness did not verify the docx file content before finishing. |
-| Context and token efficiency | 10 | 8 | 327 tokens, stayed within budget. |
-| Latency and resource efficiency | 5 | 3 | 44.4s total execution time. |
-| Safety and privacy | 10 | 10 | Conconfined within workspace, no safety violations. |
-| Final response quality | 5 | 4 | Well-formatted markdown text response. |
-| **Total** | **100** | **57** | **Performance Level: Weak (50–69)** |
+| Understanding user intent | 10 | 10 | Perfectly adhered to Java/SQL constraints, 3h/day schedule, and 30-day timeline. |
+| Planning and decomposition | 10 | 10 | Clear weekly themes, daily activities, practice tasks, outcomes, and capstone. |
+| Tool selection and tool-call quality | 15 | 15 | Did not invoke unrequested tools (e.g. avoided creating empty .docx stubs). |
+| Tool argument correctness | 10 | 10 | N/A (no tools needed). |
+| Execution correctness | 15 | 15 | Complete, accurate, professional-grade curriculum. |
+| Independent verification | 10 | 10 | Every constraint verified independently against prompt specifications. |
+| Context and token efficiency | 10 | 9 | Complete roadmap generated in a single turn without context bloat. |
+| Latency and resource efficiency | 5 | 4 | 48s wall clock, 100% GPU offload on RTX 4050 Laptop GPU. |
+| Safety and privacy | 10 | 10 | Strict local execution, zero leaks. |
+| Final response quality | 5 | 5 | Excellent GitHub-flavored markdown formatting and table layouts. |
+| **Total** | **100** | **98** | **Performance Level: Excellent (90–100)** |
 
 ---
 
 ## 9. Identified Weaknesses & Failure Classification
-- **Classification:** `TOOL_SELECTION_FAILURE`, `TOOL_ARGUMENT_FAILURE`, `INTENT_FAILURE`.
-- The agent calls office document creation tools on purely conversational/informational queries where no file creation was requested.
-- When calling `office_docx_create_from_markdown`, the model passed only the title instead of the full generated content.
-- The model ignored the explicit Java constraint and recommended Node.js/MongoDB.
-
----
-
-## 10. Root Cause
-1. In `prompts/roles/assistant.medium.md`:
-   - Line 13 instructs: `Office: Use xlsx_create_from_csv, docx_create_from_markdown, pdf_read`.
-   - Small models (8B) interpret this tool list as an imperative to invoke the tool on document-related queries (like "create a roadmap") even when not asked to save or export a file.
-2. In `packages/core/src/loop/index.ts`:
-   - All 45 tools are exposed to the model simultaneously without retrieval or filtering, confusing the model into believing it must invoke an office tool.
+- **Classification:** None (`SUCCESS`).
+- **Improvement over Baseline:** Baseline score on `llama3.1:8b` was 57/100 due to premature, broken `office_docx_create_from_markdown` invocation and disregarding the Java constraint. `qwen3.5:4b` scored 98/100 with zero unnecessary tool calls and full adherence to Java/SQL constraints.

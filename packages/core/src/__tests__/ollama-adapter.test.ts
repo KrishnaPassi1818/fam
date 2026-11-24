@@ -46,6 +46,13 @@ describe('OllamaAdapter', () => {
     expect(calls5[0]?.name).toBe('fs_write_file');
     expect(calls5[1]?.name).toBe('fs_write_file');
     expect(calls5[2]?.name).toBe('sandbox_run_command');
+
+    // Multi-block tool calls with extra stray closing braces (e.g. }}} in model output)
+    const text6 = '{"name": "fs_write_file", "arguments": {"path": "a.py", "content": "print(1)"}}}\n{"name": "fs_write_file", "arguments": {"path": "b.py", "content": "print(2)"}}';
+    const calls6 = adapter.parseFallbackToolCalls(text6);
+    expect(calls6).toHaveLength(2);
+    expect(calls6[0]?.name).toBe('fs_write_file');
+    expect(calls6[1]?.name).toBe('fs_write_file');
   });
 
   it('streams chunks and usage from mocked Ollama stream', async () => {

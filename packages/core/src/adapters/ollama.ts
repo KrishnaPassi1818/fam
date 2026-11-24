@@ -169,10 +169,12 @@ export class OllamaAdapter implements ModelAdapter {
           if (depth === 0) startIdx = i;
           depth++;
         } else if (char === '}') {
-          depth--;
-          if (depth === 0 && startIdx !== -1) {
-            jsonObjects.push(candidate.slice(startIdx, i + 1));
-            startIdx = -1;
+          if (depth > 0) {
+            depth--;
+            if (depth === 0 && startIdx !== -1) {
+              jsonObjects.push(candidate.slice(startIdx, i + 1));
+              startIdx = -1;
+            }
           }
         }
       }
@@ -205,11 +207,17 @@ export class OllamaAdapter implements ModelAdapter {
         if (name) {
           const rawArgs = pObj.args || pObj.parameters || pObj.arguments || {};
           const args = typeof rawArgs === 'object' && rawArgs !== null ? rawArgs : { value: rawArgs };
-          calls.push({
-            id: `call_${++this.callCounter}_${Date.now().toString(36)}`,
-            name,
-            args: args as Record<string, unknown>,
-          });
+          // Ignore template/tutorial placeholder arguments like "<path-to-file>" or "<updated-code>"
+          const isPlaceholder = Object.values(args).some(
+            (v) => typeof v === 'string' && /^<[\w-]+>$/.test(v.trim())
+          );
+          if (!isPlaceholder) {
+            calls.push({
+              id: `call_${++this.callCounter}_${Date.now().toString(36)}`,
+              name,
+              args: args as Record<string, unknown>,
+            });
+          }
         }
       }
     }
@@ -264,6 +272,7 @@ export class OllamaAdapter implements ModelAdapter {
       keep_alive: this.keepAlive,
       options: {
         num_ctx: req.numCtx || this.defaultNumCtx,
+        num_predict: 4096,
         ...(this.numGpu !== undefined ? { num_gpu: this.numGpu } : {}),
         ...(req.temperature !== undefined ? { temperature: req.temperature } : {}),
       },

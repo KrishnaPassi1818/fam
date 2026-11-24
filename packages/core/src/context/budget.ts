@@ -10,6 +10,14 @@ export interface ModelBudgetAllocation {
 }
 
 export const DEFAULT_BUDGETS: Record<string, ModelBudgetAllocation> = {
+  'qwen35': {
+    numCtx: 8192,
+    system: 500,
+    tools: 3000,
+    memory: 500,
+    history: 3192,
+    reserve: 1000,
+  },
   '4b': {
     numCtx: 4096,
     system: 400,

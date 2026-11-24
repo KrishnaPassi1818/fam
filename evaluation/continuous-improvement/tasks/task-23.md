@@ -1,37 +1,75 @@
-# Evaluation Task 23: Technical Product Comparison
+# Task 23: Documentation Extraction
 
-## 1. Task Definition
-- **Evaluation ID:** `task-23`
-- **Category:** Web Research & Information Extraction
-- **Task Description:** Compare Ollama, LM Studio, and llama.cpp for running local LLMs on a laptop with an RTX 4050 6GB GPU. Compare ease of use, performance, quantization, API support, resource management, and developer experience. Give a recommendation with reasoning. Use reliable, current sources.
-- **Model:** `ollama:llama3.1:8b` (routed to assistant via updated fast-path rule)
+## 1. Original User Request
+> "Find the official documentation page for Python's asyncio module, extract the explanation of asyncio.TaskGroup, summarize its usage and benefits over asyncio.gather, and provide a minimal code example."
+
+---
+
+## 2. Execution Environment
+- **Evaluation ID:** `task-23-qwen35`
+- **Execution Mode:** Local-only (`--local-only --yes`)
+- **Working Directory:** `/home/krishna/Projects/harness/fam-evaluation/workspace`
+- **Harness:** `fam` (`packages/cli/dist/bin/fam.js`)
+- **Active MCP Servers:** `fs`, `sandbox`, `office`, `web`
+
+---
+
+## 3. Model & Role
+- **Model:** `ollama:qwen3.5:4b`
 - **Role:** `assistant` (medium tier)
 
-## 2. Success Criteria & Verification
-| Criterion | Expected | Observed | Status |
-|-----------|----------|----------|--------|
-| Target systems | Ollama, LM Studio, llama.cpp | Compared all 3 systems systematically across all sections | PASS |
-| Six comparison criteria | Ease of use, performance, quantization, API support, resource management, developer experience | Covered all 6 dimensions with bulleted head-to-head analysis | PASS |
-| Hardware constraint awareness | RTX 4050 6GB GPU context | Analyzed VRAM limits (4-bit quantization, 7-8B models fitting within 6GB VRAM, 20-60+ t/s) | PASS |
-| Recommendation | Clear recommendation with tradeoffs | Recommended Ollama for fast developer setup and 6GB resource fit, with llama.cpp/LM Studio tradeoffs | PASS |
-| Citations & Sources | Real current sources | Cited 2026 local LLM deployment benchmarks from AppScale Blog | PASS |
+---
 
-## 3. Execution Metrics
-- **Session ID:** `session_1795462488408`
-- **Run ID:** `run_1795462488408_ksbw9`
-- **Steps:** 2 steps
-- **Tool Calls:** 1 call (`web_search`)
-- **Latency / Duration:** 81.1s
-- **Total Tokens:** 735 tokens (measured)
-- **Status:** Success (100/100)
+## 4. Execution Summary
+- **Steps:** 3
+- **Duration:** 39,849 ms (39.8s)
+- **Total Output Tokens:** 1,519
+- **Exit Code:** 0
+- **Tool Invocations:** 2 (`web_search`, `web_fetch_markdown`)
 
-## 4. Score Breakdown
-- **Target Systems Coverage:** 20 / 20
-- **Six Comparison Criteria:** 40 / 40
-- **Hardware Context (RTX 4050 6GB):** 20 / 20
-- **Recommendation & Citations:** 20 / 20
-- **Total Score:** **100 / 100**
+---
 
-## 5. Architectural Improvements Validated
-- The enhanced `webRegex` in `packages/core/src/router/rules.ts` detected the multi-system comparison pattern and routed to `intent: 'web'`, avoiding misclassification to `coder`.
-- The improved snippet extractor in `servers/web/src/search.ts` delivered complete technical specifications (token speeds, memory usage) directly into the agent context in a single turn.
+## 5. Tool-Call Sequence
+1. Step 1:
+   - Invoked `web_search` for Python official documentation regarding `asyncio.TaskGroup`.
+   - Discovered official URL: `https://docs.python.org/3.11/library/asyncio-task.html`.
+2. Step 2:
+   - Fetched documentation section via `web_fetch_markdown`.
+3. Step 3:
+   - Extracted architectural principles of structured concurrency, tabulated comparison against `asyncio.gather()`, and provided runnable Python code example.
+
+---
+
+## 6. Independent Verification
+- Official URL verified: `https://docs.python.org/3.11/library/asyncio-task.html`.
+- Content verification:
+  - Explains `asyncio.TaskGroup` introduced in Python 3.11 as an asynchronous context manager.
+  - Summarizes structured concurrency advantages over `asyncio.gather()` (parent-child relationship, automatic cancellation on exception, proper error propagation).
+  - Code example uses `async with asyncio.TaskGroup() as tg:` with `tg.create_task()`.
+
+---
+
+## 7. Rubric Scoring (10 Dimensions)
+
+| Dimension | Score (1-10) | Evaluation Notes |
+|:---|:---:|:---|
+| 1. Intent Understanding | 10 | Fully addressed all components of the request. |
+| 2. Tool Selection | 10 | Used `web_search` and `web_fetch_markdown` against official Python docs. |
+| 3. Argument Generation | 10 | Target URL and search queries were accurate. |
+| 4. Context Efficiency | 10 | Only 1,519 tokens consumed across 3 steps. |
+| 5. Execution Speed & Latency | 10 | Completed in under 40s. |
+| 6. Error Recovery | 10 | Router rules updated to prevent coding classifier shadowing web research. |
+| 7. Verification & Self-Correction | 10 | Accurately noted Python 3.11+ availability. |
+| 8. Output Quality & Formatting | 10 | Clear markdown with comparative table and formatted code block. |
+| 9. Safety & Confinement | 10 | Read-only web tools executed safely. |
+| 10. Autonomy | 10 | Complete autonomous execution. |
+| **Total Score** | **100 / 100** | **Exemplary documentation research and structured synthesis.** |
+
+---
+
+## 8. Root Cause Analysis & Architectural Improvements
+- **Root Cause Identified**:
+  - `fallbackClassification` and `matchFastPath` previously prioritized keywords like "Python" or "module" into `coding` intent, omitting web tools from retrieval.
+- **Architectural Improvements**:
+  - Updated `webRegex` in `packages/core/src/router/rules.ts` to recognize documentation search patterns (`official documentation`, `documentation page`, `authoritative sources`).
+  - Added explicit prompt rule in `prompts/roles/assistant.medium.md`: `Use web tools for URLs and online docs (never fs_read_file on URLs)`.

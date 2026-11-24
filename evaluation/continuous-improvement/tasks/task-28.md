@@ -1,35 +1,67 @@
-# Evaluation Task 28: Memory Relevance
+# Task 28: Multi-Fact Memory
 
-## 1. Task Definition
-- **Evaluation ID:** `task-28`
-- **Category:** Persistent Memory & Context
-- **Task Description:** Based on what you know about my saved preferences, recommend a suitable approach for building a small personal AI assistant. Explain which of my preferences influenced the recommendation.
-- **Model:** `ollama:llama3.1:8b` (routed via memory fast-path rule)
+## 1. Original User Request
+> "Remember three facts about my setup: 1) My monitor is a 34-inch ultrawide, 2) My keyboard is a mechanical 65% with tactile switches, 3) My OS is Fedora 41 Workstation."
+
+---
+
+## 2. Execution Environment
+- **Evaluation ID:** `task-28-qwen35`
+- **Execution Mode:** Local-only (`--local-only --yes`)
+- **Working Directory:** `/home/krishna/Projects/harness/fam-evaluation/workspace`
+- **Harness:** `fam` (`packages/cli/dist/bin/fam.js`)
+- **Active MCP Servers:** `fs`, `sandbox`, `office`, `web`
+
+---
+
+## 3. Model & Role
+- **Model:** `ollama:qwen3.5:4b`
 - **Role:** `assistant` (medium tier)
 
-## 2. Success Criteria & Verification
-| Criterion | Expected | Observed | Status |
-|-----------|----------|----------|--------|
-| Memory retrieval & contextual application | Apply saved preferences (local-first, Python/Java, concise) | Recommended local-first architecture using Python, avoiding cloud services | PASS |
-| Architecture recommendation | Actionable design for personal AI assistant | Proposed 5-step implementation: framework selection, local tool integration, local model training, and privacy confinement | PASS |
-| Preference influence explanation | Explicit attribution to user preferences | Explicitly stated: "Your preference for local-first solutions influenced this recommendation. Your preference for working with Python also played a significant role..." | PASS |
-| Unrelated memory isolation | No hallucinated unrelated personal facts | Cleanly confined to the 3 saved technical preferences | PASS |
+---
 
-## 3. Execution Metrics
-- **Session ID:** `session_1795463238522`
-- **Run ID:** `run_1795463238522_dr4t8`
-- **Steps:** 2 steps
-- **Tool Calls:** 1 call (`math` x 1)
-- **Latency / Duration:** 30.1s
-- **Total Tokens:** 357 tokens (measured)
-- **Status:** Success (95/100)
+## 4. Execution Summary
+- **Steps:** 2
+- **Duration:** 17,511 ms (17.5s)
+- **Total Output Tokens:** 250
+- **Exit Code:** 0
+- **Tool Invocations:** 1 (`remember`)
 
-## 4. Score Breakdown
-- **Personal AI Assistant Architecture:** 40 / 40
-- **Alignment with Retrieved Preferences:** 30 / 30
-- **Preference Influence Explanation:** 20 / 20
-- **Tool Call Discipline:** 5 / 10 (spurious pseudo-math formula in turn 1)
-- **Total Score:** **95 / 100**
+---
 
-## 5. Architectural Improvements Validated
-- Persistent memory injection directly into the system prompt allowed the agent to synthesize a tailored technical recommendation without needing the user to repeat constraints or preferences.
+## 5. Tool-Call Sequence
+1. Step 1:
+   - Invoked `remember(kind: "semantic", scope: "global", text: "Monitor is a 34-inch ultrawide, Keyboard is a mechanical 65% with tactile switches, OS is Fedora 41 Workstation")`.
+   - Stored embedding vector in SQLite memory database.
+2. Step 2:
+   - Acknowledged successful storage of the setup configuration.
+
+---
+
+## 6. Independent Verification
+- Inspected `~/.fam/db/memory.sqlite`:
+  - Active global memory verified: `[global] Monitor is a 34-inch ultrawide, Keyboard is a mechanical 65% with tactile switches, OS is Fedora 41 Workstation`.
+
+---
+
+## 7. Rubric Scoring (10 Dimensions)
+
+| Dimension | Score (1-10) | Evaluation Notes |
+|:---|:---:|:---|
+| 1. Intent Understanding | 10 | Accurately captured all 3 distinct setup facts. |
+| 2. Tool Selection | 10 | Selected `core.remember`. |
+| 3. Argument Generation | 10 | Unified and preserved all 3 attributes in memory text. |
+| 4. Context Efficiency | 10 | Only 250 tokens used. |
+| 5. Execution Speed & Latency | 10 | Fast 17.5s turn. |
+| 6. Error Recovery | 10 | No errors. |
+| 7. Verification & Self-Correction | 10 | Confirmed persistence. |
+| 8. Output Quality & Formatting | 10 | Direct, helpful response. |
+| 9. Safety & Confinement | 10 | Local SQLite vector store. |
+| 10. Autonomy | 10 | Completely autonomous. |
+| **Total Score** | **100 / 100** | **Accurate multi-fact semantic ingestion.** |
+
+---
+
+## 8. Root Cause Analysis & Architectural Improvements
+- **Key Validation**:
+  - `remember` tool successfully ingests compound multi-attribute facts in a single call, allowing high-density semantic storage.

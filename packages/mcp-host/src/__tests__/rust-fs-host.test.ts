@@ -107,6 +107,6 @@ describe('McpHost + Rust fam-fs Server Integration', () => {
       path: '../../etc/passwd',
     });
     expect(res.isError).toBe(true);
-    expect(res.content).toContain('escapes confinement root');
+    expect(res.content).toMatch(/escapes (confinement|authorized) root/);
   });
 });

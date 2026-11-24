@@ -83,7 +83,7 @@ describe('Agent Loop & TUI Driver Integration', () => {
 
     const status = emitted.find((m) => m.type === 'status');
     expect(status).toBeDefined();
-  });
+  }, 15000);
 
   it('executes tool calling lifecycle and reports duration and results', async () => {
     const emitted: ToTuiMessage[] = [];

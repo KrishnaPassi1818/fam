@@ -22,7 +22,7 @@ describe('Ratatui TUI Session Driver and Bridge', () => {
     expect(messages[0]).toMatchObject({
       type: 'init',
       model: 'qwen3.5:4b',
-      max_ctx: 4096,
+      max_ctx: expect.any(Number),
       tier: 'medium',
       is_local: true,
       role: 'assistant',

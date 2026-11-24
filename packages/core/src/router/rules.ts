@@ -98,7 +98,7 @@ export function matchFastPath(prompt: string): FastPathDecision | null {
   }
 
   // 1b. Memory & User Preference fast path
-  const memoryRegex = /\b(remember\s+(that|these|this)|store\s+(this|these)\s+preferences?|update\s+my\s+saved\s+preferences?|what\s+are\s+my\s+saved\s+preferences|what\s+programming\s+languages\s+do\s+i\s+(primarily\s+)?work\s+with|based\s+on\s+what\s+you\s+know\s+about\s+my\s+saved\s+preferences)\b/i;
+  const memoryRegex = /\b(remember\s+(that|these|this)|store\s+(this|these)\s+preferences?|update\s+my\s+([a-zA-Z]+\s+)?(information|info|preferences?|setup|profile|settings?|os)|switched\s+from|what\s+are\s+my\s+saved\s+preferences|what\s+programming\s+languages\s+do\s+i\s+(primarily\s+)?work\s+with|based\s+on\s+what\s+you\s+know\s+about\s+my\s+saved\s+preferences)\b/i;
   if (memoryRegex.test(lower)) {
     return {
       intent: 'general',
@@ -131,6 +131,23 @@ export function matchFastPath(prompt: string): FastPathDecision | null {
     };
   }
 
+  // 2b. Code / Workspace Search fast path
+  const codeSearchRegex = /\b(search\s+(the\s+)?(workspace|repo|code|source\s+code|project|directory|folder|files?)|search\s+source\s+code|find\s+(all\s+)?(todo|fixme|hack|bugs?|errors?)|grep\b)/i;
+  if (codeSearchRegex.test(lower)) {
+    return {
+      intent: 'coding',
+      complexity: Math.max(1, complexity),
+      categories: ['fs', 'code'],
+      needs_code: true,
+      needs_web: false,
+      needs_office: false,
+      privacy,
+      confidence: 0.98,
+      reasoning: 'Matched workspace code/file search pattern',
+      source: 'rules',
+    };
+  }
+
   // 3. Office Documents fast path
   const officeDocRegex = /\b(xlsx|docx|pptx|pdf|spreadsheet|excel|powerpoint|word document|word doc|\.ods|\.odt|financial statements)\b/i;
   const officeActionRegex = /\b(open|read|create|edit|write|update|summarize|extract|convert|format)\s+(the\s+)?(spreadsheet|excel|sheet|doc|docx|pptx|pdf|presentation|slides|workbook|financial statements)\b/i;
@@ -149,13 +166,34 @@ export function matchFastPath(prompt: string): FastPathDecision | null {
     };
   }
 
+  // 4a. Browser automation & ANARC fast path
+  const browserRegex = /\b(anarc|open\s+(the\s+)?browser|navigate\s+to\s+https?:\/\/|navigate\s+to\s+[a-zA-Z0-9_\-.]+\.[a-zA-Z]{2,}|browser\s+tab|active\s+tab|close\s+tab|switch\s+tab|list\s+tabs|gmail|email\s+inbox|latest\s+emails?|summarize\s+(my\s+)?emails?|send\s+(that\s+)?summary\s+to|click\s+compose|fill\s+input|dom\s+snapshot|browser_screenshot)\b/i;
+  if (browserRegex.test(lower)) {
+    return {
+      intent: 'web',
+      complexity: Math.max(2, complexity),
+      categories: ['browser', 'web'],
+      needs_code: false,
+      needs_web: true,
+      needs_office: false,
+      privacy,
+      confidence: 0.98,
+      reasoning: 'Matched browser automation or email workflow pattern',
+      source: 'rules',
+    };
+  }
+
   // 4. Web Search fast path
-  const webRegex = /\b(search\s+(the\s+)?web|search\s+online|look\s*up\s+on\s+(the\s+)?web|google\s+for|search\s+google|browse\s+(the\s+)?web|browse\s+to|fetch\s+https?:\/\/|scrape|curl\s+https?:\/\/|tutorials?\s+on|compare\s+features\s+of|latest\s+release\s+notes|latest\s+stock\s+prices|current\s+sources|reliable\s+sources|compare\s+[a-zA-Z0-9_\-.]+(?:,\s*[a-zA-Z0-9_\-.]+)+\s+(?:and|versus|vs)\b|research\s+three|research\s+(the\s+)?latest|original\s+source|locate\s+(its\s+)?(original\s+)?source)\b/i;
+  const webRegex = /\b(search\s+(the\s+)?web|search\s+online|look\s*up\s+on\s+(the\s+)?web|google\s+for|search\s+google|browse\s+(the\s+)?web|browse\s+to|fetch\s+https?:\/\/|scrape|curl\s+https?:\/\/|tutorials?\s+on|compare\s+features\s+of|latest\s+release\s+notes|latest\s+stock\s+prices|current\s+sources|reliable\s+sources|authoritative\s+sources?|official\s+documentation|documentation\s+page|find\s+(the\s+)?(official\s+)?documentation|web\s+page\s+url|fetch\s+(a\s+)?(specific\s+)?(web\s+)?page|compare\s+[a-zA-Z0-9_\-.]+(?:,\s*[a-zA-Z0-9_\-.]+)+\s+(?:and|versus|vs)\b|research\s+three|research\s+(the\s+)?latest|original\s+source|locate\s+(its\s+)?(original\s+)?source)\b/i;
   if (webRegex.test(lower)) {
+    const webCategories = ['web'];
+    if (/\b(save|write|store|export|download)\b.*\b(file|disk|doc|markdown|md)\b/i.test(lower)) {
+      webCategories.push('fs');
+    }
     return {
       intent: 'web',
       complexity: Math.max(1, complexity),
-      categories: ['web'],
+      categories: webCategories,
       needs_code: false,
       needs_web: true,
       needs_office: false,
@@ -184,7 +222,7 @@ export function matchFastPath(prompt: string): FastPathDecision | null {
   }
 
   // 6. Obvious coding / file manipulation fast path
-  const codeRegex = /\b(markdown|syntax\s+error|typecheck|type\s*check(?:ing)?|lint(?:ing)?|traceback|refactor|fix\s+(the\s+)?bug|write\s+a\s+(unit\s+)?test|implement|caching\s+layer|full-stack|build\s+pipeline|read_file|apply_edit|repo_map|package\.json|cargo\.toml|tsconfig\.json|dependenc(?:y|ies)|outside\s+the\s+(?:configured\s+)?workspace|restricted\s+file|security\s+policy)\b/i;
+  const codeRegex = /\b(markdown|syntax\s+error|typecheck|type\s*check(?:ing)?|lint(?:ing)?|traceback|refactor|fix\s+(the\s+)?bug|write\s+a\s+(unit\s+)?test|(add|write)\s+tests?|(create|build)\s+(a\s+)?([a-zA-Z0-9_-]+\s+)*(application|app|utility|tool|service|module|script|program)|data\s+models?|business\s+logic|cli\s+interaction|implement|caching\s+layer|full-stack|build\s+pipeline|read_file|apply_edit|repo_map|package\.json|cargo\.toml|tsconfig\.json|dependenc(?:y|ies)|outside\s+the\s+(?:configured\s+)?workspace|restricted\s+file|security\s+policy)\b/i;
   if (codeRegex.test(lower)) {
     return {
       intent: 'coding',

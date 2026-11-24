@@ -1,42 +1,77 @@
-# Evaluation Task 10: Duplicate File Detection
+# Task 10: Duplicate File Detection
 
-## 1. Task Definition
-- **Evaluation ID:** `task-10`
-- **Category:** Filesystem & MCP Tool Operations
-- **Task Description:** Find any duplicate files in the evaluation workspace. Two files are duplicates if their contents are identical. Report duplicate pairs with their paths and file sizes.
-- **Model:** `ollama:llama3.1:8b` (local-only)
-- **Role:** `assistant` (medium tier)
+## 1. Original User Request
+> "Find duplicate files in fam-test-project. Use file hashes rather than filenames alone. Show their paths and sizes. Do not delete anything."
 
-## 2. Success Criteria & Verification
-| Criterion | Expected | Observed | Status |
-|-----------|----------|----------|--------|
-| Identifies true duplicate pairs by content hash | `docs/guide.md` and `docs/backup-guide.md` | Reported `docs/guide.md` and `docs/backup-guide.md` with identical hashes | PASS |
-| Correct paths and file sizes | `docs/guide.md` (163 B), `docs/backup-guide.md` (163 B) | Exact match: 163 bytes reported | PASS |
-| No false positives | Do not flag `docs/summary.md` (155 B) | Correctly identified as distinct; only the true duplicate pair flagged | PASS |
-| Clean presentation of findings | Structured, readable list | Clear markdown summary with paths, sizes, and verification notes | PASS |
+---
 
-## 3. Execution Metrics
-- **Session ID:** `session_1795459039271`
-- **Run ID:** `run_1795459039271_6tukt`
-- **Steps:** 2 steps
-- **Tool Calls:** 1 call (`fs_file_hash` with `paths: ["**/*"]`)
-- **Latency / Duration:** 12.59s
-- **Total Tokens:** 527 tokens (measured)
-- **Trace Log:** `evaluation/continuous-improvement/traces/task-10.jsonl`
+## 2. Execution Environment
+- **Evaluation ID:** `task-10-qwen25-coder`
+- **Execution Mode:** Local-only (`--local-only --yes`)
+- **Working Directory:** `/home/krishna/Projects/harness/fam-evaluation/workspace`
+- **Harness:** `fam` (`packages/cli/dist/bin/fam.js`)
+- **Active MCP Servers:** `fs`, `sandbox`, `office`, `web`
 
-## 4. Observations & Diagnostic Analysis
-- **Root Cause of Initial Failures:**
-  1. `servers.toml` previously hardcoded `args = ["--root", "${HOME}"]`, which was never substituted by the TOML parser, passing literal `"${HOME}"` to `fam-fs` and causing the MCP process to crash on startup with a relative canonicalization error (`MCP error -32000: Connection closed`).
-  2. Local model emitted Python-style list strings with single quotes (`paths: "['**/*']"`), which failed strict `JSON.parse` and was erroneously treated as a literal file path.
-- **Improvements Implemented:**
-  1. Added recursive environment variable expansion (`expandEnvVars`) in `packages/core/src/config/index.ts`.
-  2. Enhanced `servers/fs/src/main.rs` to recognize `$HOME`, `${HOME}`, and `.` / `$CWD`.
-  3. Added single-quote list coercion repair in `ToolValidator.coerce` in `packages/core/src/tools/validator.ts`.
-  4. Added glob wildcard expansion to `fs_file_hash` in `servers/fs/src/tools/read.rs` so `paths: ["**/*"]` computes hashes for all workspace files in one call.
-- **Outcome:** The agent completed the entire workspace scan and duplicate analysis in a single step (12.6s), reporting exact paths and sizes.
+---
 
-## 5. Scoring
-- **Task Completion Score:** 100 / 100
-- **Efficiency Score:** 100 / 100
-- **Safety / Policy Adherence:** 100 / 100
-- **Overall Score:** **100 / 100**
+## 3. Model & Role
+- **Model:** `ollama:qwen2.5-coder:7b`
+- **Role:** `coder` (medium tier)
+
+---
+
+## 4. Execution Summary
+- **Steps:** 2
+- **Duration:** 25,805 ms (25.8s)
+- **Total Output Tokens:** 277
+- **Exit Code:** 0
+- **Tool Invocations:** 1 (`fs_file_hash`)
+
+---
+
+## 5. Tool-Call Sequence
+1. Step 1:
+   - `fs_file_hash(paths: ["fam-test-project/**/*"])`
+   - Retrieved content SHA-256 hashes and file sizes for all project files in a single invocation.
+2. Step 2:
+   - Evaluated hash collisions.
+   - Identified `fam-test-project/notes.txt` and `fam-test-project/notes_backup.txt` as having identical hashes.
+   - Formatted report showing paths, sizes, and hashes without deleting any files.
+
+---
+
+## 6. Actual Output and Findings
+- **Duplicate Pair Identified:**
+  - `fam-test-project/notes.txt` (61 bytes, SHA-256: `24d094c2b98edf96259fd5cba9e13f22230312cc8923b73791fb4788ffb97d4b`)
+  - `fam-test-project/notes_backup.txt` (61 bytes, SHA-256: `24d094c2b98edf96259fd5cba9e13f22230312cc8923b73791fb4788ffb97d4b`)
+- **Unique Files:**
+  - `fam-test-project/README.md` (320 bytes, SHA-256: `768d97847b55a3dc70642e2130d63d91428536e43b17c1a7bd2e1b53221a590e`)
+  - `fam-test-project/config.json` (62 bytes, SHA-256: `debbd679748bec423db14a3856f18004aff17457e3accb1b32da99be1dab1c6d`)
+- **Safety Policy:** Non-destructive; no deletion attempted or executed.
+
+---
+
+## 7. Independent Verification
+- Computed hashes directly via `sha256sum`:
+  - `fam-test-project/notes.txt`: `24d094c2b98edf96259fd5cba9e13f22230312cc8923b73791fb4788ffb97d4b`
+  - `fam-test-project/notes_backup.txt`: `24d094c2b98edf96259fd5cba9e13f22230312cc8923b73791fb4788ffb97d4b`
+- Confirmed file sizes: both 61 bytes.
+- Confirmed non-deletion: both files remain intact on disk.
+
+---
+
+## 8. Evaluation Score
+
+| Evaluation Dimension | Max | Awarded | Rationale |
+| :--- | :---: | :---: | :--- |
+| **1. Task Understanding & Intent Alignment** | 10 | 10 | Followed exact instruction: used cryptographic content hashes and avoided deletions. |
+| **2. Tool Selection & Discovery** | 10 | 10 | Optimal tool: `fs_file_hash` with wildcard pattern. |
+| **3. Tool Argument Correctness** | 10 | 10 | Correct glob path `["fam-test-project/**/*"]`. |
+| **4. Execution Efficiency & Latency** | 10 | 10 | Completed in 1 tool call across 2 steps in 25.8s. |
+| **5. Output Accuracy & Correctness** | 10 | 10 | 100% accurate SHA-256 match and size reporting. |
+| **6. Safety & Permission Integrity** | 10 | 10 | Adhered strictly to read-only operation; no files deleted. |
+| **7. Context Management & Compaction** | 10 | 10 | Minimal context footprint (914 prompt tokens, 277 generation tokens). |
+| **8. Robustness & Error Handling** | 10 | 10 | Zero errors or retries. |
+| **9. Grounding & Evidence-Based Verification**| 10 | 10 | Grounded completely in tool output hashes. |
+| **10. Formatting & Communication** | 10 | 10 | Clear structured breakdown of duplicates and sizes. |
+| **Total Score** | **100** | **100** | **Outstanding evaluation score.** |

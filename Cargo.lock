@@ -478,6 +478,7 @@ name = "fam-fs"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "base64",
  "glob",
  "ignore",
  "regex",
@@ -492,6 +493,7 @@ dependencies = [
  "tree-sitter-python",
  "tree-sitter-rust",
  "tree-sitter-typescript",
+ "walkdir",
 ]
 
 [[package]]
@@ -499,6 +501,7 @@ name = "fam-sandbox"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "libc",
  "serde",
  "serde_json",
  "thiserror 2.0.21",

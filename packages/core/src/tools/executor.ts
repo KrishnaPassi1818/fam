@@ -1,6 +1,8 @@
-import type { ToolCall, ToolResult, ToolDescriptor } from '@fam/shared';
+import type { ToolCall, ToolResult, ToolDescriptor, NormalizedToolResult } from '@fam/shared';
+import { NormalizedToolResultSchema } from '@fam/shared';
 import { ToolValidator, type ValidationResult } from './validator.js';
 import { PermissionGate, type PermissionCheckResult } from './permission.js';
+import { BackupService } from '../backup/index.js';
 
 export interface ToolHandler {
   (args: Record<string, unknown>, signal?: AbortSignal): Promise<{
@@ -13,6 +15,7 @@ export interface ToolExecutorOptions {
   validator?: ToolValidator;
   permissionGate?: PermissionGate;
   concurrencyLimit?: number;
+  backupService?: BackupService;
   onPermissionRequired?: (
     toolCall: ToolCall,
     check: PermissionCheckResult,
@@ -23,6 +26,7 @@ export class ToolExecutor {
   private readonly validator: ToolValidator;
   private readonly permissionGate: PermissionGate;
   private readonly concurrencyLimit: number;
+  private readonly backupService?: BackupService;
   private readonly onPermissionRequired?: (
     toolCall: ToolCall,
     check: PermissionCheckResult,
@@ -32,6 +36,7 @@ export class ToolExecutor {
     this.validator = options.validator || new ToolValidator();
     this.permissionGate = options.permissionGate || new PermissionGate();
     this.concurrencyLimit = options.concurrencyLimit || 8;
+    this.backupService = options.backupService;
     this.onPermissionRequired = options.onPermissionRequired;
   }
 
@@ -40,8 +45,10 @@ export class ToolExecutor {
     descriptors: Map<string, ToolDescriptor>,
     handlers: Map<string, ToolHandler>,
     signal?: AbortSignal,
+    taskId?: string,
   ): Promise<ToolResult[]> {
     if (toolCalls.length === 0) return [];
+    const activeTaskId = taskId || `task_${Date.now()}`;
 
     // Group into parallel read-only tools vs sequential write tools
     const readOnlyCalls: ToolCall[] = [];
@@ -62,9 +69,6 @@ export class ToolExecutor {
     for (const call of writeCalls) {
       const targetPath = String(call.args['path'] || call.args['from'] || call.args['to'] || '');
       if (targetPath) {
-        if (targetPaths.has(targetPath)) {
-          // Path conflict detected in batch
-        }
         targetPaths.add(targetPath);
       }
     }
@@ -79,22 +83,35 @@ export class ToolExecutor {
         handlers,
         results,
         signal,
+        activeTaskId,
       );
     }
 
     // 3. Execute write tools strictly sequentially
     for (const call of writeCalls) {
       if (signal?.aborted) {
+        const abortedNormalized: NormalizedToolResult = {
+          execution_id: call.id,
+          task_id: activeTaskId,
+          tool: call.name,
+          status: 'cancelled',
+          arguments: call.args,
+          result: null,
+          error: 'Execution aborted by user',
+          duration_ms: 0,
+          verified: false,
+        };
         results.set(call.id, {
           callId: call.id,
           name: call.name,
           content: 'Execution aborted by user',
           isError: true,
+          normalized: abortedNormalized as unknown as Record<string, unknown>,
         });
         continue;
       }
 
-      const res = await this.executeSingle(call, descriptors, handlers, signal);
+      const res = await this.executeSingle(call, descriptors, handlers, signal, activeTaskId);
       results.set(call.id, res);
     }
 
@@ -116,6 +133,7 @@ export class ToolExecutor {
     handlers: Map<string, ToolHandler>,
     results: Map<string, ToolResult>,
     signal?: AbortSignal,
+    taskId?: string,
   ): Promise<void> {
     let index = 0;
     const running: Promise<void>[] = [];
@@ -127,7 +145,7 @@ export class ToolExecutor {
         const call = calls[currentIdx];
         if (!call) continue;
 
-        const res = await this.executeSingle(call, descriptors, handlers, signal);
+        const res = await this.executeSingle(call, descriptors, handlers, signal, taskId);
         results.set(call.id, res);
       }
     };
@@ -140,12 +158,15 @@ export class ToolExecutor {
     await Promise.all(running);
   }
 
-  private async executeSingle(
+  public async executeSingle(
     call: ToolCall,
     descriptors: Map<string, ToolDescriptor>,
     handlers: Map<string, ToolHandler>,
     signal?: AbortSignal,
+    taskId?: string,
   ): Promise<ToolResult> {
+    const activeTaskId = taskId || `task_${Date.now()}`;
+    const startTime = Date.now();
     let desc = descriptors.get(call.name);
     let handler = handlers.get(call.name);
 
@@ -160,11 +181,23 @@ export class ToolExecutor {
     }
 
     if (!handler) {
+      const errNormalized: NormalizedToolResult = {
+        execution_id: call.id,
+        task_id: activeTaskId,
+        tool: call.name,
+        status: 'failed',
+        arguments: call.args,
+        result: null,
+        error: `Tool '${call.name}' not found. Available: ${Array.from(handlers.keys()).join(', ')}`,
+        duration_ms: Date.now() - startTime,
+        verified: false,
+      };
       return {
         callId: call.id,
         name: call.name,
-        content: `Tool '${call.name}' not found. Available: ${Array.from(handlers.keys()).join(', ')}`,
+        content: errNormalized.error!,
         isError: true,
+        normalized: errNormalized as unknown as Record<string, unknown>,
       };
     }
 
@@ -173,11 +206,23 @@ export class ToolExecutor {
     if (desc) {
       const vResult: ValidationResult = this.validator.validateAndCoerce(desc, call.args);
       if (!vResult.valid) {
+        const valNormalized: NormalizedToolResult = {
+          execution_id: call.id,
+          task_id: activeTaskId,
+          tool: call.name,
+          status: 'failed',
+          arguments: call.args,
+          result: null,
+          error: vResult.error,
+          duration_ms: Date.now() - startTime,
+          verified: false,
+        };
         return {
           callId: call.id,
           name: call.name,
           content: vResult.error,
           isError: true,
+          normalized: valNormalized as unknown as Record<string, unknown>,
         };
       }
       validatedArgs = vResult.args;
@@ -191,24 +236,65 @@ export class ToolExecutor {
       if (permCheck.requiresPrompt && this.onPermissionRequired) {
         const approved = await this.onPermissionRequired(call, permCheck);
         if (!approved) {
+          const deniedNormalized: NormalizedToolResult = {
+            execution_id: call.id,
+            task_id: activeTaskId,
+            tool: call.name,
+            status: 'failed',
+            arguments: validatedArgs,
+            result: null,
+            error: `Permission denied by user for tool '${call.name}'`,
+            duration_ms: Date.now() - startTime,
+            verified: false,
+          };
           return {
             callId: call.id,
             name: call.name,
-            content: `Permission denied by user for tool '${call.name}'`,
+            content: deniedNormalized.error!,
             isError: true,
+            normalized: deniedNormalized as unknown as Record<string, unknown>,
           };
         }
       } else {
+        const deniedNormalized: NormalizedToolResult = {
+          execution_id: call.id,
+          task_id: activeTaskId,
+          tool: call.name,
+          status: 'failed',
+          arguments: validatedArgs,
+          result: null,
+          error: permCheck.reason || `Permission denied for tool '${call.name}' (Tier ${tier})`,
+          duration_ms: Date.now() - startTime,
+          verified: false,
+        };
         return {
           callId: call.id,
           name: call.name,
-          content: permCheck.reason || `Permission denied for tool '${call.name}' (Tier ${tier})`,
+          content: deniedNormalized.error!,
           isError: true,
+          normalized: deniedNormalized as unknown as Record<string, unknown>,
         };
       }
     }
 
-    // 3. Execution with timeout and cancellation
+    // 3. Pre-write backup if modifying tool
+    const isModifying = !desc?.annotations?.readOnlyHint && (desc?.tier ?? 1) > 0;
+    if (this.backupService && isModifying) {
+      const targetPath = (validatedArgs['path'] ||
+        validatedArgs['filePath'] ||
+        validatedArgs['from'] ||
+        validatedArgs['to'] ||
+        validatedArgs['target']) as string | undefined;
+      if (typeof targetPath === 'string' && targetPath.trim()) {
+        try {
+          await this.backupService.backupFile(targetPath);
+        } catch {
+          // Best-effort pre-write backup
+        }
+      }
+    }
+
+    // 4. Execution with timeout and cancellation
     const timeoutMs = desc?.timeoutMs || 30000;
     const controller = new AbortController();
 
@@ -223,23 +309,67 @@ export class ToolExecutor {
 
     try {
       const output = await handler(validatedArgs, controller.signal);
+      const durationMs = Date.now() - startTime;
+      const isError = output.isError ?? false;
+
+      let parsedResult: Record<string, unknown> | string | null = null;
+      try {
+        parsedResult = JSON.parse(output.content);
+      } catch {
+        parsedResult = output.content;
+      }
+
+      const normalized: NormalizedToolResult = {
+        execution_id: call.id,
+        task_id: activeTaskId,
+        tool: call.name,
+        status: isError ? 'failed' : 'succeeded',
+        arguments: validatedArgs,
+        result: parsedResult,
+        error: isError ? output.content : null,
+        duration_ms: durationMs,
+        verified: !isError,
+      };
+
+      // Validate schema
+      NormalizedToolResultSchema.parse(normalized);
+
       return {
         callId: call.id,
         name: call.name,
         content: output.content,
-        isError: output.isError ?? false,
+        isError,
+        normalized: normalized as unknown as Record<string, unknown>,
       };
     } catch (err) {
+      const durationMs = Date.now() - startTime;
       const isTimeout = controller.signal.aborted && !signal?.aborted;
+      const isCancelled = signal?.aborted;
+      const status = isCancelled ? 'cancelled' : isTimeout ? 'timed_out' : 'failed';
       const msg = isTimeout
         ? `Tool '${call.name}' timed out after ${timeoutMs}ms`
-        : `Tool execution failed: ${err instanceof Error ? err.message : String(err)}`;
+        : isCancelled
+          ? `Tool '${call.name}' was cancelled`
+          : `Tool execution failed: ${err instanceof Error ? err.message : String(err)}`;
+
+      const normalized: NormalizedToolResult = {
+        execution_id: call.id,
+        task_id: activeTaskId,
+        tool: call.name,
+        status,
+        arguments: validatedArgs,
+        result: null,
+        error: msg,
+        duration_ms: durationMs,
+        verified: false,
+      };
 
       return {
         callId: call.id,
         name: call.name,
         content: msg,
         isError: true,
+        normalized: normalized as unknown as Record<string, unknown>,
       };
     } finally {
       clearTimeout(timer);

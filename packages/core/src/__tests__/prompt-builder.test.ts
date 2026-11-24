@@ -131,4 +131,23 @@ describe('PromptBuilder', () => {
     const qwenMin = builder.build({ modelId: 'ollama:qwen2.5:1.5b', role: 'router' });
     expect(qwenMin.budget).toBe(150);
   });
+
+  it('injects active browser state into Layer 6 dynamic context and preserves it', () => {
+    const res = builder.build({
+      modelId: 'ollama:qwen3.5:4b',
+      role: 'assistant',
+      dynamicContext: {
+        browserState: {
+          tabId: 'personal-tab-2',
+          title: 'Gmail - Inbox',
+          url: 'https://mail.google.com/mail/u/0/#inbox',
+          elementCount: 88,
+        },
+      },
+    });
+
+    expect(res.systemPrompt).toContain('Active browser: [Browser: Tab: personal-tab-2 | Title: "Gmail - Inbox" | URL: https://mail.google.com/mail/u/0/#inbox | Elements: 88]');
+    const dynamicLayer = res.layers.find((l) => l.name === 'dynamic');
+    expect(dynamicLayer?.dropped).toBe(false);
+  });
 });

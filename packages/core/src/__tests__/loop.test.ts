@@ -130,7 +130,7 @@ describe('AgentLoop', () => {
       }
     };
 
-    await expect(run()).rejects.toThrow(/Token budget exceeded: 3/);
+    await expect(run()).rejects.toThrow(/budget exceeded: 3/i);
   });
 
   it('aborts execution when AbortSignal is aborted', async () => {

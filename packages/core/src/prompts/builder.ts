@@ -34,6 +34,14 @@ export interface BuildPromptOptions {
     gitBranch?: string;
     memories?: string[];
     activeToolHints?: string[];
+    browserState?:
+      | {
+          tabId?: string;
+          title?: string;
+          url?: string;
+          elementCount?: number;
+        }
+      | string;
   };
 }
 
@@ -210,6 +218,18 @@ export class PromptBuilder {
     if (ctx.os) dynamicParts.push(`- Host OS: ${ctx.os}`);
     if (ctx.cwd) dynamicParts.push(`- Working directory: ${ctx.cwd}`);
     if (ctx.gitBranch) dynamicParts.push(`- Git branch: ${ctx.gitBranch}`);
+    if (ctx.browserState) {
+      if (typeof ctx.browserState === 'string') {
+        dynamicParts.push(`- Active browser: ${ctx.browserState}`);
+      } else {
+        const bParts: string[] = [];
+        if (ctx.browserState.tabId) bParts.push(`Tab: ${ctx.browserState.tabId}`);
+        if (ctx.browserState.title) bParts.push(`Title: "${ctx.browserState.title}"`);
+        if (ctx.browserState.url) bParts.push(`URL: ${ctx.browserState.url}`);
+        if (ctx.browserState.elementCount !== undefined) bParts.push(`Elements: ${ctx.browserState.elementCount}`);
+        dynamicParts.push(`- Active browser: [Browser: ${bParts.join(' | ')}]`);
+      }
+    }
     if (ctx.memories && ctx.memories.length > 0) {
       dynamicParts.push('\n## Relevant Memory (Stored User Facts & Preferences)');
       dynamicParts.push('The following facts are already stored in user memory. Use these facts to answer questions directly without calling remember:');
@@ -243,8 +263,8 @@ export class PromptBuilder {
     for (const idx of dropSequence) {
       const layer = layers[idx];
       if (layer && !layer.dropped && currentTokens > budget) {
-        // Do not drop dynamic layer if it contains critical user memories
-        if (layer.name === 'dynamic' && ctx.memories && ctx.memories.length > 0) {
+        // Do not drop dynamic layer if it contains critical user memories or active browser context
+        if (layer.name === 'dynamic' && ((ctx.memories && ctx.memories.length > 0) || ctx.browserState)) {
           continue;
         }
         layer.dropped = true;

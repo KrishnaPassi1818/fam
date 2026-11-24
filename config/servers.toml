@@ -27,3 +27,11 @@ command = "node"
 args = ["servers/web/dist/index.js"]
 autoStart = true
 enabled = true
+
+[servers.browser]
+transport = "stdio"
+command = "/home/krishna/anarc/target/release/anarc-ctl"
+args = ["mcp"]
+autoStart = true
+enabled = true
+

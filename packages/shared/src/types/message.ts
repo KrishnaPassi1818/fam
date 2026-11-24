@@ -29,6 +29,7 @@ export const ToolResultSchema = z.object({
   content: z.string(),
   isError: z.boolean().optional(),
   taint: z.enum(['normal', 'local_only']).optional(),
+  normalized: z.record(z.unknown()).optional(),
 });
 export type ToolResult = z.infer<typeof ToolResultSchema>;
 

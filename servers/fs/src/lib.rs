@@ -9,6 +9,7 @@ pub use server::FsServer;
 #[cfg(test)]
 mod tests {
     use super::*;
+    use base64::Engine;
     use serde_json::json;
     use std::fs;
     use tempfile::tempdir;
@@ -26,6 +27,7 @@ mod tests {
                 path: "sample.txt".into(),
                 start_line: Some(2),
                 end_line: Some(4),
+                raw: None,
             },
         );
 
@@ -39,6 +41,20 @@ mod tests {
         assert!(val["content"].as_str().unwrap().contains("Line 2"));
         assert!(val["content"].as_str().unwrap().contains("Line 4"));
         assert!(!val["content"].as_str().unwrap().contains("Line 1"));
+
+        // Raw read test
+        let raw_res = tools::read::execute_read_file(
+            &conf,
+            tools::read::ReadFileArgs {
+                path: "sample.txt".into(),
+                start_line: Some(2),
+                end_line: Some(3),
+                raw: Some(true),
+            },
+        );
+        assert_eq!(raw_res.is_error, Some(false));
+        let raw_val: serde_json::Value = serde_json::from_str(&raw_res.content[0].text).unwrap();
+        assert_eq!(raw_val["content"], "Line 2\nLine 3\n");
     }
 
     #[test]
@@ -68,6 +84,30 @@ mod tests {
         assert_eq!(info_val["is_file"], true);
         assert_eq!(info_val["line_count"], 2);
         assert_eq!(info_val["size_bytes"], 24);
+
+        // Test writing content with line gutters automatically strips gutters
+        let write_gutters = tools::edit::execute_write_file(
+            &conf,
+            tools::edit::WriteFileArgs {
+                path: "gutter_test.txt".into(),
+                content: "   1 | Alpha\n   2 | Beta\n   3 | \n   4 | Gamma".into(),
+                overwrite: Some(true),
+                append: None,
+            },
+        );
+        assert_eq!(write_gutters.is_error, Some(false));
+        let read_clean = tools::read::execute_read_file(
+            &conf,
+            tools::read::ReadFileArgs {
+                path: "gutter_test.txt".into(),
+                start_line: None,
+                end_line: None,
+                raw: Some(true),
+            },
+        );
+        let read_val: serde_json::Value =
+            serde_json::from_str(&read_clean.content[0].text).unwrap();
+        assert_eq!(read_val["content"], "Alpha\nBeta\n\nGamma\n");
     }
 
     #[test]
@@ -87,6 +127,7 @@ mod tests {
             tools::search::GlobArgs {
                 pattern: "*.rs".into(),
                 base_dir: None,
+                root: None,
                 path: None,
             },
         );
@@ -126,10 +167,12 @@ mod tests {
             &conf,
             tools::edit::ApplyEditArgs {
                 path: "code.ts".into(),
-                edits: vec![tools::edit::SearchReplaceBlock {
+                edits: Some(vec![tools::edit::SearchReplaceBlock {
                     search: "return 'hi';".into(),
                     replace: "return 'hello world';".into(),
-                }],
+                }]),
+                search: None,
+                replace: None,
                 dry_run: Some(false),
             },
         );
@@ -143,10 +186,12 @@ mod tests {
             &conf,
             tools::edit::ApplyEditArgs {
                 path: "code.ts".into(),
-                edits: vec![tools::edit::SearchReplaceBlock {
+                edits: Some(vec![tools::edit::SearchReplaceBlock {
                     search: "".into(),
                     replace: "// Appended line".into(),
-                }],
+                }]),
+                search: None,
+                replace: None,
                 dry_run: Some(false),
             },
         );
@@ -160,15 +205,17 @@ mod tests {
             &conf,
             tools::edit::ApplyEditArgs {
                 path: "code.ts".into(),
-                edits: vec![tools::edit::SearchReplaceBlock {
+                edits: Some(vec![tools::edit::SearchReplaceBlock {
                     search: "foo".into(),
                     replace: "baz".into(),
-                }],
+                }]),
+                search: None,
+                replace: None,
                 dry_run: Some(false),
             },
         );
         assert_eq!(ambig_res.is_error, Some(true));
-        assert!(ambig_res.content[0].text.contains("Ambiguous match"));
+        assert!(ambig_res.content[0].text.contains("ambiguous"));
     }
 
     #[test]
@@ -189,7 +236,7 @@ mod tests {
             .as_array()
             .unwrap()
             .clone();
-        assert!(tools.len() >= 9);
+        assert!(tools.len() >= 18);
 
         // tools/call: write_file
         let call_resp = server.handle_request(
@@ -209,7 +256,7 @@ mod tests {
     }
 
     #[test]
-    fn test_repo_map_extracts_symbols() {
+    fn test_repo_map_and_find_symbol() {
         let tmp = tempdir().unwrap();
         let conf = Confinement::new(tmp.path()).unwrap();
 
@@ -240,5 +287,142 @@ mod tests {
         assert!(outline.contains("fn start_server()"));
         assert!(outline.contains("interface User"));
         assert!(outline.contains("function getUser()"));
+
+        // Find symbol
+        let find_res = tools::repo_map::execute_find_symbol(
+            &conf,
+            tools::repo_map::FindSymbolArgs {
+                symbol: "start_server".into(),
+                path: None,
+                max_results: None,
+            },
+        );
+        assert_eq!(find_res.is_error, Some(false));
+        let find_val: serde_json::Value = serde_json::from_str(&find_res.content[0].text).unwrap();
+        assert_eq!(find_val["total_matches"], 1);
+    }
+
+    #[test]
+    fn test_new_filesystem_tools() {
+        let tmp = tempdir().unwrap();
+        let conf = Confinement::new(tmp.path()).unwrap();
+
+        // 1. create_directory
+        let dir_res = tools::edit::execute_create_directory(
+            &conf,
+            tools::edit::CreateDirectoryArgs {
+                path: "my_folder/sub_folder".into(),
+            },
+        );
+        assert_eq!(dir_res.is_error, Some(false));
+        assert!(tmp.path().join("my_folder/sub_folder").is_dir());
+
+        // 2. create_file
+        let cf_res = tools::edit::execute_create_file(
+            &conf,
+            tools::edit::CreateFileArgs {
+                path: "my_folder/sub_folder/app.py".into(),
+                content: Some("print('hello')\n".into()),
+                overwrite: Some(true),
+            },
+        );
+        assert_eq!(cf_res.is_error, Some(false));
+        assert!(tmp.path().join("my_folder/sub_folder/app.py").exists());
+
+        // 3. exists
+        let ex_res = tools::read::execute_exists(
+            &conf,
+            tools::read::ExistsArgs {
+                path: "my_folder/sub_folder/app.py".into(),
+            },
+        );
+        let ex_val: serde_json::Value = serde_json::from_str(&ex_res.content[0].text).unwrap();
+        assert_eq!(ex_val["exists"], true);
+        assert_eq!(ex_val["is_file"], true);
+
+        // 4. copy
+        let cp_res = tools::edit::execute_copy(
+            &conf,
+            tools::edit::CopyArgs {
+                source: Some("my_folder/sub_folder/app.py".into()),
+                from: None,
+                destination: Some("my_folder/sub_folder/app_copy.py".into()),
+                to: None,
+                overwrite: Some(true),
+            },
+        );
+        assert_eq!(cp_res.is_error, Some(false));
+        assert!(tmp.path().join("my_folder/sub_folder/app_copy.py").exists());
+
+        // 5. compare_files
+        let comp_res = tools::read::execute_compare_files(
+            &conf,
+            tools::read::CompareFilesArgs {
+                path_a: "my_folder/sub_folder/app.py".into(),
+                path_b: "my_folder/sub_folder/app_copy.py".into(),
+            },
+        );
+        let comp_val: serde_json::Value = serde_json::from_str(&comp_res.content[0].text).unwrap();
+        assert_eq!(comp_val["identical"], true);
+
+        // 6. tree
+        let tree_res = tools::read::execute_tree(
+            &conf,
+            tools::read::TreeArgs {
+                path: None,
+                depth: Some(3),
+                max_entries: None,
+            },
+        );
+        assert_eq!(tree_res.is_error, Some(false));
+        let tree_val: serde_json::Value = serde_json::from_str(&tree_res.content[0].text).unwrap();
+        assert!(tree_val["tree"].as_str().unwrap().contains("my_folder"));
+
+        // 7. binary read & write
+        let bin_bytes = vec![0u8, 159, 255, 12, 0, 88];
+        let base64_str = base64::prelude::BASE64_STANDARD.encode(&bin_bytes);
+        let wb_res = tools::edit::execute_write_binary(
+            &conf,
+            tools::edit::WriteBinaryArgs {
+                path: "data.bin".into(),
+                content_base64: base64_str.clone(),
+                overwrite: Some(true),
+            },
+        );
+        assert_eq!(wb_res.is_error, Some(false));
+
+        let rb_res = tools::read::execute_read_binary(
+            &conf,
+            tools::read::ReadBinaryArgs {
+                path: "data.bin".into(),
+            },
+        );
+        assert_eq!(rb_res.is_error, Some(false));
+        let rb_val: serde_json::Value = serde_json::from_str(&rb_res.content[0].text).unwrap();
+        assert_eq!(rb_val["content_base64"], base64_str);
+        assert_eq!(rb_val["size_bytes"], bin_bytes.len());
+
+        // 8. delete with dry-run and actual delete
+        let del_dry = tools::edit::execute_delete(
+            &conf,
+            tools::edit::DeleteArgs {
+                path: "data.bin".into(),
+                recursive: None,
+                dry_run: Some(true),
+            },
+        );
+        assert_eq!(del_dry.is_error, Some(false));
+        assert!(tmp.path().join("data.bin").exists());
+
+        let del_act = tools::edit::execute_delete(
+            &conf,
+            tools::edit::DeleteArgs {
+                path: "data.bin".into(),
+                recursive: None,
+                dry_run: Some(false),
+            },
+        );
+        assert_eq!(del_act.is_error, Some(false));
+        assert!(!tmp.path().join("data.bin").exists());
     }
 }

@@ -224,8 +224,11 @@ node packages/cli/dist/bin/fam.js --role coder --model qwen2.5-coder:7b
 #### One-Shot CLI Mode
 
 ```bash
-# Ask a quick question or request a task
-node packages/cli/dist/bin/fam.js "Analyze this repository and list all TODO comments in a markdown table"
+# Ask a quick question or request a task with primary local model (qwen3.5:4b)
+node packages/cli/dist/bin/fam.js --local-only --model qwen3.5:4b "Analyze this repository and list all TODO comments in a markdown table"
+
+# Execute tasks with authorized tool execution (--yes / -y for Tier 2/3 operations)
+node packages/cli/dist/bin/fam.js --local-only --model qwen3.5:4b --yes "Write a Python DFS implementation in /home/krishna/Downloads/dfs.py and run tests"
 
 # Perform spreadsheet calculations with in-memory SQL
 node packages/cli/dist/bin/fam.js "What is the total expenditure in monthly_expenses.xlsx grouped by category?"

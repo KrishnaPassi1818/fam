@@ -223,6 +223,16 @@ export class SessionDriver {
             type: 'warning',
             message: event.message,
           });
+        } else if (event.type === 'state_change') {
+          this.sendToTui({
+            type: 'warning',
+            message: `[State: ${event.state}] ${event.detail || ''}`,
+          });
+        } else if (event.type === 'plan') {
+          this.sendToTui({
+            type: 'warning',
+            message: `[Plan: ${event.plan.steps.length} steps for ${event.plan.task_id}]`,
+          });
         } else if (event.type === 'finish') {
           this.usedTokens = event.totalTokens;
           this.history.push({ role: 'assistant', content: event.response });

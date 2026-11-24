@@ -193,5 +193,19 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
 - [ ] **T11.6** · E · T11.1 · Final prompt tuning per tier using eval results.
 - [ ] **T11.7** · all · T11.* · Check the PRD success metrics. Document gaps.
 
+## Phase B: FAM × ANARC Autonomous Browser Integration (Milestones P0 – P10)
+
+- [x] **TB.0** · A/F · Deep Repository Audit & Architecture (`ANARC_AUDIT.md`, `FAM_AUDIT.md`, `COMPATIBILITY_MATRIX.md`, `INTEGRATION_ARCHITECTURE.md`, `IMPLEMENTATION_PLAN.md`).
+- [x] **TB.1** · B · ANARC browser-control interface alignment (`anarc-ctl mcp` JSON-RPC stdio protocol & dynamic launcher resolution).
+- [x] **TB.2** · F · FAM browser adapter (`@fam/browser`) & MCP server registration (`config/servers.toml`, `config/policy.toml`).
+- [x] **TB.3** · A · Browser tool calling, schema validation, and session management (`BrowserSessionManager`, `ToolValidator` coercion).
+- [x] **TB.4** · A/F · DOM-first semantic interaction & visual coordinate fallback (`VisualFallbackEngine`, `clickCoordinates` with occlusion checks).
+- [x] **TB.5** · A · Browser state integration into `PromptBuilder` Layer 6, context budgeting ($\le 400$ tokens), and memory integration.
+- [x] **TB.6** · A · Gmail reading, structured email extraction, and indirect prompt injection shielding (`<untrusted_email_content>`).
+- [x] **TB.7** · A · Executive intelligence summarization and structured report generation.
+- [x] **TB.8** · A/D · Email composition and mandatory Tier 2 interactive user approval gate before dispatch.
+- [x] **TB.9** · A · Browser error recovery, telemetry logging, and stale socket reconnection.
+- [x] **TB.10** · all · End-to-end integration benchmark suite & final mission execution (`scripts/run-autonomous-mission.ts`, `BENCHMARK_RESULTS.md`, `FINAL_REPORT.md`).
+
 ## Backlog (not scheduled)
-Voice I/O (whisper.cpp, TTS), a web UI, sampling/elicitation support, browser automation server, OCR, multi-profile configs, plugin marketplace.
+Voice I/O (whisper.cpp, TTS), a web UI, sampling/elicitation support, OCR, multi-profile configs, plugin marketplace.

@@ -174,4 +174,80 @@ describe('ToolValidator (T3.1)', () => {
       expect((res.args['edits'] as Record<string, unknown>[])[0]?.search).toBe('old text');
     }
   });
+
+  it('coerces common small-model browser argument hallucinations', () => {
+    const navigateTool: ToolDescriptor = {
+      name: 'browser_navigate',
+      alias: 'browser_navigate',
+      description: 'Navigate to URL',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          url: { type: 'string' },
+          tabId: { type: 'string' },
+        },
+        required: ['url'],
+      },
+      category: 'browser',
+      annotations: {},
+      tier: 1,
+      timeoutMs: 15000,
+    };
+
+    const clickTool: ToolDescriptor = {
+      name: 'browser_click',
+      alias: 'browser_click',
+      description: 'Click element',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          refId: { type: 'string' },
+        },
+        required: ['refId'],
+      },
+      category: 'browser',
+      annotations: {},
+      tier: 1,
+      timeoutMs: 15000,
+    };
+
+    const uploadTool: ToolDescriptor = {
+      name: 'browser_upload_file',
+      alias: 'browser_upload_file',
+      description: 'Upload files',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          filePaths: { type: 'array', items: { type: 'string' } },
+        },
+        required: ['filePaths'],
+      },
+      category: 'browser',
+      annotations: {},
+      tier: 2,
+      timeoutMs: 15000,
+    };
+
+    // Test URL coercion from 'target' or 'link'
+    const navRes = validator.validateAndCoerce(navigateTool, { target: 'https://mail.google.com', tab: 'tab-1' });
+    expect(navRes.valid).toBe(true);
+    if (navRes.valid) {
+      expect(navRes.args['url']).toBe('https://mail.google.com');
+      expect(navRes.args['tabId']).toBe('tab-1');
+    }
+
+    // Test refId coercion from 'ref' or 'element'
+    const clickRes = validator.validateAndCoerce(clickTool, { ref: 'b9' });
+    expect(clickRes.valid).toBe(true);
+    if (clickRes.valid) {
+      expect(clickRes.args['refId']).toBe('b9');
+    }
+
+    // Test filePaths coercion from string 'file'
+    const uploadRes = validator.validateAndCoerce(uploadTool, { file: '/tmp/report.pdf' });
+    expect(uploadRes.valid).toBe(true);
+    if (uploadRes.valid) {
+      expect(uploadRes.args['filePaths']).toEqual(['/tmp/report.pdf']);
+    }
+  });
 });
