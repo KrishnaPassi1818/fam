@@ -36,6 +36,7 @@ import { TaskPlanner } from './planner.js';
 
 export * from './state-machine.js';
 export * from './planner.js';
+export * from './reasoning.js';
 
 export interface ToolExecutionHandler {
   (args: Record<string, unknown>, signal?: AbortSignal): Promise<{
