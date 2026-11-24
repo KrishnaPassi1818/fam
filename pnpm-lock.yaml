@@ -283,12 +283,18 @@ importers:
 
   packages/evals:
     dependencies:
+      '@fam/browser':
+        specifier: workspace:*
+        version: link:../browser
       '@fam/core':
         specifier: workspace:*
         version: link:../core
       '@fam/shared':
         specifier: workspace:*
         version: link:../shared
+      commander:
+        specifier: ^13.1.0
+        version: 13.1.0
       yaml:
         specifier: ^2.9.1
         version: 2.9.1

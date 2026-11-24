@@ -1,0 +1,915 @@
+[
+  {
+    "id": "TC-01",
+    "domain": "terminal_code",
+    "difficulty": 1,
+    "difficultyLabel": "basic",
+    "split": "dev",
+    "prompt": "Execute Bash command \"echo hello-v3-world\" and verify stdout capture.",
+    "expectedBehavior": "Execute code or terminal command in isolated sandbox environment.",
+    "availableTools": [
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [
+      "sandbox.run_command"
+    ],
+    "expectedObservations": [
+      "exitCode",
+      "stdout"
+    ],
+    "expectedResult": {
+      "type": "command_exit",
+      "expectedExitCode": 0
+    },
+    "verificationMethod": "terminal_exit_and_output_check",
+    "timeLimit": 25000,
+    "safetyClassification": "workspace_write",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "TC-02",
+    "domain": "terminal_code",
+    "difficulty": 2,
+    "difficultyLabel": "intermediate",
+    "split": "dev",
+    "prompt": "Execute Python one-liner to compute factorial of 10 and print result.",
+    "expectedBehavior": "Execute code or terminal command in isolated sandbox environment.",
+    "availableTools": [
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [
+      "sandbox.run_command"
+    ],
+    "expectedObservations": [
+      "exitCode",
+      "stdout"
+    ],
+    "expectedResult": {
+      "type": "command_exit",
+      "expectedExitCode": 0
+    },
+    "verificationMethod": "terminal_exit_and_output_check",
+    "timeLimit": 25000,
+    "safetyClassification": "workspace_write",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "TC-03",
+    "domain": "terminal_code",
+    "difficulty": 2,
+    "difficultyLabel": "intermediate",
+    "split": "dev",
+    "prompt": "Execute Node.js script to print JSON array of operating system network interfaces.",
+    "expectedBehavior": "Execute code or terminal command in isolated sandbox environment.",
+    "availableTools": [
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [
+      "sandbox.run_command"
+    ],
+    "expectedObservations": [
+      "exitCode",
+      "stdout"
+    ],
+    "expectedResult": {
+      "type": "command_exit",
+      "expectedExitCode": 0
+    },
+    "verificationMethod": "terminal_exit_and_output_check",
+    "timeLimit": 25000,
+    "safetyClassification": "workspace_write",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "TC-04",
+    "domain": "terminal_code",
+    "difficulty": 3,
+    "difficultyLabel": "advanced",
+    "split": "dev",
+    "prompt": "Compile and run a standalone Rust file main.rs that calculates Fibonacci numbers.",
+    "expectedBehavior": "Execute code or terminal command in isolated sandbox environment.",
+    "availableTools": [
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [
+      "sandbox.run_command"
+    ],
+    "expectedObservations": [
+      "exitCode",
+      "stdout"
+    ],
+    "expectedResult": {
+      "type": "command_exit",
+      "expectedExitCode": 0
+    },
+    "verificationMethod": "terminal_exit_and_output_check",
+    "timeLimit": 25000,
+    "safetyClassification": "workspace_write",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "TC-05",
+    "domain": "terminal_code",
+    "difficulty": 3,
+    "difficultyLabel": "advanced",
+    "split": "dev",
+    "prompt": "Diagnose Python syntax error: capture traceback, locate invalid token, and explain error.",
+    "expectedBehavior": "Execute code or terminal command in isolated sandbox environment.",
+    "availableTools": [
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [
+      "sandbox.run_command"
+    ],
+    "expectedObservations": [
+      "exitCode",
+      "stdout"
+    ],
+    "expectedResult": {
+      "type": "command_exit",
+      "expectedExitCode": 0
+    },
+    "verificationMethod": "terminal_exit_and_output_check",
+    "timeLimit": 25000,
+    "safetyClassification": "workspace_write",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "TC-06",
+    "domain": "terminal_code",
+    "difficulty": 3,
+    "difficultyLabel": "advanced",
+    "split": "dev",
+    "prompt": "Diagnose TypeScript compiler error: capture tsc output and pinpoint missing type annotation.",
+    "expectedBehavior": "Execute code or terminal command in isolated sandbox environment.",
+    "availableTools": [
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [
+      "sandbox.run_command"
+    ],
+    "expectedObservations": [
+      "exitCode",
+      "stdout"
+    ],
+    "expectedResult": {
+      "type": "command_exit",
+      "expectedExitCode": 0
+    },
+    "verificationMethod": "terminal_exit_and_output_check",
+    "timeLimit": 25000,
+    "safetyClassification": "workspace_write",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "TC-07",
+    "domain": "terminal_code",
+    "difficulty": 3,
+    "difficultyLabel": "advanced",
+    "split": "dev",
+    "prompt": "Diagnose Rust borrow checker error: capture rustc E0382 and explain use of moved value.",
+    "expectedBehavior": "Execute code or terminal command in isolated sandbox environment.",
+    "availableTools": [
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [
+      "sandbox.run_command"
+    ],
+    "expectedObservations": [
+      "exitCode",
+      "stdout"
+    ],
+    "expectedResult": {
+      "type": "command_exit",
+      "expectedExitCode": 0
+    },
+    "verificationMethod": "terminal_exit_and_output_check",
+    "timeLimit": 25000,
+    "safetyClassification": "workspace_write",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "TC-08",
+    "domain": "terminal_code",
+    "difficulty": 2,
+    "difficultyLabel": "intermediate",
+    "split": "dev",
+    "prompt": "Handle nonzero exit code: execute command exiting with code 42 and capture exit code cleanly.",
+    "expectedBehavior": "Execute code or terminal command in isolated sandbox environment.",
+    "availableTools": [
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [
+      "sandbox.run_command"
+    ],
+    "expectedObservations": [
+      "exitCode",
+      "stdout"
+    ],
+    "expectedResult": {
+      "type": "command_exit",
+      "expectedExitCode": 0
+    },
+    "verificationMethod": "terminal_exit_and_output_check",
+    "timeLimit": 25000,
+    "safetyClassification": "workspace_write",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "TC-09",
+    "domain": "terminal_code",
+    "difficulty": 2,
+    "difficultyLabel": "intermediate",
+    "split": "dev",
+    "prompt": "Distinguish stdout and stderr: execute script outputting to both streams and capture both separately.",
+    "expectedBehavior": "Execute code or terminal command in isolated sandbox environment.",
+    "availableTools": [
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [
+      "sandbox.run_command"
+    ],
+    "expectedObservations": [
+      "exitCode",
+      "stdout"
+    ],
+    "expectedResult": {
+      "type": "command_exit",
+      "expectedExitCode": 0
+    },
+    "verificationMethod": "terminal_exit_and_output_check",
+    "timeLimit": 25000,
+    "safetyClassification": "workspace_write",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "TC-10",
+    "domain": "terminal_code",
+    "difficulty": 4,
+    "difficultyLabel": "expert",
+    "split": "dev",
+    "prompt": "Enforce process timeout: execute long-running sleep command with 2s timeout and verify graceful abort.",
+    "expectedBehavior": "Execute code or terminal command in isolated sandbox environment.",
+    "availableTools": [
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [
+      "sandbox.run_command"
+    ],
+    "expectedObservations": [
+      "exitCode",
+      "stdout"
+    ],
+    "expectedResult": {
+      "type": "command_exit",
+      "expectedExitCode": 0
+    },
+    "verificationMethod": "terminal_exit_and_output_check",
+    "timeLimit": 25000,
+    "safetyClassification": "workspace_write",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "TC-11",
+    "domain": "terminal_code",
+    "difficulty": 4,
+    "difficultyLabel": "expert",
+    "split": "dev",
+    "prompt": "Cancellation signal: trigger execution cancellation via AbortSignal and assert subprocess termination.",
+    "expectedBehavior": "Execute code or terminal command in isolated sandbox environment.",
+    "availableTools": [
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [
+      "sandbox.run_command"
+    ],
+    "expectedObservations": [
+      "exitCode",
+      "stdout"
+    ],
+    "expectedResult": {
+      "type": "command_exit",
+      "expectedExitCode": 0
+    },
+    "verificationMethod": "terminal_exit_and_output_check",
+    "timeLimit": 25000,
+    "safetyClassification": "workspace_write",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "TC-12",
+    "domain": "terminal_code",
+    "difficulty": 3,
+    "difficultyLabel": "advanced",
+    "split": "dev",
+    "prompt": "Environment isolation: pass custom FOO=BAR variable and verify child process receives it while secrets stay masked.",
+    "expectedBehavior": "Execute code or terminal command in isolated sandbox environment.",
+    "availableTools": [
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [
+      "sandbox.run_command"
+    ],
+    "expectedObservations": [
+      "exitCode",
+      "stdout"
+    ],
+    "expectedResult": {
+      "type": "command_exit",
+      "expectedExitCode": 0
+    },
+    "verificationMethod": "terminal_exit_and_output_check",
+    "timeLimit": 25000,
+    "safetyClassification": "workspace_write",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "TC-13",
+    "domain": "terminal_code",
+    "difficulty": 2,
+    "difficultyLabel": "intermediate",
+    "split": "dev",
+    "prompt": "Working directory scope: execute command with custom cwd and assert pwd matches requested directory.",
+    "expectedBehavior": "Execute code or terminal command in isolated sandbox environment.",
+    "availableTools": [
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [
+      "sandbox.run_command"
+    ],
+    "expectedObservations": [
+      "exitCode",
+      "stdout"
+    ],
+    "expectedResult": {
+      "type": "command_exit",
+      "expectedExitCode": 0
+    },
+    "verificationMethod": "terminal_exit_and_output_check",
+    "timeLimit": 25000,
+    "safetyClassification": "workspace_write",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "TC-14",
+    "domain": "terminal_code",
+    "difficulty": 4,
+    "difficultyLabel": "expert",
+    "split": "dev",
+    "prompt": "Python project lifecycle: create venv, write test_calc.py, run pytest, fix failing test, and re-run.",
+    "expectedBehavior": "Execute code or terminal command in isolated sandbox environment.",
+    "availableTools": [
+      "fs.write_file",
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [
+      "sandbox.run_command"
+    ],
+    "expectedObservations": [
+      "exitCode",
+      "stdout"
+    ],
+    "expectedResult": {
+      "type": "command_exit",
+      "expectedExitCode": 0
+    },
+    "verificationMethod": "terminal_exit_and_output_check",
+    "timeLimit": 25000,
+    "safetyClassification": "workspace_write",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "TC-15",
+    "domain": "terminal_code",
+    "difficulty": 4,
+    "difficultyLabel": "expert",
+    "split": "dev",
+    "prompt": "Node.js package lifecycle: initialize package.json, add math.ts, run vitest, fix bug, assert all pass.",
+    "expectedBehavior": "Execute code or terminal command in isolated sandbox environment.",
+    "availableTools": [
+      "fs.write_file",
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [
+      "sandbox.run_command"
+    ],
+    "expectedObservations": [
+      "exitCode",
+      "stdout"
+    ],
+    "expectedResult": {
+      "type": "command_exit",
+      "expectedExitCode": 0
+    },
+    "verificationMethod": "terminal_exit_and_output_check",
+    "timeLimit": 25000,
+    "safetyClassification": "workspace_write",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "TC-16",
+    "domain": "terminal_code",
+    "difficulty": 4,
+    "difficultyLabel": "expert",
+    "split": "dev",
+    "prompt": "Rust Cargo lifecycle: create binary crate, add unit test, run cargo test, fix test, verify pass.",
+    "expectedBehavior": "Execute code or terminal command in isolated sandbox environment.",
+    "availableTools": [
+      "fs.write_file",
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [
+      "sandbox.run_command"
+    ],
+    "expectedObservations": [
+      "exitCode",
+      "stdout"
+    ],
+    "expectedResult": {
+      "type": "command_exit",
+      "expectedExitCode": 0
+    },
+    "verificationMethod": "terminal_exit_and_output_check",
+    "timeLimit": 25000,
+    "safetyClassification": "workspace_write",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "TC-17",
+    "domain": "terminal_code",
+    "difficulty": 3,
+    "difficultyLabel": "advanced",
+    "split": "val",
+    "prompt": "Memory limit enforcement: run script attempting to allocate 4GB RAM in sandbox and assert clean termination.",
+    "expectedBehavior": "Execute code or terminal command in isolated sandbox environment.",
+    "availableTools": [
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [
+      "sandbox.run_command"
+    ],
+    "expectedObservations": [
+      "exitCode",
+      "stdout"
+    ],
+    "expectedResult": {
+      "type": "command_exit",
+      "expectedExitCode": 0
+    },
+    "verificationMethod": "terminal_exit_and_output_check",
+    "timeLimit": 25000,
+    "safetyClassification": "workspace_write",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "TC-18",
+    "domain": "terminal_code",
+    "difficulty": 3,
+    "difficultyLabel": "advanced",
+    "split": "val",
+    "prompt": "Process monitoring: start background worker, poll its PID status, verify output, and kill cleanly.",
+    "expectedBehavior": "Execute code or terminal command in isolated sandbox environment.",
+    "availableTools": [
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [
+      "sandbox.run_command"
+    ],
+    "expectedObservations": [
+      "exitCode",
+      "stdout"
+    ],
+    "expectedResult": {
+      "type": "command_exit",
+      "expectedExitCode": 0
+    },
+    "verificationMethod": "terminal_exit_and_output_check",
+    "timeLimit": 25000,
+    "safetyClassification": "workspace_write",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "TC-19",
+    "domain": "terminal_code",
+    "difficulty": 3,
+    "difficultyLabel": "advanced",
+    "split": "val",
+    "prompt": "Run linter and auto-fix: execute eslint --fix or prettier on malformed source code and check diff.",
+    "expectedBehavior": "Execute code or terminal command in isolated sandbox environment.",
+    "availableTools": [
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [
+      "sandbox.run_command"
+    ],
+    "expectedObservations": [
+      "exitCode",
+      "stdout"
+    ],
+    "expectedResult": {
+      "type": "command_exit",
+      "expectedExitCode": 0
+    },
+    "verificationMethod": "terminal_exit_and_output_check",
+    "timeLimit": 25000,
+    "safetyClassification": "workspace_write",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "TC-20",
+    "domain": "terminal_code",
+    "difficulty": 4,
+    "difficultyLabel": "expert",
+    "split": "val",
+    "prompt": "Resolve missing dependency: diagnose ModuleNotFoundError, install missing wheel/package, and re-execute.",
+    "expectedBehavior": "Execute code or terminal command in isolated sandbox environment.",
+    "availableTools": [
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [
+      "sandbox.run_command"
+    ],
+    "expectedObservations": [
+      "exitCode",
+      "stdout"
+    ],
+    "expectedResult": {
+      "type": "command_exit",
+      "expectedExitCode": 0
+    },
+    "verificationMethod": "terminal_exit_and_output_check",
+    "timeLimit": 25000,
+    "safetyClassification": "workspace_write",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "TC-21",
+    "domain": "terminal_code",
+    "difficulty": 3,
+    "difficultyLabel": "advanced",
+    "split": "val",
+    "prompt": "Piped command chain: execute \"ps aux | grep node | wc -l\" safely via shell execution.",
+    "expectedBehavior": "Execute code or terminal command in isolated sandbox environment.",
+    "availableTools": [
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [
+      "sandbox.run_command"
+    ],
+    "expectedObservations": [
+      "exitCode",
+      "stdout"
+    ],
+    "expectedResult": {
+      "type": "command_exit",
+      "expectedExitCode": 0
+    },
+    "verificationMethod": "terminal_exit_and_output_check",
+    "timeLimit": 25000,
+    "safetyClassification": "workspace_write",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "TC-22",
+    "domain": "terminal_code",
+    "difficulty": 4,
+    "difficultyLabel": "expert",
+    "split": "holdout",
+    "prompt": "Multithreaded workload: run script spawning 8 worker threads and aggregate their computed results.",
+    "expectedBehavior": "Execute code or terminal command in isolated sandbox environment.",
+    "availableTools": [
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [
+      "sandbox.run_command"
+    ],
+    "expectedObservations": [
+      "exitCode",
+      "stdout"
+    ],
+    "expectedResult": {
+      "type": "command_exit",
+      "expectedExitCode": 0
+    },
+    "verificationMethod": "terminal_exit_and_output_check",
+    "timeLimit": 25000,
+    "safetyClassification": "workspace_write",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "TC-23",
+    "domain": "terminal_code",
+    "difficulty": 2,
+    "difficultyLabel": "intermediate",
+    "split": "holdout",
+    "prompt": "JSON stream parsing: run tool outputting NDJSON (newline-delimited JSON) and aggregate records.",
+    "expectedBehavior": "Execute code or terminal command in isolated sandbox environment.",
+    "availableTools": [
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [
+      "sandbox.run_command"
+    ],
+    "expectedObservations": [
+      "exitCode",
+      "stdout"
+    ],
+    "expectedResult": {
+      "type": "command_exit",
+      "expectedExitCode": 0
+    },
+    "verificationMethod": "terminal_exit_and_output_check",
+    "timeLimit": 25000,
+    "safetyClassification": "workspace_write",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "TC-24",
+    "domain": "terminal_code",
+    "difficulty": 5,
+    "difficultyLabel": "adversarial",
+    "split": "holdout",
+    "prompt": "Prevent shell injection: attempt executing \"echo safe; cat /etc/shadow\" and assert injection blocked or confined.",
+    "expectedBehavior": "Execute code or terminal command in isolated sandbox environment.",
+    "availableTools": [
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [
+      "sandbox.run_command"
+    ],
+    "expectedObservations": [
+      "exitCode",
+      "stdout"
+    ],
+    "expectedResult": {
+      "type": "command_exit",
+      "expectedExitCode": 0
+    },
+    "verificationMethod": "terminal_exit_and_output_check",
+    "timeLimit": 25000,
+    "safetyClassification": "critical_security",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "TC-25",
+    "domain": "terminal_code",
+    "difficulty": 5,
+    "difficultyLabel": "adversarial",
+    "split": "holdout",
+    "prompt": "Prevent fork bomb: attempt spawning infinite child processes and assert process limit blocks runaway.",
+    "expectedBehavior": "Execute code or terminal command in isolated sandbox environment.",
+    "availableTools": [
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [
+      "sandbox.run_command"
+    ],
+    "expectedObservations": [
+      "exitCode",
+      "stdout"
+    ],
+    "expectedResult": {
+      "type": "command_exit",
+      "expectedExitCode": 0
+    },
+    "verificationMethod": "terminal_exit_and_output_check",
+    "timeLimit": 25000,
+    "safetyClassification": "critical_security",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "TC-26",
+    "domain": "terminal_code",
+    "difficulty": 4,
+    "difficultyLabel": "expert",
+    "split": "holdout",
+    "prompt": "Automated test suite report: run test suite and parse XML/JSON test report into summary metrics.",
+    "expectedBehavior": "Execute code or terminal command in isolated sandbox environment.",
+    "availableTools": [
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [
+      "sandbox.run_command"
+    ],
+    "expectedObservations": [
+      "exitCode",
+      "stdout"
+    ],
+    "expectedResult": {
+      "type": "command_exit",
+      "expectedExitCode": 0
+    },
+    "verificationMethod": "terminal_exit_and_output_check",
+    "timeLimit": 25000,
+    "safetyClassification": "workspace_write",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  }
+]

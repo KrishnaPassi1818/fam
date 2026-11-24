@@ -11,7 +11,8 @@
     "typecheck": "tsc -b",
     "ci": "pnpm lint && pnpm typecheck && pnpm test && cargo check",
     "prompts:check": "tsx scripts/check-prompts.ts",
-    "bench:models": "tsx scripts/bench-models.ts"
+    "bench:models": "tsx scripts/bench-models.ts",
+    "bench:v3": "tsx packages/evals/src/v3/cli.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.16.0",
