@@ -10,3 +10,5 @@ coverage/
 *.tsbuildinfo
 .harness-data/
 tmp/
+fam-evaluation/
+

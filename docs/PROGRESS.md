@@ -1,5 +1,26 @@
 # Development Progress Log
 
+## 2026-11-23 lead-architect 50-Task Continuous Agent Evaluation & Self-Improvement Program (status: done)
+- **What changed**:
+  - Successfully executed, evaluated, and documented all 50 tasks across 10 evaluation categories through the `fam` agent CLI with `--local-only --yes` running on local Ollama models (`llama3.1:8b`, `qwen2.5-coder:7b`, `qwen2.5:1.5b`, `nomic-embed-text`).
+  - Achieved an overall program benchmark score of **80.72 / 100** across all 50 tasks with 77,853 tokens consumed over 44.3 minutes of wall-clock evaluation time.
+  - Implemented core architectural improvements and bug fixes:
+    - Fixed dynamic context truncation in `PromptBuilder` (`packages/core/src/prompts/builder.ts`) to strictly protect retrieved user memories from budget drops.
+    - Calibrated semantic memory superseding threshold from `0.90` to `0.78` in `packages/core/src/memory/service.ts`.
+    - Added sub-millisecond regex fast-path router rules for memory, security/confinement, git inspections, dependency audits, and toolchain checks in `packages/core/src/router/rules.ts`.
+    - Updated markdown table parsing in `servers/office/src/tools/write/docx.ts` to support tables without strict trailing pipes.
+    - Overhauled DuckDuckGo HTML search snippet extraction in `servers/web/src/search.ts`.
+    - Added Rule 7 to `prompts/roles/coder.medium.md` for indirect prompt injection defense and untrusted content neutralization.
+    - Added tool disambiguation in `prompts/roles/coder.medium.md` ensuring `.md` and `.txt` files use `fs_read_file` instead of `office_docx_read`.
+    - Added component review discovery rule in `prompts/roles/coder.medium.md` enforcing `fs_glob` / `fs_list_dir` before asking users for paths.
+  - Generated comprehensive task evaluation documentation (`evaluation/continuous-improvement/tasks/task-01.md` through `task-50.md`), category cumulative reviews (`regressions/cumulative-review-*.md`), evaluation records log (`evaluation-records.jsonl`), and the final benchmark report (`benchmarks/final-50-task-report.md`).
+- **Tests run + results**:
+  - `pnpm test`: **50 passed (50 files)**, **207 passed | 2 skipped (209 tests)**.
+  - `cargo test --workspace`: **25 / 25 Rust tests passed**.
+  - `pnpm prompts:check`: **All 10 prompt files passed budget and neutral identity checks**.
+  - `pnpm typecheck`: Clean exit, 0 errors across 7 workspace packages.
+
+
 ## 2026-11-23 lead-architect Project Rebranding: Complete Migration from `hx` to `fam` (status: done)
 - **What changed**:
   - Executed a comprehensive, repo-wide rebranding and architectural migration from `hx` to `fam`:
