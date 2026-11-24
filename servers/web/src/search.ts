@@ -24,21 +24,15 @@ export async function webSearch(query: string, limit = 5): Promise<SearchResult[
     const html = await resp.text();
     const results: SearchResult[] = [];
 
-    // Match each result block
-    const blockRegex = /<div class="[^"]*result__body[^"]*">([\s\S]*?)<\/div>\s*<\/div>/g;
-    let blockMatch: RegExpExecArray | null;
+    // Match each result block using title and snippet tags
+    const resultRegex =
+      /<h2 class="result__title">[\s\S]*?<a[^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>[\s\S]*?<a class="result__snippet[^"]*"[^>]*>([\s\S]*?)<\/a>/gi;
+    let match: RegExpExecArray | null;
 
-    while ((blockMatch = blockRegex.exec(html)) !== null && results.length < limit) {
-      const block = blockMatch[1]!;
-
-      // Extract title and URL
-      const titleMatch = /<h2 class="result__title">\s*<a[^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/i.exec(
-        block,
-      );
-      if (!titleMatch) continue;
-
-      let rawUrl = titleMatch[1]!;
-      let title = titleMatch[2]!.replace(/<[^>]+>/g, '').trim();
+    while ((match = resultRegex.exec(html)) !== null && results.length < limit) {
+      let rawUrl = match[1]!;
+      let title = match[2]!.replace(/<[^>]+>/g, '').trim();
+      let snippet = match[3]!.replace(/<[^>]+>/g, '').trim();
 
       // Decode DuckDuckGo redirect URL
       const uddgMatch = /uddg=([^&]+)/.exec(rawUrl);
@@ -49,14 +43,6 @@ export async function webSearch(query: string, limit = 5): Promise<SearchResult[
           // Keep rawUrl
         }
       }
-
-      // Extract snippet
-      const snippetMatch = /<a class="result__snippet[^"]*"[^>]*>([\s\S]*?)<\/a>/i.exec(
-        block,
-      );
-      let snippet = snippetMatch
-        ? snippetMatch[1]!.replace(/<[^>]+>/g, '').trim()
-        : '';
 
       // Unescape HTML entities
       title = unescapeHtml(title);

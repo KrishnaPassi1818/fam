@@ -389,8 +389,8 @@ export async function docx_create_from_markdown(options: DocxCreateFromMarkdownO
               text,
             }),
           );
-        } else if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
-          // Table parsing
+        } else if (trimmed.startsWith('|')) {
+          // Table parsing - accept lines starting with | even without trailing |
           const tableLines: string[] = [trimmed];
           while (i + 1 < lines.length && lines[i + 1]!.trim().startsWith('|')) {
             i++;
@@ -403,8 +403,11 @@ export async function docx_create_from_markdown(options: DocxCreateFromMarkdownO
             const rowStr = tableLines[r]!;
             if (rowStr.includes('---')) continue; // Separator row
 
-            const cells = rowStr
-              .slice(1, -1)
+            let content = rowStr.trim();
+            if (content.startsWith('|')) content = content.slice(1);
+            if (content.endsWith('|')) content = content.slice(0, -1);
+
+            const cells = content
               .split('|')
               .map((c) => c.trim());
 
@@ -423,7 +426,7 @@ export async function docx_create_from_markdown(options: DocxCreateFromMarkdownO
                       ],
                     }),
                   ],
-                  width: { size: 100 / cells.length, type: WidthType.PERCENTAGE },
+                  width: { size: 100 / (cells.length || 1), type: WidthType.PERCENTAGE },
                 }),
             );
 
