@@ -45,7 +45,9 @@ export class ToolValidator {
 
     // 1. Common parameter name hallucinations repair
     if (properties['path'] && coerced['path'] === undefined) {
-      if (typeof coerced['file'] === 'string') {
+      if (typeof coerced['paths'] === 'string') {
+        coerced['path'] = coerced['paths'];
+      } else if (typeof coerced['file'] === 'string') {
         coerced['path'] = coerced['file'];
       } else if (typeof coerced['filename'] === 'string') {
         coerced['path'] = coerced['filename'];
@@ -91,9 +93,70 @@ export class ToolValidator {
           coerced[propName] = propType === 'integer' ? parseInt(val.trim(), 10) : parseFloat(val.trim());
         }
       } else if (propType === 'array' && !Array.isArray(val)) {
-        coerced[propName] = [val];
+        if (typeof val === 'string') {
+          try {
+            const parsed = JSON.parse(val);
+            if (Array.isArray(parsed)) {
+              coerced[propName] = parsed;
+            } else if (parsed && typeof parsed === 'object') {
+              coerced[propName] = [parsed];
+            } else {
+              coerced[propName] = [val];
+            }
+          } catch {
+            // Try single-quote list repair (e.g. "['**/*']" -> ["**/*"])
+            try {
+              const repaired = val.replace(/'/g, '"');
+              const parsed = JSON.parse(repaired);
+              if (Array.isArray(parsed)) {
+                coerced[propName] = parsed;
+              } else {
+                coerced[propName] = [parsed];
+              }
+            } catch {
+              coerced[propName] = [val];
+            }
+          }
+        } else {
+          coerced[propName] = [val];
+        }
+
+        // For edits arrays in edit tools, repair missing search or replace
+        if (propName === 'edits' && Array.isArray(coerced[propName])) {
+          for (const item of coerced[propName] as Array<Record<string, unknown>>) {
+            if (item && typeof item === 'object') {
+              if (item['search'] === undefined && typeof item['replace'] === 'string') {
+                item['search'] = '';
+              } else if (item['replace'] === undefined && typeof item['search'] === 'string') {
+                item['replace'] = '';
+              }
+            }
+          }
+        }
+      } else if (propType === 'object' && (typeof val !== 'object' || val === null)) {
+        if (typeof val === 'string') {
+          try {
+            const parsed = JSON.parse(val);
+            if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+              coerced[propName] = parsed;
+            }
+          } catch {
+            // retain
+          }
+        }
       } else if (propType === 'string' && typeof val === 'number') {
         coerced[propName] = String(val);
+      } else if (propType === 'string' && typeof val === 'string') {
+        // Repair double-escaped JSON strings emitted by local models (e.g. "{\"key\": \"val\"}" -> '{"key": "val"}')
+        if (val.includes('\\"')) {
+          try {
+            const unescaped = val.replace(/\\"/g, '"');
+            JSON.parse(unescaped);
+            coerced[propName] = unescaped;
+          } catch {
+            // Not valid JSON after unescaping; preserve raw string
+          }
+        }
       }
     }
 

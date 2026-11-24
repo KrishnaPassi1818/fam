@@ -31,6 +31,21 @@ describe('OllamaAdapter', () => {
     const text3 = '[{"name": "tool_a", "args": {}}, {"name": "tool_b", "args": {}}]';
     const calls3 = adapter.parseFallbackToolCalls(text3);
     expect(calls3).toHaveLength(2);
+
+    // Text with embedded code blocks inside JSON args
+    const text4 = 'Here is the function call:\n{"name": "fs_write_file", "parameters": {"path": "README.md", "content": "```bash\\nnpm test\\n```"}}';
+    const calls4 = adapter.parseFallbackToolCalls(text4);
+    expect(calls4).toHaveLength(1);
+    expect(calls4[0]?.name).toBe('fs_write_file');
+    expect(calls4[0]?.args).toEqual({ path: 'README.md', content: '```bash\nnpm test\n```' });
+
+    // Multi-block tool calls in separate markdown code fences
+    const text5 = 'First file:\n```json\n{"name": "fs_write_file", "arguments": {"path": "app/main.py", "content": "x=1"}}\n```\nSecond file:\n```json\n{"name": "fs_write_file", "arguments": {"path": "app/db.py", "content": "y=2"}}\n```\nRun tests:\n```json\n{"name": "sandbox_run_command", "arguments": {"command": "pytest"}}\n```';
+    const calls5 = adapter.parseFallbackToolCalls(text5);
+    expect(calls5).toHaveLength(3);
+    expect(calls5[0]?.name).toBe('fs_write_file');
+    expect(calls5[1]?.name).toBe('fs_write_file');
+    expect(calls5[2]?.name).toBe('sandbox_run_command');
   });
 
   it('streams chunks and usage from mocked Ollama stream', async () => {

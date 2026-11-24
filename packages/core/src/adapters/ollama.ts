@@ -132,9 +132,18 @@ export class OllamaAdapter implements ModelAdapter {
     const calls: ToolCall[] = [];
     const trimmed = text.trim();
 
-    // Check for ```json ... ``` blocks
-    const codeBlockMatch = trimmed.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
-    const candidate = codeBlockMatch && codeBlockMatch[1] ? codeBlockMatch[1].trim() : trimmed;
+    // Check for explicit ```json ... ``` blocks first, avoiding non-json blocks (e.g. bash)
+    const jsonBlockRegex = /```(?:json)?\s*(\{[\s\S]*?\})\s*```/gi;
+    const jsonBlockMatches = [...trimmed.matchAll(jsonBlockRegex)];
+    let candidate = trimmed;
+    if (jsonBlockMatches.length > 0) {
+      candidate = jsonBlockMatches.map((m) => (m[1] ? m[1].trim() : '')).filter(Boolean).join('\n\n');
+    } else {
+      const codeBlockMatch = trimmed.match(/```json\s*([\s\S]*?)\s*```/i);
+      if (codeBlockMatch && codeBlockMatch[1]) {
+        candidate = codeBlockMatch[1].trim();
+      }
+    }
 
     // Scan for top-level JSON objects
     const jsonObjects: string[] = [];

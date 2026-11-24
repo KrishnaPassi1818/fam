@@ -146,8 +146,18 @@ export class ToolExecutor {
     handlers: Map<string, ToolHandler>,
     signal?: AbortSignal,
   ): Promise<ToolResult> {
-    const desc = descriptors.get(call.name);
-    const handler = handlers.get(call.name);
+    let desc = descriptors.get(call.name);
+    let handler = handlers.get(call.name);
+
+    if (!handler) {
+      if (call.name === 'fs_ls' || call.name === 'ls') {
+        handler = handlers.get('fs_list_dir') || handlers.get('list_dir');
+        desc = desc || descriptors.get('fs_list_dir') || descriptors.get('list_dir');
+      } else if (call.name === 'fs_find' || call.name === 'find') {
+        handler = handlers.get('fs_glob') || handlers.get('glob');
+        desc = desc || descriptors.get('fs_glob') || descriptors.get('glob');
+      }
+    }
 
     if (!handler) {
       return {

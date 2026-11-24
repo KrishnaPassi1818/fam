@@ -100,4 +100,78 @@ describe('ToolValidator (T3.1)', () => {
       expect(res.error).toContain('`start_line` must be integer');
     }
   });
+
+  it('repairs double-escaped JSON strings in string properties', () => {
+    const writeFileTool: ToolDescriptor = {
+      name: 'fs.write_file',
+      alias: 'fs_write_file',
+      description: 'Write file contents',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          path: { type: 'string' },
+          content: { type: 'string' },
+        },
+        required: ['path', 'content'],
+      },
+      category: 'fs',
+      annotations: {},
+      tier: 1,
+      timeoutMs: 10000,
+    };
+
+    const rawArgs = {
+      path: 'config.json',
+      content: '{\\"app_name\\": \\"Family Organizer\\", \\"version\\": \\"1.0\\", \\"debug\\": true}',
+    };
+
+    const res = validator.validateAndCoerce(writeFileTool, rawArgs);
+    expect(res.valid).toBe(true);
+    if (res.valid) {
+      expect(res.args['content']).toBe('{"app_name": "Family Organizer", "version": "1.0", "debug": true}');
+      expect(() => JSON.parse(res.args['content'] as string)).not.toThrow();
+    }
+  });
+
+  it('coerces serialized JSON array strings into arrays of objects (e.g. edits in apply_edit)', () => {
+    const applyEditTool: ToolDescriptor = {
+      name: 'fs.apply_edit',
+      alias: 'fs_apply_edit',
+      description: 'Apply edits',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          path: { type: 'string' },
+          edits: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                search: { type: 'string' },
+                replace: { type: 'string' },
+              },
+              required: ['search', 'replace'],
+            },
+          },
+        },
+        required: ['path', 'edits'],
+      },
+      category: 'fs',
+      annotations: {},
+      tier: 1,
+      timeoutMs: 10000,
+    };
+
+    const rawArgs = {
+      path: 'README.md',
+      edits: '[{"search": "old text", "replace": "new text"}]',
+    };
+
+    const res = validator.validateAndCoerce(applyEditTool, rawArgs);
+    expect(res.valid).toBe(true);
+    if (res.valid) {
+      expect(Array.isArray(res.args['edits'])).toBe(true);
+      expect((res.args['edits'] as any[])[0]?.search).toBe('old text');
+    }
+  });
 });
