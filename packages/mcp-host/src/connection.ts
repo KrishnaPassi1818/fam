@@ -1,5 +1,6 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js';
@@ -26,15 +27,26 @@ function findWorkspaceRoot(startDir: string = process.cwd()): string {
   if (process.env.HARNESS_ROOT && fs.existsSync(process.env.HARNESS_ROOT)) {
     return process.env.HARNESS_ROOT;
   }
-  let current = path.resolve(startDir);
-  while (true) {
-    if (fs.existsSync(path.join(current, 'pnpm-workspace.yaml')) || fs.existsSync(path.join(current, 'Cargo.toml'))) {
+  // Search up from module directory to locate the harness repo root (containing Cargo.toml and packages/)
+  const moduleDir = path.dirname(fileURLToPath(import.meta.url));
+  let current = path.resolve(moduleDir, '..');
+  for (let i = 0; i < 6; i++) {
+    if (fs.existsSync(path.join(current, 'Cargo.toml')) && fs.existsSync(path.join(current, 'packages'))) {
       return current;
     }
     const parent = path.dirname(current);
-    if (parent === current) {
-      break;
+    if (parent === current) break;
+    current = parent;
+  }
+
+  // Fallback to startDir
+  current = path.resolve(startDir);
+  while (true) {
+    if (fs.existsSync(path.join(current, 'Cargo.toml')) && fs.existsSync(path.join(current, 'packages'))) {
+      return current;
     }
+    const parent = path.dirname(current);
+    if (parent === current) break;
     current = parent;
   }
   return startDir;
