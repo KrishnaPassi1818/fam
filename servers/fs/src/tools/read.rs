@@ -104,13 +104,13 @@ pub fn tool_definitions() -> Vec<ToolDefinition> {
         ToolDefinition {
             name: "file_hash".into(),
             description:
-                "Compute SHA-256 content hashes and sizes for one or more files to compare duplicates."
+                "Compute SHA-256 content hashes and sizes for one or more files to compare duplicates. Pass wildcard pattern (e.g. paths: [\"**/*\"]) to hash all files, or specific paths."
                     .into(),
             input_schema: json!({
                 "type": "object",
                 "properties": {
-                    "path": { "type": "string", "description": "Single file path" },
-                    "paths": { "type": "array", "items": { "type": "string" }, "description": "List of file paths" }
+                    "path": { "type": "string", "description": "Single file path or glob pattern (e.g. \"**/*\")" },
+                    "paths": { "type": "array", "items": { "type": "string" }, "description": "List of file paths or glob patterns" }
                 }
             }),
             annotations: Some(crate::protocol::ToolAnnotation {
@@ -358,6 +358,8 @@ pub fn execute_file_info(conf: &Confinement, args: FileInfoArgs) -> ToolCallResu
 }
 
 pub fn execute_file_hash(conf: &Confinement, args: FileHashArgs) -> ToolCallResult {
+    use glob::Pattern;
+    use ignore::WalkBuilder;
     use sha2::{Digest, Sha256};
 
     let mut target_paths = Vec::new();
@@ -368,12 +370,38 @@ pub fn execute_file_hash(conf: &Confinement, args: FileHashArgs) -> ToolCallResu
         target_paths.extend(ps);
     }
 
+    // Default to hashing all workspace files if no specific path is given
     if target_paths.is_empty() {
-        return ToolCallResult::error("Must provide 'path' or 'paths' to file_hash");
+        target_paths.push("**/*".into());
+    }
+
+    let mut expanded_paths = Vec::new();
+    for raw_p_str in target_paths {
+        let p_str = raw_p_str.trim_matches(|c| c == '[' || c == ']' || c == '\'' || c == '"').to_string();
+        if p_str.contains('*') || p_str.contains('?') {
+            let root_str = conf.root().to_string_lossy().to_string();
+            let clean = p_str.strip_prefix(&root_str).unwrap_or(&p_str);
+            let clean_pat = clean.trim_start_matches('/');
+            let glob_pat = if clean_pat == "*" { "**/*" } else { clean_pat };
+            if let Ok(pattern) = Pattern::new(glob_pat) {
+                let walker = WalkBuilder::new(conf.root()).standard_filters(true).build();
+                for entry in walker.flatten() {
+                    if entry.path().is_file() {
+                        let rel = conf.relative_display(entry.path());
+                        let rel_str = rel.to_string_lossy();
+                        if pattern.matches(&rel_str) || pattern.matches_path(rel) {
+                            expanded_paths.push(rel_str.to_string());
+                        }
+                    }
+                }
+            }
+        } else {
+            expanded_paths.push(p_str);
+        }
     }
 
     let mut results = Vec::new();
-    for p_str in target_paths {
+    for p_str in expanded_paths {
         let resolved = match conf.resolve(&p_str) {
             Ok(p) => p,
             Err(e) => {

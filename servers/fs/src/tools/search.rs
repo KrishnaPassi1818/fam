@@ -87,7 +87,12 @@ pub fn execute_glob(conf: &Confinement, args: GlobArgs) -> ToolCallResult {
         None => conf.resolve(".").unwrap_or_else(|_| conf.root().to_path_buf()),
     };
 
-    let pattern = match Pattern::new(&args.pattern) {
+    let root_str = conf.root().to_string_lossy().to_string();
+    let clean = args.pattern.strip_prefix(&root_str).unwrap_or(&args.pattern);
+    let clean_pat = clean.trim_start_matches('/');
+    let glob_pat = if clean_pat == "*" { "**/*" } else { clean_pat };
+
+    let pattern = match Pattern::new(glob_pat) {
         Ok(pat) => pat,
         Err(e) => {
             return ToolCallResult::error(format!("Invalid glob pattern '{}': {e}", args.pattern))
@@ -110,7 +115,8 @@ pub fn execute_glob(conf: &Confinement, args: GlobArgs) -> ToolCallResult {
         if path.is_file() {
             let rel = conf.relative_display(path);
             let rel_str = rel.to_string_lossy();
-            if pattern.matches(&rel_str) || pattern.matches_path(rel) {
+            let matches_fname = path.file_name().map(|n| pattern.matches(&n.to_string_lossy())).unwrap_or(false);
+            if pattern.matches(&rel_str) || pattern.matches_path(rel) || matches_fname {
                 matches.push(rel_str.to_string());
             }
         }

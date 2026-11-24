@@ -11,6 +11,8 @@ pub struct WriteFileArgs {
     pub content: String,
     #[serde(default)]
     pub overwrite: Option<bool>,
+    #[serde(default)]
+    pub append: Option<bool>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -50,7 +52,8 @@ pub fn tool_definitions() -> Vec<ToolDefinition> {
                 "properties": {
                     "path": { "type": "string", "description": "File path to write" },
                     "content": { "type": "string", "description": "Full file content" },
-                    "overwrite": { "type": "boolean", "description": "Whether to overwrite existing file (default true)" }
+                    "overwrite": { "type": "boolean", "description": "Whether to overwrite existing file (default true)" },
+                    "append": { "type": "boolean", "description": "Whether to append to file instead of overwriting (default false)" }
                 },
                 "required": ["path", "content"]
             }),
@@ -63,7 +66,7 @@ pub fn tool_definitions() -> Vec<ToolDefinition> {
         },
         ToolDefinition {
             name: "apply_edit".into(),
-            description: "Apply search/replace edits to a file with whitespace-tolerant fuzzy matching and ambiguity detection.".into(),
+            description: "Apply search/replace edits to a file with whitespace-tolerant fuzzy matching. To append to the end of a file, pass an empty search string (\"\").".into(),
             input_schema: json!({
                 "type": "object",
                 "properties": {
@@ -152,8 +155,24 @@ pub fn execute_write_file(conf: &Confinement, args: WriteFileArgs) -> ToolCallRe
         }
     }
 
-    if let Err(e) = fs::write(&resolved, &args.content) {
-        return ToolCallResult::error(format!("Failed to write file '{}': {e}", args.path));
+    let is_append = args.append.unwrap_or(false);
+    if is_append {
+        use std::io::Write;
+        let mut file = match fs::OpenOptions::new().create(true).append(true).open(&resolved) {
+            Ok(f) => f,
+            Err(e) => return ToolCallResult::error(format!("Failed to open file for append: {e}")),
+        };
+        let mut bytes_to_write = args.content.clone();
+        if resolved.exists() && fs::metadata(&resolved).map(|m| m.len() > 0).unwrap_or(false) && !bytes_to_write.starts_with('\n') {
+            bytes_to_write = format!("\n{bytes_to_write}");
+        }
+        if let Err(e) = file.write_all(bytes_to_write.as_bytes()) {
+            return ToolCallResult::error(format!("Failed to append to file '{}': {e}", args.path));
+        }
+    } else {
+        if let Err(e) = fs::write(&resolved, &args.content) {
+            return ToolCallResult::error(format!("Failed to write file '{}': {e}", args.path));
+        }
     }
 
     let res_json = json!({
@@ -217,8 +236,14 @@ pub fn execute_apply_edit(conf: &Confinement, args: ApplyEditArgs) -> ToolCallRe
 }
 
 fn apply_single_block(text: &str, search: &str, replace: &str) -> Result<String> {
+    // If search is empty, append replace to the end of the content
     if search.is_empty() {
-        bail!("Search target cannot be empty");
+        let mut out = text.to_string();
+        if !out.is_empty() && !out.ends_with('\n') {
+            out.push('\n');
+        }
+        out.push_str(replace);
+        return Ok(out);
     }
 
     // 1. Exact match

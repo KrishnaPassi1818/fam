@@ -21,6 +21,14 @@ async fn main() -> Result<()> {
                 } else {
                     root = PathBuf::from(root_arg);
                 }
+            } else if root_arg == "${HOME}" || root_arg == "$HOME" {
+                if let Ok(home) = env::var("HOME") {
+                    root = PathBuf::from(home);
+                } else {
+                    root = PathBuf::from(root_arg);
+                }
+            } else if root_arg == "." || root_arg == "${CWD}" || root_arg == "$CWD" {
+                root = env::current_dir().unwrap_or_else(|_| PathBuf::from("."));
             } else {
                 root = PathBuf::from(root_arg);
             }

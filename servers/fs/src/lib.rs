@@ -52,6 +52,7 @@ mod tests {
                 path: "nested/dir/hello.txt".into(),
                 content: "Hello World!\nSecond Line".into(),
                 overwrite: Some(true),
+                append: None,
             },
         );
         assert_eq!(write_res.is_error, Some(false));
@@ -136,6 +137,22 @@ mod tests {
 
         let updated = fs::read_to_string(&file).unwrap();
         assert!(updated.contains("return 'hello world';"));
+
+        // Append to end of file when search is empty
+        let append_res = tools::edit::execute_apply_edit(
+            &conf,
+            tools::edit::ApplyEditArgs {
+                path: "code.ts".into(),
+                edits: vec![tools::edit::SearchReplaceBlock {
+                    search: "".into(),
+                    replace: "// Appended line".into(),
+                }],
+                dry_run: Some(false),
+            },
+        );
+        assert_eq!(append_res.is_error, Some(false));
+        let appended = fs::read_to_string(&file).unwrap();
+        assert!(appended.ends_with("// Appended line"));
 
         // Ambiguity check: duplicate line
         fs::write(&file, "foo\nfoo\nbar\n").unwrap();
