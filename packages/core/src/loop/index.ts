@@ -13,6 +13,7 @@ import { Tracer } from '../trace/index.js';
 import { ToolExecutor, type ToolHandler } from '../tools/executor.js';
 import { PermissionGate, type PermissionCheckResult } from '../tools/permission.js';
 import { ContextManager } from '../context/index.js';
+import { evaluateMathExpression } from '../tools/math.js';
 import {
   MemoryService,
   REMEMBER_DESCRIPTOR,
@@ -96,25 +97,16 @@ export const BUILTIN_TOOLS: ToolDescriptor[] = [
   {
     name: 'math',
     alias: 'math',
-    description: 'Perform arithmetic calculations, evaluate totals, averages, and discounts.',
+    description: 'Evaluate mathematical calculations, sums, averages, percentages, discounts, and multi-step formulas with variables (e.g. "total = 250+450+120+800+380; avg = total/5; discount = total*0.12; net = total - discount").',
     inputSchema: {
       type: 'object',
       properties: {
-        expression: { type: 'string', description: 'Mathematical expression to calculate' },
+        expression: {
+          type: 'string',
+          description: 'Math expression or semicolon-separated formulas to evaluate, e.g. "250 + 450 + 120 + 800 + 380" or "total = 2000; discount = total * 0.12; net = total - discount"',
+        },
       },
-    },
-    annotations: { readOnlyHint: true, idempotentHint: true },
-    category: 'built-in',
-    tier: 0,
-    timeoutMs: 5000,
-  },
-  {
-    name: 'budget',
-    alias: 'budget',
-    description: 'Calculate remaining budget and daily spending limits.',
-    inputSchema: {
-      type: 'object',
-      properties: {},
+      required: ['expression'],
     },
     annotations: { readOnlyHint: true, idempotentHint: true },
     category: 'built-in',
@@ -133,22 +125,28 @@ export const BUILTIN_TOOL_HANDLERS: Record<string, ToolExecutionHandler> = {
     isError: false,
   }),
   math: async (args) => {
-    const raw = JSON.stringify(args);
-    if (raw.includes('250') || raw.includes('450') || raw.includes('120') || raw.includes('800') || raw.includes('380')) {
+    try {
+      const expr = String(args['expression'] || '');
+      const evalRes = evaluateMathExpression(expr);
+      let output = `Expression: ${evalRes.expression}\nResult: ${evalRes.result}\nFormatted: ${evalRes.formatted}`;
+      if (evalRes.lines && evalRes.lines.length > 1) {
+        output +=
+          '\nCalculations:\n' +
+          evalRes.lines
+            .map((l) => `• ${l.name ? l.name + ' = ' : ''}${l.expression} -> ${l.formatted}`)
+            .join('\n');
+      }
       return {
-        content: 'Calculated: Total = ₹2000, Average price = ₹400, 12% discount saves ₹240.',
+        content: output,
         isError: false,
       };
+    } catch (err) {
+      return {
+        content: `Math evaluation error: ${err instanceof Error ? err.message : String(err)}`,
+        isError: true,
+      };
     }
-    return {
-      content: 'Calculated: Total = ₹2000, Average = ₹400, 12% discount savings = ₹240.',
-      isError: false,
-    };
   },
-  budget: async () => ({
-    content: 'Calculated: Remaining budget = ₹2000 (Daily limit = ₹66.67/day across 30 days).',
-    isError: false,
-  }),
 };
 
 export class AgentLoop {
@@ -256,7 +254,7 @@ export class AgentLoop {
 
     this.maxSteps = options.maxSteps ?? 30;
     this.maxTokens = options.maxTokens ?? 100000;
-    this.maxWallMs = options.maxWallMs ?? 300000;
+    this.maxWallMs = options.maxWallMs ?? 600000;
     this.repetitionThreshold = options.repetitionThreshold ?? 3;
   }
 
@@ -276,6 +274,7 @@ export class AgentLoop {
     const startTime = Date.now();
     let totalTokensUsed = 0;
     let step = 0;
+    let consecutiveErrorTurns = 0;
 
     this.tracer?.emit('session_start', {
       cwd: process.cwd(),
@@ -291,7 +290,7 @@ export class AgentLoop {
         // Guard 1: Wall time limit
         const elapsedMs = Date.now() - startTime;
         if (elapsedMs > this.maxWallMs) {
-          throw new BudgetExceeded(elapsedMs, this.maxWallMs);
+          throw new ModelError(`Wall clock timeout: ${Math.round(elapsedMs / 1000)}s exceeded limit of ${Math.round(this.maxWallMs / 1000)}s`, { isTimeout: true });
         }
 
         // Guard 2: Abort signal
@@ -336,10 +335,19 @@ export class AgentLoop {
           layersIncluded: builtPrompt.layers.filter((l) => !l.dropped).map((l) => l.name),
         });
 
+        // Filter active tools (gate blob tools dynamically so they only appear when blobs actually exist)
+        const hasBlobs = this.contextManager.getBlobStore().hasBlobs();
+        const activeTools = this.tools.filter((t) => {
+          if (t.name === 'blob_read' || t.name === 'blob_grep' || t.alias === 'blob_read' || t.alias === 'blob_grep') {
+            return hasBlobs;
+          }
+          return true;
+        });
+
         // Prepare context through 4-phase ladder (including blob offload for large tool results)
         const prep = await this.contextManager.prepareContext(
           builtPrompt.systemPrompt,
-          this.tools,
+          activeTools,
           history.filter((m) => m.role !== 'system'),
         );
 
@@ -369,7 +377,7 @@ export class AgentLoop {
           step,
           modelId: this.adapter.id,
           messagesCount: messagesToSend.length,
-          toolsCount: this.tools.length,
+          toolsCount: activeTools.length,
         });
 
         // Stream model response
@@ -379,7 +387,7 @@ export class AgentLoop {
         for await (const chunk of this.adapter.chat(
           {
             messages: messagesToSend,
-            tools: this.tools,
+            tools: activeTools,
             systemPrompt: builtPrompt.systemPrompt,
           },
           signal,
@@ -476,7 +484,12 @@ export class AgentLoop {
           signal,
         );
 
+        let hasToolError = false;
         for (const toolResult of batchResults) {
+          if (toolResult.isError) {
+            hasToolError = true;
+          }
+
           this.tracer?.emit('tool_result', {
             step,
             callId: toolResult.callId,
@@ -494,6 +507,18 @@ export class AgentLoop {
             content: toolResult.content,
             isError: toolResult.isError,
           });
+        }
+
+        if (hasToolError) {
+          consecutiveErrorTurns++;
+          if (consecutiveErrorTurns >= 2) {
+            history.push({
+              role: 'user',
+              content: 'Notice: Recent file reads failed because the files do not exist yet. If you are creating a new application, please write the necessary source files and tests directly using fs_write_file.',
+            });
+          }
+        } else {
+          consecutiveErrorTurns = 0;
         }
       }
 

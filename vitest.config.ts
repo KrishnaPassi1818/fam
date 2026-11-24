@@ -5,7 +5,7 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     include: ['**/*.test.{ts,tsx}'],
-    exclude: ['**/node_modules/**', '**/dist/**', '**/target/**'],
+    exclude: ['**/node_modules/**', '**/dist/**', '**/target/**', '**/fam-evaluation/**', '**/evaluation/**'],
     server: {
       deps: {
         external: ['node:sqlite', 'sqlite-vec'],

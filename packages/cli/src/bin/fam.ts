@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import { Command } from 'commander';
 import { VERSION } from '@fam/shared';
-import { loadConfig, Tracer, MemoryService, AgentLoop, PermissionGate } from '@fam/core';
+import { loadConfig, Tracer, MemoryService, AgentLoop, PermissionGate, Router } from '@fam/core';
 import { McpHost } from '@fam/mcp-host';
 import { runDoctor, formatDoctorTable } from '../doctor/index.js';
 import { listServers, testServer, saveServerConfig, removeServerConfig } from '../mcp/index.js';
@@ -363,7 +363,35 @@ program
 
       const isOneShot = Boolean(promptArg && promptArg.trim().length > 0);
       if (isOneShot) {
-        const modelId = options.model || config.general.defaultModel || 'llama3.1:8b';
+        let modelId = options.model;
+        let role = options.role;
+
+        // Dynamic routing when model or role not explicitly set
+        if (!modelId || !role || role === 'assistant') {
+          try {
+            const router = new Router();
+            const decision = await router.route(promptArg!, options.model);
+            if ((!role || role === 'assistant') && decision.intent === 'coding') {
+              role = 'coder';
+            }
+            if (!modelId && decision.modelChain.length > 0) {
+              let candidate = decision.modelChain[0];
+              if (options.localOnly && candidate && candidate.startsWith('gemini:')) {
+                const local = decision.modelChain.find((m) => !m.startsWith('gemini:'));
+                if (local) candidate = local;
+              }
+              if (candidate) {
+                modelId = candidate.replace(/^ollama:/, '');
+              }
+            }
+          } catch {
+            // graceful fallback
+          }
+        }
+
+        modelId = modelId || config.general.defaultModel || 'llama3.1:8b';
+        role = role || 'assistant';
+
         const adapter = createAdapter({
           modelId,
           config,
@@ -400,7 +428,7 @@ program
           tracer: new Tracer(),
           memoryService,
           permissionGate,
-          role: options.role || 'assistant',
+          role,
           tier: tier as 'full' | 'medium' | 'min',
           userGlobalPrompt: systemOverride,
           projectPrompt: options.appendSystem,

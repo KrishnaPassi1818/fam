@@ -4,11 +4,11 @@ model = "qwen2.5-coder:7b"
 placement = "gpu"
 numCtx = 8192
 keepAlive = "10m"
-temperature = 0.7
+temperature = 0.1
 
 [models."ollama:qwen2.5-coder:7b".caps]
-tools = false
-parallelTools = false
+tools = true
+parallelTools = true
 vision = false
 jsonSchemaFormat = true
 maxCtx = 8192
@@ -19,7 +19,7 @@ model = "llama3.1:8b"
 placement = "gpu"
 numCtx = 8192
 keepAlive = "10m"
-temperature = 0.7
+temperature = 0.1
 
 [models."ollama:llama3.1:8b".caps]
 tools = true

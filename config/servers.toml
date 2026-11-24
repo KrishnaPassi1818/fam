@@ -3,7 +3,7 @@
 [servers.fs]
 transport = "stdio"
 command = "target/debug/fam-fs"
-args = ["--root", "${HOME}"]
+args = ["--root", "."]
 autoStart = true
 enabled = true
 
