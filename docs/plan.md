@@ -34,14 +34,14 @@ Lanes interact only through the contracts in `packages/shared` and MCP schemas. 
 - Tracer (JSONL).
 - Benchmark script: measure VRAM, tokens/s, max stable `num_ctx` for each model, then write `models.toml`.
 - Probe: does qwen2.5-coder:7b support Ollama native tool calls? Record the result and set `caps.tools`.
-- **Exit gate**: demo p1: converses with each model, tool call round-trips on llama3.1 and Gemini, trace file produced, `models.toml` populated from measurements.
+- **Exit gate**: demo p1: converses with each model, tool call round-trips on qwen3.5:4b and Gemini, trace file produced, `models.toml` populated from measurements.
 
 ### Phase 2: MCP host and the `fs` server
 **Goal**: real tools via MCP.
 - MCP host (stdio, then streamable HTTP), registry bridge, namespacing, aliasing, `list_changed`, lazy start, reconnect.
 - Rust `fs` server with all tools in architecture 4.11 (repo_map via tree-sitter for TS/JS/Py/Rust/Go at minimum).
 - `fam mcp list/add/test`. First-connect approval for third-party servers.
-- **Exit gate**: agent can "find all TODOs in this repo and summarize by file" using `fs` over MCP with llama3.1. A third-party MCP server (e.g. the reference filesystem or fetch server) connects through config alone.
+- **Exit gate**: agent can "find all TODOs in this repo and summarize by file" using `fs` over MCP with qwen3.5:4b. A third-party MCP server (e.g. the reference filesystem or fetch server) connects through config alone.
 
 ### Phase 3: Executor, permissions, approvals
 **Goal**: safe parallel multi-tool execution.
@@ -62,7 +62,7 @@ Lanes interact only through the contracts in `packages/shared` and MCP schemas. 
 - Router (rules fast path + 1.5b JSON classification), routing policy file.
 - Tool embeddings (`nomic-embed-text`), top-K retrieval, `find_tools`, sticky and core sets, description shortening for small models.
 - Model scheduler/lock with batching by model.
-- **Exit gate**: with ≥ 40 registered tools, llama3.1 correct-tool selection ≥ 85% on a 40-prompt eval set. Router latency < 800 ms on CPU. Local VRAM swaps are minimized in a mixed-task test.
+- **Exit gate**: with ≥ 40 registered tools, qwen3.5:4b correct-tool selection ≥ 85% on a 40-prompt eval set. Router latency < 800 ms on CPU. Local VRAM swaps are minimized in a mixed-task test.
 
 ### Phase 6: Memory
 **Goal**: implement memory.md part A.
@@ -116,6 +116,6 @@ P2 → P10 (after P3) → P11
 - Merge points are phase exit gates. One agent integrates and runs the gate.
 
 ## 6. Risk checkpoints
-- End of P1: if the llama3.1:8b tool-calling reliability is poor, bring the Phase 5 retrieval and constrained-output work forward.
+- End of P1: if the qwen3.5:4b tool-calling reliability is poor, bring the Phase 5 retrieval and constrained-output work forward.
 - End of P4: if 8k is unstable on 6 GB, reduce to 6k and shift more work to Gemini.
 - End of P7: if the libraries can't do a needed docx/xlsx operation, add a LibreOffice UNO-script fallback tool.

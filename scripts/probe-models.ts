@@ -10,7 +10,7 @@ async function main() {
 
   const modelsToProbe = [
     { name: 'qwen2.5-coder:7b', placement: 'gpu', numCtx: 8192 },
-    { name: 'llama3.1:8b', placement: 'gpu', numCtx: 8192 },
+    { name: 'qwen3.5:4b', placement: 'gpu', numCtx: 4096 },
     { name: 'qwen2.5:1.5b', placement: 'cpu', numCtx: 4096, numGpu: 0 },
   ];
 

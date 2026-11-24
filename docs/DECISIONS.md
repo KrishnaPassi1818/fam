@@ -6,11 +6,11 @@
 - **Context**: Setting up `fam`, a local-first CLI AI agent harness running on Linux (Omarchy / Arch-based, AMD Ryzen 7 7435HS, NVIDIA RTX 4050 6GB VRAM, 24GB RAM).
 - **Decision**:
   1. Monorepo structure using `pnpm` workspaces for TypeScript packages and Cargo workspace for Rust MCP servers.
-  2. Local models managed via Ollama (`qwen2.5:1.5b` on CPU for router/compactor, `llama3.1:8b` on GPU for general worker, `qwen2.5-coder:7b` on GPU for coding generator, `nomic-embed-text` for vector embeddings).
+  2. Local models managed via Ollama (`qwen2.5:1.5b` on CPU for router/compactor, `qwen3.5:4b` on GPU for general worker [superseding initial llama3.1:8b per ADR-005], `qwen2.5-coder:7b` on GPU for coding generator, `nomic-embed-text` for vector embeddings).
   3. Cloud model via Gemini API (`@google/genai`) for complex planning, long-context work, and escalation.
   4. Core contracts frozen in `packages/shared`.
 - **Consequences**:
-  - GPU VRAM (6GB) requires strict serialization between 7B/8B models: `llama3.1:8b` and `qwen2.5-coder:7b` must never co-load in VRAM.
+  - GPU VRAM (6GB) requires strict serialization between GPU models: `qwen3.5:4b` and `qwen2.5-coder:7b` must never co-load in VRAM.
   - Router (`qwen2.5:1.5b`) is pinned to CPU (`num_gpu: 0`).
 
 ## ADR-002: Contracts Frozen v1
@@ -64,6 +64,22 @@
   - The CLI package `@fam/cli` is now pure TypeScript with zero React dependencies.
   - Interactive terminal performance is vastly superior with zero flicker during token streaming and strict signal abort handling (`Esc` interrupt).
   - TUI can be tested independently in Rust using `ratatui::backend::TestBackend` and in TypeScript via the IPC session driver.
+
+## ADR-005: Primary Local GPU Worker Migration from Llama 3.1 8B to Qwen 3.5 4B
+- **Date**: 2026-11-24
+- **Status**: Accepted
+- **Context**: The primary local worker model was originally `llama3.1:8b`. While functional, running `llama3.1:8b` (4.9 GB weights) with an 8,192 context window pushed GPU VRAM consumption to ~4,011 MB and resulted in partial offloading (27/33 layers on GPU, 6 layers spilled to CPU) on the RTX 4050 6GB GPU. Migrating to `qwen3.5:4b` (`d8b0f5e9760c`, 3.1 GB weights) allows 100% GPU offloading with 4,096 context window, native function tool calling, vision support via clip projector, faster generation speeds (25.6+ tok/s), and zero CPU layer spill.
+- **Decision**:
+  1. Replace all footprints and configurations of `llama3.1:8b` with `qwen3.5:4b`.
+  2. Set `qwen3.5:4b` as default assistant model in `config/default.toml`, `config/models.toml`, `config/routing.toml`, and user configuration `~/.fam/`.
+  3. Context window calibrated to 4096 tokens (`numCtx = 4096`) with 100% GPU offload on llamacpp runner.
+  4. Prompt profile migrated: `prompts/profiles/llama3.md` deleted and replaced with `prompts/profiles/qwen35.md`.
+  5. Updated `fam doctor` diagnostic suite, model scheduler locks, context budgeter tables, test suites, and documentation across all packages.
+- **Consequences**:
+  - 100% GPU placement without CPU layer spill or thermal throttling.
+  - Zero co-loading interference with `qwen2.5-coder:7b` as both cleanly fit under 6GB VRAM bounds when scheduled.
+  - All test suites and prompt budget checks pass cleanly with new model defaults.
+
 
 
 

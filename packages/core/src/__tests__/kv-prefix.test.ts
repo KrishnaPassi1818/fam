@@ -7,7 +7,7 @@ describe('KV-Cache Prefix Stability Verification (T4.6)', () => {
     const builder = new PromptBuilder();
 
     const turn1 = builder.build({
-      modelId: 'ollama:llama3.1:8b',
+      modelId: 'ollama:qwen3.5:4b',
       role: 'assistant',
       dynamicContext: {
         date: '2026-11-22T20:00:00Z',
@@ -17,7 +17,7 @@ describe('KV-Cache Prefix Stability Verification (T4.6)', () => {
     });
 
     const turn2 = builder.build({
-      modelId: 'ollama:llama3.1:8b',
+      modelId: 'ollama:qwen3.5:4b',
       role: 'assistant',
       dynamicContext: {
         date: '2026-11-22T20:05:00Z',

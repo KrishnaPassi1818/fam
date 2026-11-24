@@ -151,7 +151,7 @@ export class PromptBuilder {
       };
     }
     return {
-      family: 'llama3',
+      family: 'qwen35',
       tier: requestedTier || 'medium',
       budget: 600,
     };

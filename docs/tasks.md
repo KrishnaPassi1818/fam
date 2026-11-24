@@ -18,7 +18,7 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
   AC: every section of the file appears in the inventory. No verbatim copy of more than a short phrase.
 - [x] **T0.6** · E · T0.5 · Write `prompts/core.md` (harness rules: tool protocol, untrusted-data rule, parallel-call guidance, ask-vs-act, safety), ≤ 300 tokens, with a front-matter budget.
   AC: token test passes.
-- [x] **T0.7** · E · T0.5, T0.6 · Distill and write `prompts/roles/assistant.full.md` (≤ 4000 tok), `assistant.medium.md` (≤ 600), `coder.full.md`, `coder.medium.md` (≤ 600), `router.min.md` (≤ 150, rigid JSON output), plus model profiles `prompts/profiles/{llama3,qwen,qwen-coder,gemini}.md` (≤ 150 each).
+- [x] **T0.7** · E · T0.5, T0.6 · Distill and write `prompts/roles/assistant.full.md` (≤ 4000 tok), `assistant.medium.md` (≤ 600), `coder.full.md`, `coder.medium.md` (≤ 600), `router.min.md` (≤ 150, rigid JSON output), plus model profiles `prompts/profiles/{qwen35,qwen,qwen-coder,gemini}.md` (≤ 150 each).
   AC: neutral identity only (test greps for vendor names), token budgets enforced by a test, rewritten in own words, most important rules first.
 - [x] **T0.8** · E · T0.7 · Prompt budget test and linter script (`pnpm prompts:check`): counts tokens, checks front-matter, and greps for banned identity strings.
   AC: runs in CI.
@@ -67,7 +67,7 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
 - [x] **T2.8** · F/D · T2.1 · `fam mcp list|add|remove|test`, first-connect approval UI showing the command and tools.
   AC: manual demo, unit tests for the config edits.
 - [x] **T2.9** · A · T2.3, T2.5 · Wire registry tools into the loop (all tools presented for now; retrieval comes in P5). Demo: "find all TODOs and summarize by file".
-  AC: gate demo passes with llama3.1; record the transcript. Connect one third-party MCP server by config only.
+  AC: gate demo passes with qwen3.5:4b; record the transcript. Connect one third-party MCP server by config only.
 
 ## Phase 3: Executor, permissions, approvals
 
@@ -120,7 +120,7 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
 - [x] **T5.6** · A · T5.2 · Local model scheduler/lock: serialize local calls, group by model, unload policy, Gemini bypass.
   AC: mixed-task test counts swaps.
 - [x] **T5.7** · E · T5.4 · 40-prompt tool-selection eval with ≥ 40 registered tools (use fixture tools).
-  AC: ≥ 85% on llama3.1.
+  AC: ≥ 85% on qwen3.5:4b.
 
 ## Phase 6: Memory
 
@@ -166,7 +166,7 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
 
 ## Phase 9: Planner, escalation, sub-agents
 
-- [ ] **T9.1** · A · T5.2 · Plan schema and Gemini planner (structured output); local-only fallback planner using llama3.1.
+- [ ] **T9.1** · A · T5.2 · Plan schema and Gemini planner (structured output); local-only fallback planner using qwen3.5:4b.
 - [ ] **T9.2** · A · T9.1, T3.2 · DAG executor: dependency resolution, concurrent ready nodes, result handles, node retries, partial-failure policy.
 - [ ] **T9.3** · A · T5.6 · Escalation ladder with compacted state handoff, privacy re-check per hop, budget tracking per run (tokens, Gemini calls).
 - [ ] **T9.4** · A · T9.2 · Verifier hooks per design 6, an optional critic pass for complexity ≥ 4.

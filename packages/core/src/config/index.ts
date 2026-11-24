@@ -128,7 +128,7 @@ export function loadConfig(options: LoadConfigOptions = {}): FamConfig {
       chain: rule['chain'] ?? [],
     }));
     routingConfig = {
-      defaultChain: defaultChain || ['ollama:llama3.1:8b', 'gemini:gemini-2.5-flash'],
+      defaultChain: defaultChain || ['ollama:qwen3.5:4b', 'gemini:gemini-2.5-flash'],
       rules,
     };
   }

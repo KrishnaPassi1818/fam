@@ -41,9 +41,9 @@ pub struct StatusInfo {
 impl Default for StatusInfo {
     fn default() -> Self {
         Self {
-            model: "llama3.1:8b".to_string(),
+            model: "qwen3.5:4b".to_string(),
             used_tokens: 0,
-            max_ctx: 8192,
+            max_ctx: 4096,
             tier: "medium".to_string(),
             is_local: true,
             cwd: std::env::current_dir()

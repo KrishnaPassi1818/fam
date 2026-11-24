@@ -25,7 +25,9 @@ export function createAdapter(options: CreateAdapterOptions): ModelAdapter {
   }
 
   // Local Ollama adapter
-  const profile = config.models.models[modelId] as ModelProfile | undefined;
+  const profile = (config.models.models[modelId] ||
+    config.models.models[`ollama:${modelId}`] ||
+    config.models.models[modelId.replace(/^ollama:/, '')]) as ModelProfile | undefined;
   const placement = profile?.placement || 'gpu';
   const numGpu = placement === 'cpu' ? 0 : profile?.numGpu;
 
@@ -34,5 +36,6 @@ export function createAdapter(options: CreateAdapterOptions): ModelAdapter {
     host: process.env['FAM_OLLAMA_HOST'] || process.env['HX_OLLAMA_HOST'] || 'http://127.0.0.1:11434',
     numGpu,
     numCtx: profile?.numCtx,
+    caps: profile?.caps,
   });
 }

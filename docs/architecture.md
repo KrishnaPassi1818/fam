@@ -58,7 +58,7 @@ harness/
 ### 4.1 Model adapter layer (`core/adapters`)
 ```ts
 interface ModelAdapter {
-  id: string;                          // "ollama:llama3.1:8b" | "gemini:<model>"
+  id: string;                          // "ollama:qwen3.5:4b" | "gemini:<model>"
   caps: { tools: boolean; parallelTools: boolean; vision: boolean;
           jsonSchemaFormat: boolean; maxCtx: number };
   chat(req: ChatRequest, signal?: AbortSignal): AsyncIterable<ChatChunk>;
@@ -121,7 +121,7 @@ Loop detection: hash of (tool, normalized args) repeated ≥3 → inject a "you 
 ### 4.7 Planner, orchestrator, escalation (`core/orchestrator`)
 - Simple tasks: single loop on the chosen model.
 - Complex: Gemini produces a plan `Plan { nodes: [{id, goal, deps[], tools?, model?, verify?}] }` as structured output. The DAG executor runs ready nodes concurrently (Gemini parallel, local serialized by a **model lock**), passing results as handles.
-- **Escalation ladder**: worker (llama3.1) → retry with repair → coder (if code) → Gemini. Escalation passes a compacted state, not the whole history. Privacy check at every hop.
+- **Escalation ladder**: worker (qwen3.5:4b) → retry with repair → coder (if code) → Gemini. Escalation passes a compacted state, not the whole history. Privacy check at every hop.
 - **Model lock/scheduler**: a queue that serializes local LLM calls, batches by model to minimize VRAM swaps, and lets Gemini calls bypass it.
 
 ### 4.8 Coding loop (`core/coding`)
@@ -162,7 +162,7 @@ JSONL per run at `~/.fam/traces/<session>/<run>.jsonl`, with events: `prompt`, `
 | Model | Placement | num_ctx | Notes |
 |---|---|---|---|
 | qwen2.5:1.5b | CPU (`num_gpu:0`) | 4096 | router, compactor, validators |
-| llama3.1:8b | GPU | 8192 (tune to fit 6 GB) | general worker; `keep_alive` 10m |
+| qwen3.5:4b | GPU | 4096 (100% GPU offload, ~3.1 GB) | general worker; `keep_alive` 10m |
 | qwen2.5-coder:7b | GPU | 8192 | generator path; unload other 8B first |
 | nomic-embed-text | CPU | n/a | embeddings |
 | Gemini | API | large | planner, escalation, vision, long-context |

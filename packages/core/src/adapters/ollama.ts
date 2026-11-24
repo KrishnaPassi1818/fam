@@ -56,7 +56,7 @@ export class OllamaAdapter implements ModelAdapter {
     const cleanModel = options.model.replace(/^ollama:/, '');
     this.modelName = cleanModel;
     this.id = `ollama:${cleanModel}`;
-    this.defaultNumCtx = options.numCtx || 8192;
+    this.defaultNumCtx = options.numCtx || 4096;
     this.numGpu = options.numGpu;
     this.keepAlive = options.keepAlive || '10m';
 

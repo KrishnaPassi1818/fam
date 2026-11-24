@@ -207,8 +207,7 @@ async function main() {
 
   const testMatrix: Array<{ model: string; numCtx: number; placement: 'gpu' | 'cpu' }> = [
     { model: 'qwen2.5:1.5b', numCtx: 4096, placement: 'cpu' },
-    { model: 'llama3.1:8b', numCtx: 4096, placement: 'gpu' },
-    { model: 'llama3.1:8b', numCtx: 8192, placement: 'gpu' },
+    { model: 'qwen3.5:4b', numCtx: 4096, placement: 'gpu' },
     { model: 'qwen2.5-coder:7b', numCtx: 4096, placement: 'gpu' },
     { model: 'qwen2.5-coder:7b', numCtx: 8192, placement: 'gpu' },
   ];

@@ -65,7 +65,7 @@ _Combines local Ollama models and cloud Gemini with native Rust Ratatui TUI, Mod
                        │    │                                                │               │  │ │
                        │    │                                                ▼               │  │ │
                        │    │ ModelAdapters                            PermissionGate        │  │ │
-                       │    │ ├── Ollama (Llama/Qwen)                  (Tiers 0 - 4)         │  │ │
+                       │    │ ├── Ollama (Qwen 3.5 / Qwen 2.5)         (Tiers 0 - 4)         │  │ │
                        │    │ └── Gemini (API)                               │               │  │ │
                        │    │                                                ▼               │  │ │
                        │    │ Tracer (JSONL)                              McpHost            │  │ │
@@ -85,7 +85,7 @@ _Combines local Ollama models and cloud Gemini with native Rust Ratatui TUI, Mod
 
 ### 🚀 Dual-Engine Model Cascade
 
-- **Local GPU Workers**: `llama3.1:8b` for general assistant duties; `qwen2.5-coder:7b` for code synthesis.
+- **Local GPU Workers**: `qwen3.5:4b` for general assistant duties; `qwen2.5-coder:7b` for code synthesis.
 - **Local CPU Router**: `qwen2.5:1.5b` running on CPU (`num_gpu: 0`) for sub-millisecond intent classification, complexity scoring, and history compaction.
 - **Semantic Embeddings**: `nomic-embed-text` for vector tool retrieval and memory indexing.
 - **Cloud Escalation**: Seamless handoff to **Google Gemini** (Gemini 2.5 Flash / Pro) for large planning DAGs or context > 8k tokens.
@@ -139,7 +139,7 @@ _Combines local Ollama models and cloud Gemini with native Rust Ratatui TUI, Mod
 | Model                  |     Placement      | Context (`num_ctx`) | Generation Speed | Prompt Eval Speed | VRAM Allocation |   Status   |
 | :--------------------- | :----------------: | :-----------------: | :--------------: | :---------------: | :-------------: | :--------: |
 | **`qwen2.5:1.5b`**     | CPU (`num_gpu: 0`) |        4,096        |  **36.8 tok/s**  |  **360.8 tok/s**  | 0 MB (100% CPU) | ✅ Optimal |
-| **`llama3.1:8b`**      |     GPU (VRAM)     |        8,192        |  **18.4 tok/s**  |  **99.7 tok/s**   |    ~4,011 MB    | ✅ Smooth  |
+| **`qwen3.5:4b`**       |     GPU (VRAM)     |        4,096        |  **25.6 tok/s**  |  **114.9 tok/s**  |    ~3,100 MB    | ✅ 100% GPU|
 | **`qwen2.5-coder:7b`** |     GPU (VRAM)     |        8,192        |  **24.3 tok/s**  |  **310.4 tok/s**  |    ~4,073 MB    |  ✅ Fast   |
 
 ### Comprehensive 25-Task Evaluation Suite
@@ -183,7 +183,7 @@ cargo build
 
 ```bash
 # General assistant worker
-ollama pull llama3.1:8b
+ollama pull qwen3.5:4b
 
 # Code generator
 ollama pull qwen2.5-coder:7b
@@ -241,7 +241,7 @@ node packages/cli/dist/bin/fam.js "What is the total expenditure in monthly_expe
 fam [options] [prompt]
 
 Options:
-  --model <model>        Force a specific model (e.g. llama3.1:8b, qwen2.5-coder:7b)
+  --model <model>        Force a specific model (e.g. qwen3.5:4b, qwen2.5-coder:7b)
   --role <role>          Select agent role: assistant, coder, router (default: assistant)
   --system <prompt>      Override role system instructions with custom text
   --append-system <text> Append additional custom instructions to dynamic prompt

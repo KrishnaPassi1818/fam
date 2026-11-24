@@ -4,10 +4,10 @@ import type { ChatRequest, Message } from '@fam/shared';
 
 describe('OllamaAdapter', () => {
   it('instantiates with expected default caps and properties', () => {
-    const adapter = new OllamaAdapter({ model: 'llama3.1:8b', numCtx: 8192 });
-    expect(adapter.id).toBe('ollama:llama3.1:8b');
+    const adapter = new OllamaAdapter({ model: 'qwen3.5:4b', numCtx: 4096 });
+    expect(adapter.id).toBe('ollama:qwen3.5:4b');
     expect(adapter.caps.tools).toBe(true);
-    expect(adapter.caps.maxCtx).toBe(8192);
+    expect(adapter.caps.maxCtx).toBe(4096);
   });
 
   it('parses fallback JSON tool calls from text', () => {
@@ -49,7 +49,7 @@ describe('OllamaAdapter', () => {
   });
 
   it('streams chunks and usage from mocked Ollama stream', async () => {
-    const adapter = new OllamaAdapter({ model: 'llama3.1:8b' });
+    const adapter = new OllamaAdapter({ model: 'qwen3.5:4b' });
 
     const mockLines = [
       JSON.stringify({ message: { content: 'Hello ' }, done: false }),
@@ -92,7 +92,7 @@ describe('OllamaAdapter', () => {
   });
 
   it('parses native tool calls and assigns synthetic IDs', async () => {
-    const adapter = new OllamaAdapter({ model: 'llama3.1:8b' });
+    const adapter = new OllamaAdapter({ model: 'qwen3.5:4b' });
 
     const mockLines = [
       JSON.stringify({
@@ -137,7 +137,7 @@ describe('OllamaAdapter', () => {
   });
 
   it('throws ModelError on HTTP failure', async () => {
-    const adapter = new OllamaAdapter({ model: 'llama3.1:8b' });
+    const adapter = new OllamaAdapter({ model: 'qwen3.5:4b' });
 
     vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
       new Response('out of memory allocating KV cache', { status: 507 }),

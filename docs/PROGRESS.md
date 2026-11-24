@@ -1,5 +1,42 @@
 # Development Progress Log
 
+## 2026-11-24 lead-architect Refactor Primary Local Worker Model to `qwen3.5:4b` (status: done)
+- **What changed**:
+  - Removed all footprints and runtime dependencies on `llama3.1:8b` across the entire codebase and migrated the primary local GPU worker model to `qwen3.5:4b`:
+    - **Model Specifications & Hardware Profile**:
+      - Name: `qwen3.5:4b`, digest `d8b0f5e9760c`, 3.1 GB memory footprint in GPU VRAM (100% GPU offload, zero CPU layer spill on 6GB RTX 4050 Laptop GPU, llamacpp runner, 4096 context window).
+      - Capabilities: completion, vision (clip projector), native tool calling, and thinking support.
+    - **Configuration Files**:
+      - `config/default.toml` & `~/.fam/default.toml`: updated `defaultModel = "ollama:qwen3.5:4b"`.
+      - `config/models.toml` & `~/.fam/models.toml`: replaced `ollama:llama3.1:8b` profile with `[models."ollama:qwen3.5:4b"]` configured for `numCtx = 4096`, `placement = "gpu"`, `vision = true`, and `tools = true`.
+      - `config/routing.toml` & `~/.fam/routing.toml`: replaced `ollama:llama3.1:8b` across default routing chain, office, web fallback, system, and local-only fallback rules.
+    - **TypeScript Packages & Runtime Core**:
+      - `@fam/shared`: updated default model and default routing chain in `packages/shared/src/types/config.ts`, model adapter ID type in `adapter.ts`, token estimator docstrings, and config unit tests.
+      - `@fam/core`: updated fallback defaults in `packages/core/src/config/index.ts`, `DEFAULT_ROUTING_CONFIG` in `router/policy.ts`, GPU model registry in `models/scheduler.ts`, prompt layer resolution in `prompts/builder.ts`, 4B context allocation budget in `context/budget.ts` (`numCtx = 4096`), and default context size in `adapters/ollama.ts`.
+      - `@fam/cli`: updated `fam doctor` target model checklist in `doctor/index.ts`, CLI commander default fallback and option descriptions in `bin/fam.ts`, TUI IPC session driver model resolution in `ui/session.ts`, and adapter factory lookup in `ui/adapter-factory.ts`.
+    - **Prompts & Profiles**:
+      - Deleted `prompts/profiles/llama3.md` and added `prompts/profiles/qwen35.md` with 150-token budget.
+      - Verified `pnpm prompts:check`: 10/10 prompts passed budget and neutral identity checks.
+    - **Rust Crates (`crates/fam-tui`)**:
+      - Updated default model to `"qwen3.5:4b"` and default context to `4096` in `crates/fam-tui/src/app.rs`.
+      - Updated status bar rendering test in `tests/tui_tests.rs` and backend IPC deserialization in `tests/protocol_bridge_tests.rs`.
+    - **Documentation & ADR**:
+      - Authored **ADR-005** ("Primary Local GPU Worker Migration from Llama 3.1 8B to Qwen 3.5 4B") in `docs/DECISIONS.md`.
+      - Updated `README.md`, `docs/architecture.md`, `docs/design.md`, `docs/getting-started.md`, `docs/cli.md`, `docs/mcp.md`, `docs/configuration.md`, `docs/plan.md`, `docs/prd.md`, `docs/tasks.md`, and `docs/reference/prompt-analysis.md`.
+    - **E2E Validation**:
+      - Verified with `fam doctor`: all target models present (`qwen3.5:4b`, `qwen2.5:1.5b`, `qwen2.5-coder:7b`, `nomic-embed-text`).
+      - Verified one-shot execution with `node packages/cli/dist/bin/fam.js --local-only "What is 15 * 4? Reply with only the number."` -> returned `60`.
+      - Verified general assistant query with `node packages/cli/dist/bin/fam.js --local-only "Hello, tell me a 1-sentence joke about science."` -> loaded and executed on `qwen3.5:4b` in 100% GPU VRAM (3.1 GB, llamacpp).
+- **Tests run + results**:
+  - `pnpm build`: Clean build across all 7 workspace packages (`shared`, `core`, `mcp-host`, `office`, `web`, `evals`, `cli`).
+  - `pnpm typecheck`: Clean exit, 0 errors.
+  - `pnpm lint`: Clean exit, 0 errors, 0 warnings.
+  - `pnpm prompts:check`: All 10 prompt files passed budget and neutral identity constraints.
+  - `cargo test --workspace`: 25 passed (0 failed).
+  - `pnpm test`: 50 passed (50 files), 207 passed | 2 skipped (209 tests).
+  - `node packages/cli/dist/bin/fam.js doctor`: Verdict: All required dependencies are satisfied.
+
+
 ## 2026-11-23 lead-architect 50-Task Continuous Agent Evaluation & Self-Improvement Program (status: done)
 - **What changed**:
   - Successfully executed, evaluated, and documented all 50 tasks across 10 evaluation categories through the `fam` agent CLI with `--local-only --yes` running on local Ollama models (`llama3.1:8b`, `qwen2.5-coder:7b`, `qwen2.5:1.5b`, `nomic-embed-text`).

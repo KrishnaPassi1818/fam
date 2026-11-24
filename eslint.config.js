@@ -10,6 +10,8 @@ export default tseslint.config(
       'docs/**',
       'prompts/**',
       'scripts/**',
+      'fam-evaluation/**',
+      'evaluation/**',
       '**/*.d.ts',
     ],
   },

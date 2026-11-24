@@ -52,13 +52,13 @@ describe('PromptBuilder', () => {
 
   it('guarantees byte-identical stable prefix across multiple turns with changing dynamic content', () => {
     const turn1 = builder.build({
-      modelId: 'ollama:llama3.1:8b',
+      modelId: 'ollama:qwen3.5:4b',
       role: 'assistant',
       dynamicContext: { date: '2026-11-22T19:00:00Z', cwd: '/repo/a' },
     });
 
     const turn2 = builder.build({
-      modelId: 'ollama:llama3.1:8b',
+      modelId: 'ollama:qwen3.5:4b',
       role: 'assistant',
       dynamicContext: { date: '2026-11-22T19:05:00Z', cwd: '/repo/b' },
     });
@@ -73,7 +73,7 @@ describe('PromptBuilder', () => {
     // Core (255) + profile (45) + assistant.medium (190) = 490 tokens.
     // A 300-token user prompt and 100-token dynamic context will push it to ~890 tokens.
     const res = builder.build({
-      modelId: 'ollama:llama3.1:8b',
+      modelId: 'ollama:qwen3.5:4b',
       role: 'assistant',
       userGlobalPrompt: 'This is a long user instruction designed to exceed budget. '.repeat(20),
       dynamicContext: {
@@ -125,8 +125,8 @@ describe('PromptBuilder', () => {
     const gemini = builder.build({ modelId: 'gemini:gemini-2.5-flash', role: 'assistant' });
     expect(gemini.budget).toBe(4000);
 
-    const llama = builder.build({ modelId: 'ollama:llama3.1:8b', role: 'assistant' });
-    expect(llama.budget).toBe(600);
+    const qwen = builder.build({ modelId: 'ollama:qwen3.5:4b', role: 'assistant' });
+    expect(qwen.budget).toBe(600);
 
     const qwenMin = builder.build({ modelId: 'ollama:qwen2.5:1.5b', role: 'router' });
     expect(qwenMin.budget).toBe(150);

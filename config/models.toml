@@ -13,20 +13,20 @@ vision = false
 jsonSchemaFormat = true
 maxCtx = 8192
 
-[models."ollama:llama3.1:8b"]
+[models."ollama:qwen3.5:4b"]
 provider = "ollama"
-model = "llama3.1:8b"
+model = "qwen3.5:4b"
 placement = "gpu"
-numCtx = 8192
+numCtx = 4096
 keepAlive = "10m"
 temperature = 0.1
 
-[models."ollama:llama3.1:8b".caps]
+[models."ollama:qwen3.5:4b".caps]
 tools = true
 parallelTools = true
-vision = false
+vision = true
 jsonSchemaFormat = true
-maxCtx = 8192
+maxCtx = 4096
 
 [models."ollama:qwen2.5:1.5b"]
 provider = "ollama"

@@ -49,7 +49,7 @@ function runFam(
   } = {},
 ): { stdout: string; stderr: string; exitCode: number; durationMs: number } {
   const cwd = options.cwd || TEST_WORKSPACE;
-  const model = options.model || 'llama3.1:8b';
+  const model = options.model || 'qwen3.5:4b';
   const role = options.role || 'assistant';
   const timeoutMs = options.timeoutMs || 240000;
 

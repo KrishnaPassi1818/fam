@@ -9,11 +9,11 @@
 - **Target Harness Token Budgets**:
   - `core.md`: ≤ 300 tokens (stable harness baseline)
   - `assistant.full.md` (Gemini): ≤ 4,000 tokens
-  - `assistant.medium.md` (llama3.1:8b): ≤ 600 tokens
+  - `assistant.medium.md` (qwen3.5:4b): ≤ 600 tokens
   - `coder.full.md`: ≤ 4,000 tokens
   - `coder.medium.md` (qwen2.5-coder:7b): ≤ 600 tokens
   - `router.min.md` (qwen2.5:1.5b): ≤ 150 tokens
-  - Model Profiles (`llama3`, `qwen`, `qwen-coder`, `gemini`): ≤ 150 tokens each
+  - Model Profiles (`qwen35`, `qwen`, `qwen-coder`, `gemini`): ≤ 150 tokens each
 
 ---
 

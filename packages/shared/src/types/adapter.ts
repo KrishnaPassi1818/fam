@@ -33,7 +33,7 @@ export interface ChatChunk {
 }
 
 export interface ModelAdapter {
-  id: string; // "ollama:llama3.1:8b" | "gemini:gemini-2.5-flash"
+  id: string; // "ollama:qwen3.5:4b" | "gemini:gemini-2.5-flash"
   caps: ModelCaps;
   chat(req: ChatRequest, signal?: AbortSignal): AsyncIterable<ChatChunk>;
   countTokens(msgs: Message[]): Promise<number> | number;

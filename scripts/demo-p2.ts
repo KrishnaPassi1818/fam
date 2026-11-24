@@ -62,8 +62,8 @@ async function main() {
   }
   console.log(`✓ Third-party server executed successfully: ${addResult.content}`);
 
-  // STEP 3: Setup llama3.1:8b Agent Loop with fs tools
-  console.log('\n[3/4] Running llama3.1:8b Agent Loop with MCP fs tools (grep TODOs)...');
+  // STEP 3: Setup qwen3.5:4b Agent Loop with fs tools
+  console.log('\n[3/4] Running qwen3.5:4b Agent Loop with MCP fs tools (grep TODOs)...');
   const tracer = new Tracer({
     traceDir: tracesDir,
     sessionId: `gate_p2_${Date.now()}`,
@@ -71,8 +71,8 @@ async function main() {
   });
 
   const adapter = new OllamaAdapter({
-    model: 'llama3.1:8b',
-    numCtx: 8192,
+    model: 'qwen3.5:4b',
+    numCtx: 4096,
   });
 
   // Use alias names for small model tool-calling stability (e.g. fs_grep)
@@ -117,7 +117,7 @@ async function main() {
   }
 
   if (!toolWasCalled) {
-    throw new Error('llama3.1:8b did not emit any tool call!');
+    throw new Error('qwen3.5:4b did not emit any tool call!');
   }
   console.log(`✓ Agent loop executed tool call '${toolNameCalled}' successfully.`);
 

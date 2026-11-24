@@ -19,7 +19,7 @@ When called with a `[PROMPT]`, `fam` executes in **one-shot mode** directly in t
 
 | Flag                     | Short | Description                                                                                      |    Default    |
 | :----------------------- | :---: | :----------------------------------------------------------------------------------------------- | :-----------: |
-| `--model <model>`        | `-m`  | Force a specific model (e.g. `llama3.1:8b`, `qwen2.5-coder:7b`). Overrides the automated router. | `llama3.1:8b` |
+| `--model <model>`        | `-m`  | Force a specific model (e.g. `qwen3.5:4b`, `qwen2.5-coder:7b`). Overrides the automated router. | `qwen3.5:4b` |
 | `--role <role>`          | `-r`  | Select system role: `assistant`, `coder`, or `router`.                                           |  `assistant`  |
 | `--system <text>`        |       | Completely override the role prompt layer with custom instructions.                              |     None      |
 | `--append-system <text>` |       | Append extra instructions to the dynamic context layer.                                          |     None      |
@@ -84,7 +84,7 @@ Run automated benchmark evaluation suites against models:
 
 ```bash
 fam eval --suite smoke
-fam eval --model llama3.1:8b --task task_01
+fam eval --model qwen3.5:4b --task task_01
 fam eval --suite smoke --json
 ```
 
@@ -113,7 +113,7 @@ When launched interactively (`fam`), `fam` spawns the native Rust TUI frontend b
 ├─────────────────────────────────────────────────────────────────────────────────────┤
 │  fam > _                                                                             │
 ├─────────────────────────────────────────────────────────────────────────────────────┤
-│ llama3.1:8b │ ctx 2.4k/8k │ medium │ 21.2 tok/s │ [LOCAL] │ /home/krishna/Projects/harness │
+│ qwen3.5:4b │ ctx 2.4k/4k │ medium │ 25.6 tok/s │ [LOCAL] │ /home/krishna/Projects/harness │
 └─────────────────────────────────────────────────────────────────────────────────────┘
 ```
 

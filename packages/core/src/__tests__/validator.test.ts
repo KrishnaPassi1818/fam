@@ -171,7 +171,7 @@ describe('ToolValidator (T3.1)', () => {
     expect(res.valid).toBe(true);
     if (res.valid) {
       expect(Array.isArray(res.args['edits'])).toBe(true);
-      expect((res.args['edits'] as any[])[0]?.search).toBe('old text');
+      expect((res.args['edits'] as Record<string, unknown>[])[0]?.search).toBe('old text');
     }
   });
 });

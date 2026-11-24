@@ -33,7 +33,7 @@ describe('Config Loader', () => {
     // Write a sample default.toml to tmpConfigDir
     fs.writeFileSync(
       path.join(tmpConfigDir, 'default.toml'),
-      '[general]\ndefaultModel = "ollama:llama3.1:8b"\nlogLevel = "warn"\n',
+      '[general]\ndefaultModel = "ollama:qwen3.5:4b"\nlogLevel = "warn"\n',
     );
 
     const config = loadConfig({
@@ -42,7 +42,7 @@ describe('Config Loader', () => {
       env: {},
     });
 
-    expect(config.general.defaultModel).toBe('ollama:llama3.1:8b');
+    expect(config.general.defaultModel).toBe('ollama:qwen3.5:4b');
     expect(config.general.logLevel).toBe('warn');
     // Also verify it was copied to user dataDir
     expect(fs.existsSync(path.join(tmpDataDir, 'default.toml'))).toBe(true);

@@ -332,7 +332,7 @@ async function main() {
       sessionId: `gate_p3_${Date.now()}`,
       runId: 'demo_run_p3',
     });
-    tracer.emit('session_start', { model: 'llama3.1:8b', role: 'assistant' });
+    tracer.emit('session_start', { model: 'qwen3.5:4b', role: 'assistant' });
     tracer.emit('tool_call', { name: 'read_slow', args: {} });
     tracer.emit('permission', { tool: 'fs_trash', granted: true });
     tracer.emit('session_end', { totalTokens: 250, durationMs: 800 });

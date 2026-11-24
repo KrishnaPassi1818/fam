@@ -64,7 +64,7 @@ Single power user, also a casual user for everyday tasks.
 - NFR-1 Local-first: works fully offline with local models (web tools excepted).
 - NFR-2 Memory: never co-load two 7–8B models. The router runs on CPU.
 - NFR-3 Latency: time-to-first-token < 3 s for a warm 8B model on a ≤4k prompt.
-- NFR-4 Reliability: tool-call validity ≥ 95% after repair on the eval suite for the llama3.1:8b worker.
+- NFR-4 Reliability: tool-call validity ≥ 95% after repair on the eval suite for the qwen3.5:4b worker.
 - NFR-5 Safety: no destructive operation without a tier-appropriate approval; all writes recoverable (backup, trash, or git).
 - NFR-6 Portability: Windows and Linux (macOS best-effort). OS differences are isolated behind an interface.
 - NFR-7 Startup: CLI is interactive in < 1 s. MCP servers start lazily.
