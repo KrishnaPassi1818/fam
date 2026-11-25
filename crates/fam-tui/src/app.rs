@@ -141,6 +141,10 @@ impl App {
                 content,
                 model,
             } => {
+                if role == "system" && content.contains("interrupted") {
+                    self.active_delta = None;
+                    self.is_processing = false;
+                }
                 self.messages.push(DisplayMessage {
                     id,
                     role,
