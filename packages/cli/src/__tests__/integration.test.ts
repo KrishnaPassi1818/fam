@@ -83,6 +83,12 @@ describe('Agent Loop & TUI Driver Integration', () => {
 
     const status = emitted.find((m) => m.type === 'status');
     expect(status).toBeDefined();
+
+    // State transitions and plan events must not be emitted as TUI warnings
+    const stateWarnings = emitted.filter(
+      (m) => m.type === 'warning' && (m.message.includes('[State:') || m.message.includes('[Plan:')),
+    );
+    expect(stateWarnings).toHaveLength(0);
   }, 15000);
 
   it('executes tool calling lifecycle and reports duration and results', async () => {

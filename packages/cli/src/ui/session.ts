@@ -224,15 +224,9 @@ export class SessionDriver {
             message: event.message,
           });
         } else if (event.type === 'state_change') {
-          this.sendToTui({
-            type: 'warning',
-            message: `[State: ${event.state}] ${event.detail || ''}`,
-          });
+          // Internal lifecycle state transitions are traced by AgentLoop; do not flood TUI with warnings.
         } else if (event.type === 'plan') {
-          this.sendToTui({
-            type: 'warning',
-            message: `[Plan: ${event.plan.steps.length} steps for ${event.plan.task_id}]`,
-          });
+          // Internal plan events are traced by AgentLoop; do not flood TUI with warnings.
         } else if (event.type === 'finish') {
           this.usedTokens = event.totalTokens;
           this.history.push({ role: 'assistant', content: event.response });
