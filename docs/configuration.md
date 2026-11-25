@@ -29,7 +29,7 @@ Controls default models, agent execution limits, and logging.
 
 ```toml
 [general]
-default_model = "llama3.1:8b"     # Default model for assistant role
+default_model = "qwen3.5:4b"     # Default model for assistant role
 default_role = "assistant"        # Default role: assistant | coder | router
 local_only = false                # If true, disables all cloud/Gemini escalation
 log_level = "info"                # debug | info | warn | error
@@ -57,13 +57,13 @@ num_ctx = 4096                    # Maximum context window
 measured_tok_per_sec = 36.8       # Generation speed benchmarked on Ryzen 7
 caps = { tools = false, parallel_tools = false, json_format = true }
 
-[models."llama3.1:8b"]
+[models."qwen3.5:4b"]
 provider = "ollama"
-placement = "gpu"                 # Loaded into NVIDIA GPU VRAM
+placement = "gpu"                 # Loaded into NVIDIA GPU VRAM (100% GPU, ~3.1 GB)
 tier = "medium"                   # Prompt tier: medium (≤ 600 tokens)
-num_ctx = 8192                    # Context window
-measured_tok_per_sec = 18.4       # Generation speed benchmarked on RTX 4050
-caps = { tools = true, parallel_tools = false, json_format = true }
+num_ctx = 4096                    # Context window
+measured_tok_per_sec = 25.6       # Generation speed benchmarked on RTX 4050
+caps = { tools = true, parallel_tools = true, vision = true, json_format = true }
 
 [models."qwen2.5-coder:7b"]
 provider = "ollama"
@@ -176,11 +176,11 @@ primary = "qwen2.5-coder:7b"
 fallback = "gemini-2.5-flash"
 
 [chains.general]
-primary = "llama3.1:8b"
+primary = "qwen3.5:4b"
 fallback = "gemini-2.5-flash"
 
 [chains.office]
-primary = "llama3.1:8b"
+primary = "qwen3.5:4b"
 fallback = "gemini-2.5-flash"
 
 # Complexity Escalation: Queries with estimated complexity ≥ 4 escalate directly

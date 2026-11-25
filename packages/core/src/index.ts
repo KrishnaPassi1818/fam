@@ -19,6 +19,10 @@ export * from './tools/retriever.js';
 export * from './tools/meta/find-tools.js';
 export * from './models/scheduler.js';
 export * from './memory/index.js';
+export * from './loop/planner.js';
+export * from './loop/reasoning.js';
+export * from './tools/registry.js';
+export * from './tools/privilege-broker.js';
 
 
 

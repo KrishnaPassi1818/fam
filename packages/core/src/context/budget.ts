@@ -10,6 +10,22 @@ export interface ModelBudgetAllocation {
 }
 
 export const DEFAULT_BUDGETS: Record<string, ModelBudgetAllocation> = {
+  'qwen35': {
+    numCtx: 8192,
+    system: 500,
+    tools: 3000,
+    memory: 500,
+    history: 3192,
+    reserve: 1000,
+  },
+  '4b': {
+    numCtx: 4096,
+    system: 400,
+    tools: 1800,
+    memory: 400,
+    history: 996,
+    reserve: 500,
+  },
   '8b': {
     numCtx: 8192,
     system: 500,
@@ -60,13 +76,13 @@ export class ContextBudgeter {
   constructor(budgetOrModelId?: string | Partial<ModelBudgetAllocation>) {
     if (typeof budgetOrModelId === 'object' && budgetOrModelId !== null) {
       this.budget = {
-        ...DEFAULT_BUDGETS['8b']!,
+        ...DEFAULT_BUDGETS['4b']!,
         ...budgetOrModelId,
       };
     } else if (typeof budgetOrModelId === 'string') {
       this.budget = this.resolveBudget(budgetOrModelId);
     } else {
-      this.budget = DEFAULT_BUDGETS['8b']!;
+      this.budget = DEFAULT_BUDGETS['4b']!;
     }
   }
 
@@ -81,10 +97,13 @@ export class ContextBudgeter {
     if (modelId.includes('1.5b')) {
       return DEFAULT_BUDGETS['1.5b']!;
     }
+    if (modelId.includes('4b') || modelId.includes('qwen3.5')) {
+      return DEFAULT_BUDGETS['4b']!;
+    }
     if (modelId.includes('7b') || modelId.includes('coder')) {
       return DEFAULT_BUDGETS['7b']!;
     }
-    return DEFAULT_BUDGETS['8b']!;
+    return DEFAULT_BUDGETS['4b']!;
   }
 
   public calculateToolsTokens(tools: ToolDescriptor[] = []): number {

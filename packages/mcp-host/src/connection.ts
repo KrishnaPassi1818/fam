@@ -203,6 +203,18 @@ export class McpConnection {
     }
   }
 
+  public async ping(): Promise<boolean> {
+    if (this.state !== 'connected' || !this.client) {
+      return false;
+    }
+    try {
+      await this.client.ping();
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   public async listTools(): Promise<Tool[]> {
     if (this.state !== 'connected' || !this.client) {
       await this.connect();
@@ -211,38 +223,62 @@ export class McpConnection {
     return res.tools || [];
   }
 
-  public async callTool(name: string, args: Record<string, unknown>): Promise<McpToolCallOutput> {
+  public async callTool(
+    name: string,
+    args: Record<string, unknown>,
+    signal?: AbortSignal,
+  ): Promise<McpToolCallOutput> {
+    if (signal?.aborted) {
+      return { content: 'Call aborted before invocation', isError: true };
+    }
+
     if (this.state !== 'connected' || !this.client) {
       await this.connect();
     }
 
-    const res = await this.client!.callTool({
-      name,
-      arguments: args,
-    });
+    try {
+      const res = await this.client!.callTool(
+        {
+          name,
+          arguments: args,
+        },
+        undefined,
+        signal ? { signal } : undefined,
+      );
 
-    const isError = Boolean(res.isError);
-    let content = '';
+      const isError = Boolean(res.isError);
+      let content = '';
 
-    if (Array.isArray(res.content)) {
-      content = res.content
-        .map((item) => {
-          if (typeof item === 'object' && item !== null) {
-            if ('text' in item && typeof item.text === 'string') {
-              return item.text;
+      if (Array.isArray(res.content)) {
+        content = res.content
+          .map((item) => {
+            if (typeof item === 'object' && item !== null) {
+              if ('text' in item && typeof item.text === 'string') {
+                return item.text;
+              }
+              return JSON.stringify(item);
             }
-            return JSON.stringify(item);
-          }
-          return String(item);
-        })
-        .join('\n');
-    } else if (typeof res.content === 'string') {
-      content = res.content;
-    } else if (res.content) {
-      content = JSON.stringify(res.content);
-    }
+            return String(item);
+          })
+          .join('\n');
+      } else if (typeof res.content === 'string') {
+        content = res.content;
+      } else if (res.content) {
+        content = JSON.stringify(res.content);
+      }
 
-    return { content, isError };
+      return { content, isError };
+    } catch (err) {
+      if (signal?.aborted) {
+        return { content: `Tool call '${name}' was cancelled`, isError: true };
+      }
+      // If error indicates transport disconnection, mark reconnecting
+      const msg = err instanceof Error ? err.message : String(err);
+      if (msg.includes('closed') || msg.includes('ECONNRESET') || msg.includes('EPIPE')) {
+        this.handleUnexpectedClose();
+      }
+      throw err;
+    }
   }
 
   public async disconnect(): Promise<void> {

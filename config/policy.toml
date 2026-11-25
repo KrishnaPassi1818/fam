@@ -46,3 +46,45 @@ commandPrefixAllowlist = [
 "office.convert" = 1
 "office.recalc" = 1
 "office.uno_script" = 3
+
+# Browser Tools (ANARC Native Primitives)
+"browser.see" = 0
+"browser.read" = 0
+"browser.find" = 0
+"browser.tabs" = 0
+"browser.doctor" = 0
+"browser.shot" = 0
+"browser.tab" = 1
+"browser.do" = 1
+"browser.upload" = 2
+
+"browser_see" = 0
+"browser_read" = 0
+"browser_find" = 0
+"browser_tabs" = 0
+"browser_doctor" = 0
+"browser_shot" = 0
+"browser_tab" = 1
+"browser_do" = 1
+"browser_upload" = 2
+
+# Browser Semantic Tools
+"browser_get_dom" = 0
+"browser_get_page_text" = 0
+"browser_get_links" = 0
+"browser_screenshot" = 0
+"browser_health" = 0
+"browser_list_tabs" = 0
+"browser_navigate" = 1
+"browser_new_tab" = 1
+"browser_switch_tab" = 1
+"browser_close_tab" = 1
+"browser_click" = 1
+"browser_click_coordinates" = 1
+"browser_visual_click" = 1
+"browser_fill" = 1
+"browser_type" = 1
+"browser_scroll" = 1
+"browser_press_key" = 1
+"browser_execute_script" = 1
+"browser_upload_file" = 2

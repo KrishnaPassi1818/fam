@@ -11,9 +11,12 @@ export interface ToolRetrieverOptions {
 
 export const DEFAULT_CORE_TOOLS = [
   'core.find_tools',
+  'find_tools',
   'core.blob_read',
   'core.todo',
+  'todo',
   'core.remember',
+  'remember',
 ];
 
 export interface ScoredTool {
@@ -109,12 +112,17 @@ export class ToolRetriever {
       return coreTools;
     }
 
-    // Embed the query
+    // Skip embedding call for empty queries or general conversational turns
+    const shouldEmbed =
+      query.trim().length > 0 && routerContext?.intent !== 'general';
+
     let queryEmbedding: number[] | null = null;
-    try {
-      queryEmbedding = await this.embeddingService.embedText(query);
-    } catch {
-      queryEmbedding = null;
+    if (shouldEmbed) {
+      try {
+        queryEmbedding = await this.embeddingService.embedText(query);
+      } catch {
+        queryEmbedding = null;
+      }
     }
 
     // Score all candidates
@@ -131,11 +139,18 @@ export class ToolRetriever {
       } else {
         // Text keyword heuristic fallback if no embeddings
         const queryLower = query.toLowerCase();
-        const textToMatch = `${tool.name} ${tool.description} ${tool.category}`.toLowerCase();
+        const propNames = Object.keys((tool.inputSchema?.properties || {}) as Record<string, unknown>).join(' ');
+        const textToMatch = `${tool.name} ${tool.alias || ''} ${tool.description} ${tool.category} ${propNames}`.toLowerCase();
         const queryTerms = queryLower.split(/\s+/).filter((w) => w.length > 2);
         let matches = 0;
         for (const term of queryTerms) {
-          if (textToMatch.includes(term)) matches++;
+          if (textToMatch.includes(term)) {
+            matches++;
+          } else if ((term === 'save' || term === 'saving') && (textToMatch.includes('write') || textToMatch.includes('create'))) {
+            matches++;
+          } else if (term === 'fetch' && textToMatch.includes('read')) {
+            matches++;
+          }
         }
         baseScore = queryTerms.length > 0 ? matches / queryTerms.length : 0;
       }
@@ -147,7 +162,7 @@ export class ToolRetriever {
       } else if (
         (routerContext?.needs_code && (tool.category === 'code' || tool.category === 'fs' || tool.category === 'git')) ||
         (routerContext?.needs_office && tool.category === 'office') ||
-        (routerContext?.needs_web && tool.category === 'web')
+        (routerContext?.needs_web && (tool.category === 'web' || tool.category === 'browser'))
       ) {
         catBoost = this.categoryBoost;
       }

@@ -1,0 +1,860 @@
+[
+  {
+    "id": "RP-01",
+    "domain": "reasoning_planning",
+    "difficulty": 1,
+    "difficultyLabel": "basic",
+    "split": "dev",
+    "prompt": "Calculate total cost: 4 items at $24.50 each with 8.5% tax.",
+    "expectedBehavior": "Provide sound, verifiable reasoning with explicit evidence and steps.",
+    "availableTools": [
+      "math",
+      "echo"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "106.33"
+    ],
+    "expectedResult": {
+      "type": "regex_match",
+      "pattern": "106.33"
+    },
+    "verificationMethod": "reasoning_and_factual_verification",
+    "timeLimit": 15000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "RP-02",
+    "domain": "reasoning_planning",
+    "difficulty": 2,
+    "difficultyLabel": "intermediate",
+    "split": "dev",
+    "prompt": "Constraint satisfaction: schedule 4 meetings within 9am-5pm avoiding overlaps and lunch (12-1pm).",
+    "expectedBehavior": "Provide sound, verifiable reasoning with explicit evidence and steps.",
+    "availableTools": [
+      "math",
+      "echo"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "schedule"
+    ],
+    "expectedResult": {
+      "type": "regex_match",
+      "pattern": "schedule"
+    },
+    "verificationMethod": "reasoning_and_factual_verification",
+    "timeLimit": 15000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "RP-03",
+    "domain": "reasoning_planning",
+    "difficulty": 3,
+    "difficultyLabel": "advanced",
+    "split": "dev",
+    "prompt": "Multi-step planning: construct DAG plan to build, test, package, and deploy a software artifact.",
+    "expectedBehavior": "Provide sound, verifiable reasoning with explicit evidence and steps.",
+    "availableTools": [
+      "math",
+      "echo"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "DAG"
+    ],
+    "expectedResult": {
+      "type": "regex_match",
+      "pattern": "DAG"
+    },
+    "verificationMethod": "reasoning_and_factual_verification",
+    "timeLimit": 15000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "RP-04",
+    "domain": "reasoning_planning",
+    "difficulty": 2,
+    "difficultyLabel": "intermediate",
+    "split": "dev",
+    "prompt": "Probability calculation: chance of rolling at least one 6 in three rolls of a fair die.",
+    "expectedBehavior": "Provide sound, verifiable reasoning with explicit evidence and steps.",
+    "availableTools": [
+      "math",
+      "echo"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "42.13%"
+    ],
+    "expectedResult": {
+      "type": "regex_match",
+      "pattern": "42.13%"
+    },
+    "verificationMethod": "reasoning_and_factual_verification",
+    "timeLimit": 15000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "RP-05",
+    "domain": "reasoning_planning",
+    "difficulty": 3,
+    "difficultyLabel": "advanced",
+    "split": "dev",
+    "prompt": "Resource allocation: optimize task assignment across 3 workers with differing hourly capacities.",
+    "expectedBehavior": "Provide sound, verifiable reasoning with explicit evidence and steps.",
+    "availableTools": [
+      "math",
+      "echo"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "optimal"
+    ],
+    "expectedResult": {
+      "type": "regex_match",
+      "pattern": "optimal"
+    },
+    "verificationMethod": "reasoning_and_factual_verification",
+    "timeLimit": 15000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "RP-06",
+    "domain": "reasoning_planning",
+    "difficulty": 4,
+    "difficultyLabel": "expert",
+    "split": "dev",
+    "prompt": "Identify contradiction: analyze two conflicting reports on incident timeline and isolate divergence.",
+    "expectedBehavior": "Provide sound, verifiable reasoning with explicit evidence and steps.",
+    "availableTools": [
+      "math",
+      "echo"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "contradiction"
+    ],
+    "expectedResult": {
+      "type": "regex_match",
+      "pattern": "contradiction"
+    },
+    "verificationMethod": "reasoning_and_factual_verification",
+    "timeLimit": 15000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "RP-07",
+    "domain": "reasoning_planning",
+    "difficulty": 3,
+    "difficultyLabel": "advanced",
+    "split": "dev",
+    "prompt": "Handle ambiguity: user requests \"clean the project\" - ask clarification on build vs git clean.",
+    "expectedBehavior": "Provide sound, verifiable reasoning with explicit evidence and steps.",
+    "availableTools": [
+      "math",
+      "echo"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "clarification"
+    ],
+    "expectedResult": {
+      "type": "regex_match",
+      "pattern": "clarification"
+    },
+    "verificationMethod": "reasoning_and_factual_verification",
+    "timeLimit": 15000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "RP-08",
+    "domain": "reasoning_planning",
+    "difficulty": 3,
+    "difficultyLabel": "advanced",
+    "split": "dev",
+    "prompt": "Missing information: recognize missing API key or path and explicitly request it before acting.",
+    "expectedBehavior": "Provide sound, verifiable reasoning with explicit evidence and steps.",
+    "availableTools": [
+      "math",
+      "echo"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "missing"
+    ],
+    "expectedResult": {
+      "type": "regex_match",
+      "pattern": "missing"
+    },
+    "verificationMethod": "reasoning_and_factual_verification",
+    "timeLimit": 15000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "RP-09",
+    "domain": "reasoning_planning",
+    "difficulty": 4,
+    "difficultyLabel": "expert",
+    "split": "dev",
+    "prompt": "Root cause diagnosis: given 4 disparate log snippets, deduce underlying database deadlock.",
+    "expectedBehavior": "Provide sound, verifiable reasoning with explicit evidence and steps.",
+    "availableTools": [
+      "math",
+      "echo"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "deadlock"
+    ],
+    "expectedResult": {
+      "type": "regex_match",
+      "pattern": "deadlock"
+    },
+    "verificationMethod": "reasoning_and_factual_verification",
+    "timeLimit": 15000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "RP-10",
+    "domain": "reasoning_planning",
+    "difficulty": 2,
+    "difficultyLabel": "intermediate",
+    "split": "dev",
+    "prompt": "Percentage change: calculate percentage increase from 4,500 to 7,200.",
+    "expectedBehavior": "Provide sound, verifiable reasoning with explicit evidence and steps.",
+    "availableTools": [
+      "math",
+      "echo"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "60%"
+    ],
+    "expectedResult": {
+      "type": "regex_match",
+      "pattern": "60%"
+    },
+    "verificationMethod": "reasoning_and_factual_verification",
+    "timeLimit": 15000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "RP-11",
+    "domain": "reasoning_planning",
+    "difficulty": 3,
+    "difficultyLabel": "advanced",
+    "split": "dev",
+    "prompt": "Task prioritization: rank 6 pending bugs by severity, user impact, and security urgency.",
+    "expectedBehavior": "Provide sound, verifiable reasoning with explicit evidence and steps.",
+    "availableTools": [
+      "math",
+      "echo"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "priority"
+    ],
+    "expectedResult": {
+      "type": "regex_match",
+      "pattern": "priority"
+    },
+    "verificationMethod": "reasoning_and_factual_verification",
+    "timeLimit": 15000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "RP-12",
+    "domain": "reasoning_planning",
+    "difficulty": 4,
+    "difficultyLabel": "expert",
+    "split": "dev",
+    "prompt": "Dependency resolution: determine topological execution order for 7 interdependent tasks.",
+    "expectedBehavior": "Provide sound, verifiable reasoning with explicit evidence and steps.",
+    "availableTools": [
+      "math",
+      "echo"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "topological"
+    ],
+    "expectedResult": {
+      "type": "regex_match",
+      "pattern": "topological"
+    },
+    "verificationMethod": "reasoning_and_factual_verification",
+    "timeLimit": 15000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "RP-13",
+    "domain": "reasoning_planning",
+    "difficulty": 3,
+    "difficultyLabel": "advanced",
+    "split": "dev",
+    "prompt": "Explain constraint violation: why assigning 16GB memory to container on 8GB host is invalid.",
+    "expectedBehavior": "Provide sound, verifiable reasoning with explicit evidence and steps.",
+    "availableTools": [
+      "math",
+      "echo"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "exceeds"
+    ],
+    "expectedResult": {
+      "type": "regex_match",
+      "pattern": "exceeds"
+    },
+    "verificationMethod": "reasoning_and_factual_verification",
+    "timeLimit": 15000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "RP-14",
+    "domain": "reasoning_planning",
+    "difficulty": 2,
+    "difficultyLabel": "intermediate",
+    "split": "dev",
+    "prompt": "Compound interest: calculate value of $10,000 at 5% annual interest compounded monthly for 3 years.",
+    "expectedBehavior": "Provide sound, verifiable reasoning with explicit evidence and steps.",
+    "availableTools": [
+      "math",
+      "echo"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "11614.72"
+    ],
+    "expectedResult": {
+      "type": "regex_match",
+      "pattern": "11614.72"
+    },
+    "verificationMethod": "reasoning_and_factual_verification",
+    "timeLimit": 15000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "RP-15",
+    "domain": "reasoning_planning",
+    "difficulty": 4,
+    "difficultyLabel": "expert",
+    "split": "dev",
+    "prompt": "Strategy comparison: compare monolithic vs microservices architecture for small 2-person team.",
+    "expectedBehavior": "Provide sound, verifiable reasoning with explicit evidence and steps.",
+    "availableTools": [
+      "math",
+      "echo"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "tradeoff"
+    ],
+    "expectedResult": {
+      "type": "regex_match",
+      "pattern": "tradeoff"
+    },
+    "verificationMethod": "reasoning_and_factual_verification",
+    "timeLimit": 15000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "RP-16",
+    "domain": "reasoning_planning",
+    "difficulty": 3,
+    "difficultyLabel": "advanced",
+    "split": "dev",
+    "prompt": "Logic puzzle: solve 4-person seating arrangement based on relative position clues.",
+    "expectedBehavior": "Provide sound, verifiable reasoning with explicit evidence and steps.",
+    "availableTools": [
+      "math",
+      "echo"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "solution"
+    ],
+    "expectedResult": {
+      "type": "regex_match",
+      "pattern": "solution"
+    },
+    "verificationMethod": "reasoning_and_factual_verification",
+    "timeLimit": 15000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "RP-17",
+    "domain": "reasoning_planning",
+    "difficulty": 4,
+    "difficultyLabel": "expert",
+    "split": "val",
+    "prompt": "Plan operation under limited 512MB RAM budget: select streaming over in-memory buffering.",
+    "expectedBehavior": "Provide sound, verifiable reasoning with explicit evidence and steps.",
+    "availableTools": [
+      "math",
+      "echo"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "streaming"
+    ],
+    "expectedResult": {
+      "type": "regex_match",
+      "pattern": "streaming"
+    },
+    "verificationMethod": "reasoning_and_factual_verification",
+    "timeLimit": 15000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "RP-18",
+    "domain": "reasoning_planning",
+    "difficulty": 2,
+    "difficultyLabel": "intermediate",
+    "split": "val",
+    "prompt": "Identify first task: given prerequisite graph, select uniquely unblocked starting task.",
+    "expectedBehavior": "Provide sound, verifiable reasoning with explicit evidence and steps.",
+    "availableTools": [
+      "math",
+      "echo"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "first"
+    ],
+    "expectedResult": {
+      "type": "regex_match",
+      "pattern": "first"
+    },
+    "verificationMethod": "reasoning_and_factual_verification",
+    "timeLimit": 15000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "RP-19",
+    "domain": "reasoning_planning",
+    "difficulty": 3,
+    "difficultyLabel": "advanced",
+    "split": "val",
+    "prompt": "Verify arithmetic calculations in user statement and correct 2 math errors.",
+    "expectedBehavior": "Provide sound, verifiable reasoning with explicit evidence and steps.",
+    "availableTools": [
+      "math",
+      "echo"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "correction"
+    ],
+    "expectedResult": {
+      "type": "regex_match",
+      "pattern": "correction"
+    },
+    "verificationMethod": "reasoning_and_factual_verification",
+    "timeLimit": 15000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "RP-20",
+    "domain": "reasoning_planning",
+    "difficulty": 4,
+    "difficultyLabel": "expert",
+    "split": "val",
+    "prompt": "Diagnose intermittent timeout: deduce DNS exhaustion from connection failure logs.",
+    "expectedBehavior": "Provide sound, verifiable reasoning with explicit evidence and steps.",
+    "availableTools": [
+      "math",
+      "echo"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "DNS"
+    ],
+    "expectedResult": {
+      "type": "regex_match",
+      "pattern": "DNS"
+    },
+    "verificationMethod": "reasoning_and_factual_verification",
+    "timeLimit": 15000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "RP-21",
+    "domain": "reasoning_planning",
+    "difficulty": 3,
+    "difficultyLabel": "advanced",
+    "split": "val",
+    "prompt": "Evaluate risk of schema migration on live database and suggest rollback plan.",
+    "expectedBehavior": "Provide sound, verifiable reasoning with explicit evidence and steps.",
+    "availableTools": [
+      "math",
+      "echo"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "rollback"
+    ],
+    "expectedResult": {
+      "type": "regex_match",
+      "pattern": "rollback"
+    },
+    "verificationMethod": "reasoning_and_factual_verification",
+    "timeLimit": 15000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "RP-22",
+    "domain": "reasoning_planning",
+    "difficulty": 4,
+    "difficultyLabel": "expert",
+    "split": "holdout",
+    "prompt": "Synthesize optimal backup schedule balancing RPO (1 hour) and storage costs.",
+    "expectedBehavior": "Provide sound, verifiable reasoning with explicit evidence and steps.",
+    "availableTools": [
+      "math",
+      "echo"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "incremental"
+    ],
+    "expectedResult": {
+      "type": "regex_match",
+      "pattern": "incremental"
+    },
+    "verificationMethod": "reasoning_and_factual_verification",
+    "timeLimit": 15000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "RP-23",
+    "domain": "reasoning_planning",
+    "difficulty": 3,
+    "difficultyLabel": "advanced",
+    "split": "holdout",
+    "prompt": "Deduce output of deterministic finite automaton on given input sequence.",
+    "expectedBehavior": "Provide sound, verifiable reasoning with explicit evidence and steps.",
+    "availableTools": [
+      "math",
+      "echo"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "accepted"
+    ],
+    "expectedResult": {
+      "type": "regex_match",
+      "pattern": "accepted"
+    },
+    "verificationMethod": "reasoning_and_factual_verification",
+    "timeLimit": 15000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "RP-24",
+    "domain": "reasoning_planning",
+    "difficulty": 5,
+    "difficultyLabel": "adversarial",
+    "split": "holdout",
+    "prompt": "Adversarial logic: user presents misleading syllogism with false premise - identify fallacy.",
+    "expectedBehavior": "Provide sound, verifiable reasoning with explicit evidence and steps.",
+    "availableTools": [
+      "math",
+      "echo"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "fallacy"
+    ],
+    "expectedResult": {
+      "type": "regex_match",
+      "pattern": "fallacy"
+    },
+    "verificationMethod": "reasoning_and_factual_verification",
+    "timeLimit": 15000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "RP-25",
+    "domain": "reasoning_planning",
+    "difficulty": 5,
+    "difficultyLabel": "adversarial",
+    "split": "holdout",
+    "prompt": "Conflicting requirements: user demands zero latency and zero cost with infinite retention.",
+    "expectedBehavior": "Provide sound, verifiable reasoning with explicit evidence and steps.",
+    "availableTools": [
+      "math",
+      "echo"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "impossible"
+    ],
+    "expectedResult": {
+      "type": "regex_match",
+      "pattern": "impossible"
+    },
+    "verificationMethod": "reasoning_and_factual_verification",
+    "timeLimit": 15000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "RP-26",
+    "domain": "reasoning_planning",
+    "difficulty": 4,
+    "difficultyLabel": "expert",
+    "split": "holdout",
+    "prompt": "Long-horizon strategic roadmap: 6-month agent evolution plan broken into verifiable milestones.",
+    "expectedBehavior": "Provide sound, verifiable reasoning with explicit evidence and steps.",
+    "availableTools": [
+      "math",
+      "echo"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "milestone"
+    ],
+    "expectedResult": {
+      "type": "regex_match",
+      "pattern": "milestone"
+    },
+    "verificationMethod": "reasoning_and_factual_verification",
+    "timeLimit": 15000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  }
+]

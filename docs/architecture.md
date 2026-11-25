@@ -58,7 +58,7 @@ harness/
 ### 4.1 Model adapter layer (`core/adapters`)
 ```ts
 interface ModelAdapter {
-  id: string;                          // "ollama:llama3.1:8b" | "gemini:<model>"
+  id: string;                          // "ollama:qwen3.5:4b" | "gemini:<model>"
   caps: { tools: boolean; parallelTools: boolean; vision: boolean;
           jsonSchemaFormat: boolean; maxCtx: number };
   chat(req: ChatRequest, signal?: AbortSignal): AsyncIterable<ChatChunk>;
@@ -77,20 +77,44 @@ interface ToolCall { id: string; name: string; args: unknown }
 - **Fallback tool-call parser** for models that emit calls as JSON in text.
 
 ### 4.2 Agent loop (`core/loop`)
+The agent loop is governed by an explicit `AgentStateMachine` (`packages/core/src/loop/state-machine.ts`) tracking 13 formal execution states:
+- `IDLE`: Initial state before execution starts.
+- `UNDERSTANDING`: Analyzing user request and intent.
+- `PLANNING`: Constructing execution plan or DAG.
+- `DISCOVERING_TOOLS`: Selecting relevant tools via router/retriever.
+- `REASONING`: Invoking model adapter with context.
+- `WAITING_FOR_PERMISSION`: Awaiting user authorization for Tier 2/3 tools.
+- `EXECUTING`: Running approved tool calls via `ToolExecutor`.
+- `OBSERVING`: Processing tool results and updating conversation context.
+- `RECOVERING`: Handling tool errors, repetition traps, or repair attempts.
+- `VERIFYING`: Executing automated tests, syntax checks, or outcome verification.
+- `COMPLETED`: Successful task termination.
+- `FAILED`: Unrecoverable failure or budget exhaustion.
+- `CANCELLED`: User or signal abortion.
+
 ```
 while !done:
+  stateMachine.transition(UNDERSTANDING -> PLANNING -> DISCOVERING_TOOLS -> REASONING)
   prompt  = PromptBuilder.build(...)
   tools   = ToolRetriever.select(turn)
   ctx     = ContextManager.fit(history, prompt, tools, model)
   resp    = adapter.chat(ctx)
-  if resp.toolCalls: results = Executor.run(calls); history += results; continue
+  if resp.toolCalls:
+    stateMachine.transition(EXECUTING)
+    results = Executor.run(calls)   // Backs up files via BackupService before writes
+    stateMachine.transition(OBSERVING)
+    history += results
+    continue
   verdict = Verifier.check(resp)       // optional, by task type
-  if verdict.fail && attempts < N: feedback → continue
+  if verdict.fail && attempts < N:
+    stateMachine.transition(RECOVERING)
+    feedback → continue
   if verdict.fail: Escalator.next()    // bigger model
+  stateMachine.transition(COMPLETED)
   done
-guards: maxSteps, maxTokens, maxWallMs, repetition detector, abort signal
+guards: maxSteps, maxTokens, maxWallMs, repetition detector (>=3 repetitions), abort signal
 ```
-Loop detection: hash of (tool, normalized args) repeated ≥3 → inject a "you are repeating yourself" message, then escalate.
+Loop detection: hash of (tool, normalized args) repeated ≥3 → halts loop or injects correction feedback, preventing model runaway.
 
 ### 4.3 Tool registry and MCP host (`mcp-host`)
 - `McpHost` spawns servers from config (`stdio` or `http`), lazily on first use or first retrieval hit. It handles `initialize`, `tools/list`, `list_changed`, reconnect with backoff, and server health.
@@ -121,7 +145,7 @@ Loop detection: hash of (tool, normalized args) repeated ≥3 → inject a "you 
 ### 4.7 Planner, orchestrator, escalation (`core/orchestrator`)
 - Simple tasks: single loop on the chosen model.
 - Complex: Gemini produces a plan `Plan { nodes: [{id, goal, deps[], tools?, model?, verify?}] }` as structured output. The DAG executor runs ready nodes concurrently (Gemini parallel, local serialized by a **model lock**), passing results as handles.
-- **Escalation ladder**: worker (llama3.1) → retry with repair → coder (if code) → Gemini. Escalation passes a compacted state, not the whole history. Privacy check at every hop.
+- **Escalation ladder**: worker (qwen3.5:4b) → retry with repair → coder (if code) → Gemini. Escalation passes a compacted state, not the whole history. Privacy check at every hop.
 - **Model lock/scheduler**: a queue that serializes local LLM calls, batches by model to minimize VRAM swaps, and lets Gemini calls bypass it.
 
 ### 4.8 Coding loop (`core/coding`)
@@ -162,7 +186,7 @@ JSONL per run at `~/.fam/traces/<session>/<run>.jsonl`, with events: `prompt`, `
 | Model | Placement | num_ctx | Notes |
 |---|---|---|---|
 | qwen2.5:1.5b | CPU (`num_gpu:0`) | 4096 | router, compactor, validators |
-| llama3.1:8b | GPU | 8192 (tune to fit 6 GB) | general worker; `keep_alive` 10m |
+| qwen3.5:4b | GPU | 4096 (100% GPU offload, ~3.1 GB) | general worker; `keep_alive` 10m |
 | qwen2.5-coder:7b | GPU | 8192 | generator path; unload other 8B first |
 | nomic-embed-text | CPU | n/a | embeddings |
 | Gemini | API | large | planner, escalation, vision, long-context |

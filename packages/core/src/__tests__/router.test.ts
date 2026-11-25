@@ -93,7 +93,7 @@ describe('Phase 5: Router & Routing Policy (T5.1 & T5.2)', () => {
       expect(chain).toContain('ollama:qwen2.5-coder:7b');
     });
 
-    it('resolves office tasks to llama3.1:8b', () => {
+    it('resolves office tasks to qwen3.5:4b', () => {
       const chain = policy.resolve({
         intent: 'office',
         complexity: 2,
@@ -106,7 +106,7 @@ describe('Phase 5: Router & Routing Policy (T5.1 & T5.2)', () => {
         source: 'rules',
       });
 
-      expect(chain[0]).toBe('ollama:llama3.1:8b');
+      expect(chain[0]).toBe('ollama:qwen3.5:4b');
     });
 
     it('STRICTLY strips cloud/gemini models when privacy is local_only', () => {
@@ -127,7 +127,7 @@ describe('Phase 5: Router & Routing Policy (T5.1 & T5.2)', () => {
         expect(model).not.toContain('gemini');
         expect(model).toMatch(/^ollama:/);
       }
-      expect(chain).toEqual(['ollama:llama3.1:8b', 'ollama:qwen2.5-coder:7b']);
+      expect(chain).toEqual(['ollama:qwen3.5:4b', 'ollama:qwen2.5-coder:7b']);
     });
 
     it('throws PrivacyBlocked when user supplies --model gemini on local_only prompt', () => {

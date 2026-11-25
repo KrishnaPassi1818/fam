@@ -246,3 +246,74 @@ fn test_tool_call_truncation_rendering() {
     assert!(view.contains("test_tool"));
     assert!(view.contains("...")); // verifies truncation
 }
+
+#[test]
+fn test_tool_call_utf8_truncation_no_panic() {
+    let backend = TestBackend::new(120, 24);
+    let mut terminal = Terminal::new(backend).unwrap();
+
+    let mut app = App::new();
+    // Reproduce exact panic: byte index 57 inside '\u{202a}' (bytes 56..59)
+    let utf8_result =
+        "b42 \"More send options\" · center: (294, 903)\nb41 \"Send \u{202a}(Ctrl-Enter)\u{202c}\" · center: (241, 903)"
+            .to_string();
+
+    app.apply_backend_message(ToTuiMessage::ToolCall {
+        id: "c_utf8".to_string(),
+        name: "browser_find".to_string(),
+        args: serde_json::json!({ "q": "send button" }),
+    });
+    app.apply_backend_message(ToTuiMessage::ToolResult {
+        call_id: "c_utf8".to_string(),
+        is_error: false,
+        content: utf8_result,
+        duration_ms: Some(48),
+    });
+
+    terminal.draw(|f| ui::render_app(f, &app)).unwrap();
+    let view = terminal.backend().to_string();
+
+    assert!(view.contains("browser_find"));
+    assert!(view.contains("..."));
+}
+
+#[test]
+fn test_approval_utf8_truncation_no_panic() {
+    let backend = TestBackend::new(120, 24);
+    let mut terminal = Terminal::new(backend).unwrap();
+
+    let mut app = App::new();
+    // Multi-byte UTF-8 char straddling byte 97
+    let content = format!("{}\u{202a}extra_text_here", "a".repeat(95));
+    app.apply_backend_message(ToTuiMessage::ApprovalRequest {
+        id: "req_utf8".to_string(),
+        tool_name: "fs_write_file".to_string(),
+        args: serde_json::json!({ "content": content }),
+        tier: 2,
+        reason: None,
+    });
+
+    terminal.draw(|f| ui::render_app(f, &app)).unwrap();
+    let view = terminal.backend().to_string();
+    assert!(view.contains("PERMISSION REQUIRED: fs_write_file"));
+}
+
+#[test]
+fn test_multiline_message_rendering() {
+    let backend = TestBackend::new(80, 24);
+    let mut terminal = Terminal::new(backend).unwrap();
+
+    let mut app = App::new();
+    app.apply_backend_message(ToTuiMessage::Message {
+        id: "m_multi".to_string(),
+        role: "assistant".to_string(),
+        content: "Line one\nLine two\nLine three".to_string(),
+        model: Some("qwen3.5:4b".to_string()),
+    });
+
+    terminal.draw(|f| ui::render_app(f, &app)).unwrap();
+    let view = terminal.backend().to_string();
+    assert!(view.contains("Line one"));
+    assert!(view.contains("Line two"));
+    assert!(view.contains("Line three"));
+}

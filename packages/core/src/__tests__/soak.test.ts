@@ -20,7 +20,7 @@ describe('60-Turn Soak Test (T4.7)', () => {
   it('runs 60 turns without exceeding 8192 context or corrupting state', async () => {
     const blobStore = new BlobStore({ blobsDir: tmpBlobsDir, thresholdChars: 800 });
     const contextManager = new ContextManager({
-      modelId: 'ollama:llama3.1:8b',
+      modelId: 'ollama:qwen3.5:4b',
       blobStore,
     });
 

@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { ToolTierSchema } from './tool.js';
 
 export const GeneralConfigSchema = z.object({
-  defaultModel: z.string().default('ollama:llama3.1:8b'),
+  defaultModel: z.string().default('ollama:qwen3.5:4b'),
   defaultRole: z.string().default('assistant'),
   fallbackModel: z.string().default('gemini:gemini-2.5-flash'),
   logLevel: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
@@ -16,7 +16,7 @@ export const ModelProfileSchema = z.object({
   provider: z.enum(['ollama', 'gemini']),
   model: z.string(),
   placement: z.enum(['gpu', 'cpu', 'api']).default('gpu'),
-  numCtx: z.number().default(8192),
+  numCtx: z.number().default(4096),
   numGpu: z.number().optional(),
   keepAlive: z.string().default('10m'),
   temperature: z.number().default(0.7),
@@ -25,7 +25,7 @@ export const ModelProfileSchema = z.object({
     parallelTools: z.boolean().default(false),
     vision: z.boolean().default(false),
     jsonSchemaFormat: z.boolean().default(true),
-    maxCtx: z.number().default(8192),
+    maxCtx: z.number().default(4096),
   }),
 });
 export type ModelProfile = z.infer<typeof ModelProfileSchema>;
@@ -100,7 +100,7 @@ export const RoutingRuleSchema = z.object({
 export type RoutingRule = z.infer<typeof RoutingRuleSchema>;
 
 export const RoutingConfigSchema = z.object({
-  defaultChain: z.array(z.string()).default(['ollama:llama3.1:8b', 'gemini:gemini-2.5-flash']),
+  defaultChain: z.array(z.string()).default(['ollama:qwen3.5:4b', 'gemini:gemini-2.5-flash']),
   rules: z.array(RoutingRuleSchema).default([]),
 });
 export type RoutingConfig = z.infer<typeof RoutingConfigSchema>;
@@ -112,7 +112,7 @@ export const FamConfigSchema = z.object({
   privacy: PrivacyConfigSchema.default({}),
   servers: ServersConfigSchema.default({ servers: {} }),
   routing: RoutingConfigSchema.default({
-    defaultChain: ['ollama:llama3.1:8b', 'gemini:gemini-2.5-flash'],
+    defaultChain: ['ollama:qwen3.5:4b', 'gemini:gemini-2.5-flash'],
     rules: [],
   }),
 });

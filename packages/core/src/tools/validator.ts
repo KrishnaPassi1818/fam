@@ -60,6 +60,18 @@ export class ToolValidator {
       }
     }
 
+    if (properties['content'] && coerced['content'] === undefined) {
+      if (typeof coerced['contents'] === 'string') {
+        coerced['content'] = coerced['contents'];
+      } else if (typeof coerced['text'] === 'string') {
+        coerced['content'] = coerced['text'];
+      } else if (typeof coerced['body'] === 'string') {
+        coerced['content'] = coerced['body'];
+      } else if (typeof coerced['data'] === 'string') {
+        coerced['content'] = coerced['data'];
+      }
+    }
+
     if (properties['pattern'] && coerced['pattern'] === undefined) {
       if (typeof coerced['regex'] === 'string') {
         coerced['pattern'] = coerced['regex'];
@@ -68,10 +80,91 @@ export class ToolValidator {
       }
     }
 
+    if (properties['expression'] && coerced['expression'] === undefined) {
+      if (typeof coerced['formula'] === 'string') {
+        coerced['expression'] = coerced['formula'];
+      } else if (typeof coerced['expr'] === 'string') {
+        coerced['expression'] = coerced['expr'];
+      } else if (typeof coerced['calculation'] === 'string') {
+        coerced['expression'] = coerced['calculation'];
+      } else if (typeof coerced['query'] === 'string') {
+        coerced['expression'] = coerced['query'];
+      }
+    }
+
     if (properties['query'] && coerced['query'] === undefined) {
       if (typeof coerced['q'] === 'string') {
         coerced['query'] = coerced['q'];
       }
+    }
+
+    // Browser parameter name hallucinations repair
+    if (properties['url'] && coerced['url'] === undefined) {
+      const candidates = ['link', 'uri', 'address', 'target', 'site', 'website', 'dest', 'destination'];
+      for (const cand of candidates) {
+        if (typeof coerced[cand] === 'string') {
+          coerced['url'] = coerced[cand];
+          break;
+        }
+      }
+    }
+
+    if (properties['refId'] && coerced['refId'] === undefined) {
+      const candidates = ['ref', 'target', 'id', 'element', 'elementId', 'selector', 'tag'];
+      for (const cand of candidates) {
+        if (typeof coerced[cand] === 'string') {
+          coerced['refId'] = coerced[cand];
+          break;
+        }
+      }
+    }
+
+    if (properties['tabId'] && coerced['tabId'] === undefined) {
+      const candidates = ['tab', 'id', 'target', 'tab_id'];
+      for (const cand of candidates) {
+        if (typeof coerced[cand] === 'string') {
+          coerced['tabId'] = coerced[cand];
+          break;
+        }
+      }
+    }
+
+    if (properties['chord'] && coerced['chord'] === undefined) {
+      const candidates = ['key', 'keys', 'button', 'press'];
+      for (const cand of candidates) {
+        if (typeof coerced[cand] === 'string') {
+          coerced['chord'] = coerced[cand];
+          break;
+        }
+      }
+    }
+
+    if (properties['direction'] && coerced['direction'] === undefined) {
+      const candidates = ['dir', 'scroll'];
+      for (const cand of candidates) {
+        if (typeof coerced[cand] === 'string') {
+          coerced['direction'] = coerced[cand];
+          break;
+        }
+      }
+    }
+
+    if (properties['filePaths'] && coerced['filePaths'] === undefined) {
+      if (Array.isArray(coerced['files'])) {
+        coerced['filePaths'] = coerced['files'];
+      } else if (typeof coerced['file'] === 'string') {
+        coerced['filePaths'] = [coerced['file']];
+      } else if (Array.isArray(coerced['paths'])) {
+        coerced['filePaths'] = coerced['paths'];
+      } else if (typeof coerced['filePath'] === 'string') {
+        coerced['filePaths'] = [coerced['filePath']];
+      } else if (typeof coerced['path'] === 'string') {
+        coerced['filePaths'] = [coerced['path']];
+      }
+    }
+
+    if (properties['scope'] && coerced['scope'] === 'full') {
+      coerced['scope'] = 'all';
     }
 
     // 2. Safe type coercions per property

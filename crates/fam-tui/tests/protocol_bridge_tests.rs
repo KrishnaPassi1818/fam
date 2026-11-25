@@ -3,7 +3,7 @@ use fam_tui::protocol::{FromTuiMessage, ToTuiMessage};
 #[test]
 fn test_rust_deserializes_all_backend_messages() {
     let json_samples = vec![
-        r#"{"type":"init","model":"llama3.1:8b","max_ctx":8192,"tier":"medium","is_local":true,"cwd":"/workspace","role":"assistant"}"#,
+        r#"{"type":"init","model":"qwen3.5:4b","max_ctx":4096,"tier":"medium","is_local":true,"cwd":"/workspace","role":"assistant"}"#,
         r#"{"type":"message","id":"m1","role":"user","content":"hello world","model":null}"#,
         r#"{"type":"chunk","delta":"streaming chunk text","tokens_per_sec":42.5}"#,
         r#"{"type":"tool_call","id":"call_1","name":"fs_read","args":{"path":"test.txt"}}"#,
@@ -60,7 +60,7 @@ fn test_rust_serializes_all_frontend_messages() {
 
 #[test]
 fn test_rust_deserialization_handles_unicode_and_escapes() {
-    let json = r#"{"type":"message","id":"unicode_1","role":"assistant","content":"Special ⚙ ✖ ▌ \n \t \"quotes\" and emojis 🎉","model":"llama3.1:8b"}"#;
+    let json = r#"{"type":"message","id":"unicode_1","role":"assistant","content":"Special ⚙ ✖ ▌ \n \t \"quotes\" and emojis 🎉","model":"qwen3.5:4b"}"#;
     let parsed: ToTuiMessage = serde_json::from_str(json).unwrap();
     match parsed {
         ToTuiMessage::Message { content, .. } => {

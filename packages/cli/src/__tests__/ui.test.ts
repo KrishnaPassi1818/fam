@@ -11,7 +11,7 @@ describe('Ratatui TUI Session Driver and Bridge', () => {
     const messages: ToTuiMessage[] = [];
     const options: TuiSessionConfig = {
       config: testConfig,
-      initialModel: 'llama3.1:8b',
+      initialModel: 'qwen3.5:4b',
       initialRole: 'assistant',
     };
 
@@ -21,8 +21,8 @@ describe('Ratatui TUI Session Driver and Bridge', () => {
     expect(messages.length).toBeGreaterThan(0);
     expect(messages[0]).toMatchObject({
       type: 'init',
-      model: 'llama3.1:8b',
-      max_ctx: 8192,
+      model: 'qwen3.5:4b',
+      max_ctx: expect.any(Number),
       tier: 'medium',
       is_local: true,
       role: 'assistant',

@@ -57,7 +57,7 @@ cargo build
 
 ```bash
 # 1. General Assistant Worker (Runs in GPU VRAM)
-ollama pull llama3.1:8b
+ollama pull qwen3.5:4b
 
 # 2. Dedicated Code Generator (Runs in GPU VRAM)
 ollama pull qwen2.5-coder:7b
@@ -93,7 +93,7 @@ STATUS   | COMPONENT                | DETAILS
 [ PASS ] | pnpm                     | v12.x
 [ PASS ] | Rust & Cargo             | rustc 1.98+ / cargo 1.98+
 [ PASS ] | NVIDIA GPU & VRAM        | NVIDIA RTX 4050 (6141MiB total)
-[ PASS ] | Ollama Service           | Connected. Available models: llama3.1:8b, qwen2.5:1.5b...
+[ PASS ] | Ollama Service           | Connected. Available models: qwen3.5:4b, qwen2.5:1.5b...
 [ PASS ] | Ollama Models            | All target models present
 [ PASS ] | LibreOffice (soffice)    | LibreOffice installed
 [ PASS ] | Git                      | git version 2.x

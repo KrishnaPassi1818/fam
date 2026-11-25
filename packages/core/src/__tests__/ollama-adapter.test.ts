@@ -4,10 +4,10 @@ import type { ChatRequest, Message } from '@fam/shared';
 
 describe('OllamaAdapter', () => {
   it('instantiates with expected default caps and properties', () => {
-    const adapter = new OllamaAdapter({ model: 'llama3.1:8b', numCtx: 8192 });
-    expect(adapter.id).toBe('ollama:llama3.1:8b');
+    const adapter = new OllamaAdapter({ model: 'qwen3.5:4b', numCtx: 4096 });
+    expect(adapter.id).toBe('ollama:qwen3.5:4b');
     expect(adapter.caps.tools).toBe(true);
-    expect(adapter.caps.maxCtx).toBe(8192);
+    expect(adapter.caps.maxCtx).toBe(4096);
   });
 
   it('parses fallback JSON tool calls from text', () => {
@@ -46,10 +46,17 @@ describe('OllamaAdapter', () => {
     expect(calls5[0]?.name).toBe('fs_write_file');
     expect(calls5[1]?.name).toBe('fs_write_file');
     expect(calls5[2]?.name).toBe('sandbox_run_command');
+
+    // Multi-block tool calls with extra stray closing braces (e.g. }}} in model output)
+    const text6 = '{"name": "fs_write_file", "arguments": {"path": "a.py", "content": "print(1)"}}}\n{"name": "fs_write_file", "arguments": {"path": "b.py", "content": "print(2)"}}';
+    const calls6 = adapter.parseFallbackToolCalls(text6);
+    expect(calls6).toHaveLength(2);
+    expect(calls6[0]?.name).toBe('fs_write_file');
+    expect(calls6[1]?.name).toBe('fs_write_file');
   });
 
   it('streams chunks and usage from mocked Ollama stream', async () => {
-    const adapter = new OllamaAdapter({ model: 'llama3.1:8b' });
+    const adapter = new OllamaAdapter({ model: 'qwen3.5:4b' });
 
     const mockLines = [
       JSON.stringify({ message: { content: 'Hello ' }, done: false }),
@@ -92,7 +99,7 @@ describe('OllamaAdapter', () => {
   });
 
   it('parses native tool calls and assigns synthetic IDs', async () => {
-    const adapter = new OllamaAdapter({ model: 'llama3.1:8b' });
+    const adapter = new OllamaAdapter({ model: 'qwen3.5:4b' });
 
     const mockLines = [
       JSON.stringify({
@@ -137,7 +144,7 @@ describe('OllamaAdapter', () => {
   });
 
   it('throws ModelError on HTTP failure', async () => {
-    const adapter = new OllamaAdapter({ model: 'llama3.1:8b' });
+    const adapter = new OllamaAdapter({ model: 'qwen3.5:4b' });
 
     vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
       new Response('out of memory allocating KV cache', { status: 507 }),

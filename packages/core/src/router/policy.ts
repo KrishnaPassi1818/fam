@@ -11,7 +11,7 @@ export interface RoutingPolicyOptions {
 }
 
 export const DEFAULT_ROUTING_CONFIG: RoutingConfig = {
-  defaultChain: ['ollama:llama3.1:8b', 'gemini:gemini-2.5-flash'],
+  defaultChain: ['ollama:qwen3.5:4b', 'gemini:gemini-2.5-flash'],
   rules: [
     {
       intent: 'coding',
@@ -28,27 +28,27 @@ export const DEFAULT_ROUTING_CONFIG: RoutingConfig = {
     {
       intent: 'office',
       privacy: 'normal',
-      chain: ['ollama:llama3.1:8b', 'gemini:gemini-2.5-flash'],
+      chain: ['ollama:qwen3.5:4b', 'gemini:gemini-2.5-flash'],
     },
     {
       intent: 'web',
       privacy: 'normal',
-      chain: ['gemini:gemini-2.5-flash', 'ollama:llama3.1:8b'],
+      chain: ['gemini:gemini-2.5-flash', 'ollama:qwen3.5:4b'],
     },
     {
       intent: 'system',
       privacy: 'normal',
-      chain: ['ollama:llama3.1:8b'],
+      chain: ['ollama:qwen3.5:4b'],
     },
     {
       intent: 'general',
       maxComplexity: 2,
       privacy: 'normal',
-      chain: ['ollama:llama3.1:8b'],
+      chain: ['ollama:qwen3.5:4b'],
     },
     {
       privacy: 'local_only',
-      chain: ['ollama:llama3.1:8b', 'ollama:qwen2.5-coder:7b'],
+      chain: ['ollama:qwen3.5:4b', 'ollama:qwen2.5-coder:7b'],
     },
   ],
 };
@@ -149,7 +149,7 @@ export class RoutingPolicy {
 
       // Guarantee at least one local model is present
       if (resolvedChain.length === 0) {
-        resolvedChain = ['ollama:llama3.1:8b'];
+        resolvedChain = ['ollama:qwen3.5:4b'];
       }
     }
 

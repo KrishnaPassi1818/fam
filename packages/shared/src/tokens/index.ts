@@ -1,7 +1,7 @@
 import type { Message } from '../types/message.js';
 
 /**
- * Fast tiktoken/llama-calibrated token estimator.
+ * Fast tiktoken/local-calibrated token estimator.
  * Average across English prose and source code is ~3.8-4.0 chars per token,
  * or ~0.75 words per token with punctuation adjustments.
  */

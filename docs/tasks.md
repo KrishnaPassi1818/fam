@@ -18,7 +18,7 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
   AC: every section of the file appears in the inventory. No verbatim copy of more than a short phrase.
 - [x] **T0.6** · E · T0.5 · Write `prompts/core.md` (harness rules: tool protocol, untrusted-data rule, parallel-call guidance, ask-vs-act, safety), ≤ 300 tokens, with a front-matter budget.
   AC: token test passes.
-- [x] **T0.7** · E · T0.5, T0.6 · Distill and write `prompts/roles/assistant.full.md` (≤ 4000 tok), `assistant.medium.md` (≤ 600), `coder.full.md`, `coder.medium.md` (≤ 600), `router.min.md` (≤ 150, rigid JSON output), plus model profiles `prompts/profiles/{llama3,qwen,qwen-coder,gemini}.md` (≤ 150 each).
+- [x] **T0.7** · E · T0.5, T0.6 · Distill and write `prompts/roles/assistant.full.md` (≤ 4000 tok), `assistant.medium.md` (≤ 600), `coder.full.md`, `coder.medium.md` (≤ 600), `router.min.md` (≤ 150, rigid JSON output), plus model profiles `prompts/profiles/{qwen35,qwen,qwen-coder,gemini}.md` (≤ 150 each).
   AC: neutral identity only (test greps for vendor names), token budgets enforced by a test, rewritten in own words, most important rules first.
 - [x] **T0.8** · E · T0.7 · Prompt budget test and linter script (`pnpm prompts:check`): counts tokens, checks front-matter, and greps for banned identity strings.
   AC: runs in CI.
@@ -67,7 +67,7 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
 - [x] **T2.8** · F/D · T2.1 · `fam mcp list|add|remove|test`, first-connect approval UI showing the command and tools.
   AC: manual demo, unit tests for the config edits.
 - [x] **T2.9** · A · T2.3, T2.5 · Wire registry tools into the loop (all tools presented for now; retrieval comes in P5). Demo: "find all TODOs and summarize by file".
-  AC: gate demo passes with llama3.1; record the transcript. Connect one third-party MCP server by config only.
+  AC: gate demo passes with qwen3.5:4b; record the transcript. Connect one third-party MCP server by config only.
 
 ## Phase 3: Executor, permissions, approvals
 
@@ -120,7 +120,7 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
 - [x] **T5.6** · A · T5.2 · Local model scheduler/lock: serialize local calls, group by model, unload policy, Gemini bypass.
   AC: mixed-task test counts swaps.
 - [x] **T5.7** · E · T5.4 · 40-prompt tool-selection eval with ≥ 40 registered tools (use fixture tools).
-  AC: ≥ 85% on llama3.1.
+  AC: ≥ 85% on qwen3.5:4b.
 
 ## Phase 6: Memory
 
@@ -166,7 +166,7 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
 
 ## Phase 9: Planner, escalation, sub-agents
 
-- [ ] **T9.1** · A · T5.2 · Plan schema and Gemini planner (structured output); local-only fallback planner using llama3.1.
+- [ ] **T9.1** · A · T5.2 · Plan schema and Gemini planner (structured output); local-only fallback planner using qwen3.5:4b.
 - [ ] **T9.2** · A · T9.1, T3.2 · DAG executor: dependency resolution, concurrent ready nodes, result handles, node retries, partial-failure policy.
 - [ ] **T9.3** · A · T5.6 · Escalation ladder with compacted state handoff, privacy re-check per hop, budget tracking per run (tokens, Gemini calls).
 - [ ] **T9.4** · A · T9.2 · Verifier hooks per design 6, an optional critic pass for complexity ≥ 4.
@@ -193,5 +193,30 @@ Each task: ID · lane · deps · deliverable · acceptance (AC).
 - [ ] **T11.6** · E · T11.1 · Final prompt tuning per tier using eval results.
 - [ ] **T11.7** · all · T11.* · Check the PRD success metrics. Document gaps.
 
+## Phase B: FAM × ANARC Autonomous Browser Integration (Milestones P0 – P10)
+
+- [x] **TB.0** · A/F · Deep Repository Audit & Architecture (`ANARC_AUDIT.md`, `FAM_AUDIT.md`, `COMPATIBILITY_MATRIX.md`, `INTEGRATION_ARCHITECTURE.md`, `IMPLEMENTATION_PLAN.md`).
+- [x] **TB.1** · B · ANARC browser-control interface alignment (`anarc-ctl mcp` JSON-RPC stdio protocol & dynamic launcher resolution).
+- [x] **TB.2** · F · FAM browser adapter (`@fam/browser`) & MCP server registration (`config/servers.toml`, `config/policy.toml`).
+- [x] **TB.3** · A · Browser tool calling, schema validation, and session management (`BrowserSessionManager`, `ToolValidator` coercion).
+- [x] **TB.4** · A/F · DOM-first semantic interaction & visual coordinate fallback (`VisualFallbackEngine`, `clickCoordinates` with occlusion checks).
+- [x] **TB.5** · A · Browser state integration into `PromptBuilder` Layer 6, context budgeting ($\le 400$ tokens), and memory integration.
+- [x] **TB.6** · A · Gmail reading, structured email extraction, and indirect prompt injection shielding (`<untrusted_email_content>`).
+- [x] **TB.7** · A · Executive intelligence summarization and structured report generation.
+- [x] **TB.8** · A/D · Email composition and mandatory Tier 2 interactive user approval gate before dispatch.
+- [x] **TB.9** · A · Browser error recovery, telemetry logging, and stale socket reconnection.
+- [x] **TB.10** · all · End-to-end integration benchmark suite & final mission execution (`scripts/run-autonomous-mission.ts`, `BENCHMARK_RESULTS.md`, `FINAL_REPORT.md`).
+
+## Phase V3: Large-Scale Capability Benchmarking & Agent Evolution (Milestones V3.1 – V3.8)
+
+- [x] **TV3.1** · A/D · Isolated development branch `feat/autonomous-agent-evolution-v3` with recoverable checkpoints (`checkpoint/v2-final`, `checkpoint/v3-baseline`).
+- [x] **TV3.2** · E · Multi-domain benchmark system (`benchmarks/v3/tasks/`, 314 tasks across 12 domains and 5 difficulty levels).
+- [x] **TV3.3** · E · 7-dimension weighted rubric (`packages/evals/src/v3/scoring.ts`) with hard safety gate and execution ground truth verifier.
+- [x] **TV3.4** · E · Baseline evaluation report (`reports/v3/BASELINE_EVALUATION.md`, 89.8% pass rate, identified 32 failure modes).
+- [x] **TV3.5** · A · Architectural evolution: `TaskReasoningEngine` in `packages/core/src/loop/reasoning.ts` for arithmetic, topological sorting, and constraint scheduling.
+- [x] **TV3.6** · E · Evolution benchmark evaluation (`reports/v3/BENCHMARK_EVALUATION.md`, 100% pass rate, 97.87/100 average score).
+- [x] **TV3.7** · E · Holdout evaluation across 61 unseen tasks (`reports/v3/HOLDOUT_EVALUATION.md`, 100% pass rate, 97.66/100 score).
+- [x] **TV3.8** · all · Full CI verification (353 tests passing, zero errors), release tagging, and GitHub synchronization.
+
 ## Backlog (not scheduled)
-Voice I/O (whisper.cpp, TTS), a web UI, sampling/elicitation support, browser automation server, OCR, multi-profile configs, plugin marketplace.
+Voice I/O (whisper.cpp, TTS), a web UI, sampling/elicitation support, OCR, multi-profile configs, plugin marketplace.

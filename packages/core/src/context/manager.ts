@@ -4,6 +4,7 @@ import { BlobStore } from './blobs.js';
 import { ToolResultStubber } from './stubbing.js';
 import { TurnCompactor } from './compactor.js';
 import { EmergencyTruncator } from './truncation.js';
+import { TaskContextManager, type TaskContext } from './task-context.js';
 
 export interface ContextManagerOptions {
   modelId?: string;
@@ -13,6 +14,7 @@ export interface ContextManagerOptions {
   stubber?: ToolResultStubber;
   compactor?: TurnCompactor;
   truncator?: EmergencyTruncator;
+  taskContextManager?: TaskContextManager;
 }
 
 export class ContextManager {
@@ -21,6 +23,7 @@ export class ContextManager {
   private readonly stubber: ToolResultStubber;
   private readonly compactor: TurnCompactor;
   private readonly truncator: EmergencyTruncator;
+  private readonly taskContextManager: TaskContextManager;
 
   constructor(options: ContextManagerOptions = {}) {
     this.budgeter = new ContextBudgeter(options.budget || options.modelId);
@@ -30,6 +33,7 @@ export class ContextManager {
       options.compactor ||
       new TurnCompactor({ adapter: options.compactorAdapter });
     this.truncator = options.truncator || new EmergencyTruncator();
+    this.taskContextManager = options.taskContextManager || new TaskContextManager();
   }
 
   public getBlobStore(): BlobStore {
@@ -38,6 +42,10 @@ export class ContextManager {
 
   public getBudget(): ModelBudgetAllocation {
     return this.budgeter.getBudget();
+  }
+
+  public getTaskContextManager(): TaskContextManager {
+    return this.taskContextManager;
   }
 
   public account(
@@ -50,7 +58,8 @@ export class ContextManager {
 
   /**
    * Prepares and optimizes message history to strictly fit within num_ctx.
-   * Executes the 4-phase ladder per Architecture §4.5:
+   * Executes observation invalidation and the 4-phase ladder per Architecture §4.5:
+   * 0. Invalidate stale observations (DOM / file modifications)
    * 1. Blob offload (large tool outputs)
    * 2. Tool result stubbing (older results -> 1 line)
    * 3. Rolling turn compaction (older turns -> summary)
@@ -60,6 +69,7 @@ export class ContextManager {
     systemPrompt: string,
     tools: ToolDescriptor[],
     messages: Message[],
+    taskContext?: TaskContext,
   ): Promise<{
     messages: Message[];
     accounting: ContextAccounting;
@@ -67,6 +77,43 @@ export class ContextManager {
   }> {
     const applied: string[] = [];
     let currentMessages = [...messages];
+    const task = taskContext || this.taskContextManager.getActiveTask();
+
+    // Phase 0: Stale Observation Invalidation
+    if (task) {
+      let invalidatedCount = 0;
+      currentMessages = currentMessages.map((msg) => {
+        if (msg.role !== 'tool') return msg;
+
+        let content = typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content);
+
+        // Check DOM invalidation
+        if (task.domObservation && task.domObservation.stale) {
+          if (content.includes('<!DOCTYPE') || content.includes('<html') || content.includes('browser_read_dom') || content.includes('Page DOM:')) {
+            content = `[STALE OBSERVATION INVALIDATED: Browser navigated to ${task.browserSession?.currentUrl || 'new page'}; previous DOM is no longer valid]`;
+            invalidatedCount++;
+          }
+        }
+
+        // Check File invalidation
+        for (const [path, obs] of task.fileObservations.entries()) {
+          if (obs.stale && content.includes(path)) {
+            content = `[STALE OBSERVATION INVALIDATED: File "${path}" was modified or deleted; cached contents are no longer valid]`;
+            invalidatedCount++;
+            break;
+          }
+        }
+
+        return {
+          ...msg,
+          content,
+        };
+      });
+
+      if (invalidatedCount > 0) {
+        applied.push(`observation_invalidation(${invalidatedCount})`);
+      }
+    }
 
     // Phase 1: Blob offloading for large tool outputs
     let blobOffloadedCount = 0;

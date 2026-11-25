@@ -56,7 +56,7 @@ describe('Agent Loop & TUI Driver Integration', () => {
 
   it('runs multi-step streaming conversation and emits granular TUI events', async () => {
     const emitted: ToTuiMessage[] = [];
-    const driver = new SessionDriver({ config, initialModel: 'llama3.1:8b' }, (msg) => emitted.push(msg));
+    const driver = new SessionDriver({ config, initialModel: 'qwen3.5:4b' }, (msg) => emitted.push(msg));
 
     const mockAdapter = new MockAdapter();
     mockAdapter.turns = [
@@ -83,11 +83,17 @@ describe('Agent Loop & TUI Driver Integration', () => {
 
     const status = emitted.find((m) => m.type === 'status');
     expect(status).toBeDefined();
-  });
+
+    // State transitions and plan events must not be emitted as TUI warnings
+    const stateWarnings = emitted.filter(
+      (m) => m.type === 'warning' && (m.message.includes('[State:') || m.message.includes('[Plan:')),
+    );
+    expect(stateWarnings).toHaveLength(0);
+  }, 15000);
 
   it('executes tool calling lifecycle and reports duration and results', async () => {
     const emitted: ToTuiMessage[] = [];
-    const driver = new SessionDriver({ config, initialModel: 'llama3.1:8b' }, (msg) => emitted.push(msg));
+    const driver = new SessionDriver({ config, initialModel: 'qwen3.5:4b' }, (msg) => emitted.push(msg));
 
     const mockAdapter = new MockAdapter();
     mockAdapter.turns = [
@@ -124,7 +130,7 @@ describe('Agent Loop & TUI Driver Integration', () => {
 
   it('aborts active streaming turn on interrupt message', async () => {
     const emitted: ToTuiMessage[] = [];
-    const driver = new SessionDriver({ config, initialModel: 'llama3.1:8b' }, (msg) => emitted.push(msg));
+    const driver = new SessionDriver({ config, initialModel: 'qwen3.5:4b' }, (msg) => emitted.push(msg));
 
     const mockAdapter = new MockAdapter();
     mockAdapter.turns = [

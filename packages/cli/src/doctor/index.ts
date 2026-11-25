@@ -159,7 +159,7 @@ export async function runDoctor(): Promise<DoctorReport> {
   });
 
   // Required Models Check
-  const requiredModels = ['llama3.1:8b', 'qwen2.5:1.5b', 'qwen2.5-coder:7b', 'nomic-embed-text'];
+  const requiredModels = ['qwen3.5:4b', 'qwen2.5:1.5b', 'qwen2.5-coder:7b', 'nomic-embed-text'];
   const missingModels = requiredModels.filter((req) => !ollama.models.some((m) => m.startsWith(req)));
   items.push({
     name: 'Ollama Models',

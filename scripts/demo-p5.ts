@@ -195,11 +195,11 @@ async function main() {
   scheduler.resetSwapCount();
 
   const simulatedWorkload = [
-    { name: 'Task 1 (Llama general)', model: 'ollama:llama3.1:8b' },
-    { name: 'Task 2 (Llama general)', model: 'ollama:llama3.1:8b' },
+    { name: 'Task 1 (Qwen general)', model: 'ollama:qwen3.5:4b' },
+    { name: 'Task 2 (Qwen general)', model: 'ollama:qwen3.5:4b' },
     { name: 'Task 3 (Coder edit)', model: 'ollama:qwen2.5-coder:7b' },
     { name: 'Task 4 (Gemini planner)', model: 'gemini:gemini-2.5-flash' },
-    { name: 'Task 5 (Llama summary)', model: 'ollama:llama3.1:8b' },
+    { name: 'Task 5 (Qwen summary)', model: 'ollama:qwen3.5:4b' },
   ];
 
   console.log('Executing mixed-task workload through ModelScheduler:');

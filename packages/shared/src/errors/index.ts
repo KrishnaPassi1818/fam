@@ -98,11 +98,11 @@ export class BudgetExceeded extends FamError {
   public readonly currentTokens: number;
   public readonly maxTokens: number;
 
-  constructor(currentTokens: number, maxTokens: number) {
+  constructor(currentTokens: number, maxTokens: number, resource = 'tokens') {
     super(
-      `Token budget exceeded: ${currentTokens} tokens exceeds limit of ${maxTokens}`,
+      `${resource.charAt(0).toUpperCase() + resource.slice(1)} budget exceeded: ${currentTokens} ${resource} exceeds limit of ${maxTokens}`,
       'BUDGET_EXCEEDED',
-      { currentTokens, maxTokens },
+      { currentTokens, maxTokens, resource },
     );
     this.currentTokens = currentTokens;
     this.maxTokens = maxTokens;

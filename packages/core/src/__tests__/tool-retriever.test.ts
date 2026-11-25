@@ -233,4 +233,27 @@ describe('Phase 5: Tool Embeddings & Vector Retrieval (T5.3, T5.4, T5.5)', () =>
     const names = subsequent.map((t) => t.name);
     expect(names).toContain('fs.trash');
   });
+
+  it('boosts browser tools when categories or routing includes browser', async () => {
+    const browserTool: ToolDescriptor = {
+      name: 'browser_navigate',
+      alias: 'browser_navigate',
+      description: 'Navigate active browser tab to a destination URL',
+      category: 'browser',
+      tier: 1,
+      timeoutMs: 15000,
+      annotations: {},
+      inputSchema: { type: 'object', properties: { url: { type: 'string' } }, required: ['url'] },
+    };
+    retriever.registerTool(browserTool);
+
+    const results = await retriever.retrieve('open ANARC browser and navigate to Gmail', {
+      categories: ['browser', 'web'],
+      intent: 'web',
+      needs_web: true,
+    });
+
+    const toolNames = results.map((t) => t.name);
+    expect(toolNames).toContain('browser_navigate');
+  });
 });

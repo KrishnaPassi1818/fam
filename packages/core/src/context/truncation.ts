@@ -24,6 +24,9 @@ export class EmergencyTruncator {
       let t = 0;
       for (const m of [...systemMsgs, rootUserMsg, ...pool, latestMsg]) {
         t += estimateTokens(m.content);
+        if (m.role === 'assistant' && m.toolCalls) {
+          t += estimateTokens(JSON.stringify(m.toolCalls));
+        }
       }
       return t;
     };

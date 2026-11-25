@@ -1,0 +1,856 @@
+[
+  {
+    "id": "DA-01",
+    "domain": "data_analysis",
+    "difficulty": 1,
+    "difficultyLabel": "basic",
+    "split": "dev",
+    "prompt": "Parse customers.csv and compute total number of registered records.",
+    "expectedBehavior": "Execute data analysis workflow accurately with verified numbers.",
+    "availableTools": [
+      "fs.read_file"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "result",
+      "summary"
+    ],
+    "expectedResult": {
+      "type": "tool_called"
+    },
+    "verificationMethod": "data_accuracy_verification",
+    "timeLimit": 20000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "DA-02",
+    "domain": "data_analysis",
+    "difficulty": 2,
+    "difficultyLabel": "intermediate",
+    "split": "dev",
+    "prompt": "Compute mean, median, and standard deviation of revenue column in sales.json.",
+    "expectedBehavior": "Execute data analysis workflow accurately with verified numbers.",
+    "availableTools": [
+      "fs.read_file",
+      "math"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "result",
+      "summary"
+    ],
+    "expectedResult": {
+      "type": "tool_called"
+    },
+    "verificationMethod": "data_accuracy_verification",
+    "timeLimit": 20000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "DA-03",
+    "domain": "data_analysis",
+    "difficulty": 2,
+    "difficultyLabel": "intermediate",
+    "split": "dev",
+    "prompt": "Data cleaning: handle missing values in dataset by filling with column median.",
+    "expectedBehavior": "Execute data analysis workflow accurately with verified numbers.",
+    "availableTools": [
+      "fs.read_file",
+      "fs.write_file"
+    ],
+    "requiredPermissions": [
+      "fs.write_file"
+    ],
+    "expectedObservations": [
+      "result",
+      "summary"
+    ],
+    "expectedResult": {
+      "type": "tool_called"
+    },
+    "verificationMethod": "data_accuracy_verification",
+    "timeLimit": 20000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "DA-04",
+    "domain": "data_analysis",
+    "difficulty": 3,
+    "difficultyLabel": "advanced",
+    "split": "dev",
+    "prompt": "Outlier detection: identify outliers using Interquartile Range (IQR) method.",
+    "expectedBehavior": "Execute data analysis workflow accurately with verified numbers.",
+    "availableTools": [
+      "fs.read_file",
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "result",
+      "summary"
+    ],
+    "expectedResult": {
+      "type": "tool_called"
+    },
+    "verificationMethod": "data_accuracy_verification",
+    "timeLimit": 20000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "DA-05",
+    "domain": "data_analysis",
+    "difficulty": 2,
+    "difficultyLabel": "intermediate",
+    "split": "dev",
+    "prompt": "Group and aggregate: group transactions by department and compute total spend per dept.",
+    "expectedBehavior": "Execute data analysis workflow accurately with verified numbers.",
+    "availableTools": [
+      "fs.read_file",
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "result",
+      "summary"
+    ],
+    "expectedResult": {
+      "type": "tool_called"
+    },
+    "verificationMethod": "data_accuracy_verification",
+    "timeLimit": 20000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "DA-06",
+    "domain": "data_analysis",
+    "difficulty": 3,
+    "difficultyLabel": "advanced",
+    "split": "dev",
+    "prompt": "Compute Pearson correlation coefficient between marketing spend and customer acquisition.",
+    "expectedBehavior": "Execute data analysis workflow accurately with verified numbers.",
+    "availableTools": [
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "result",
+      "summary"
+    ],
+    "expectedResult": {
+      "type": "tool_called"
+    },
+    "verificationMethod": "data_accuracy_verification",
+    "timeLimit": 20000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "DA-07",
+    "domain": "data_analysis",
+    "difficulty": 3,
+    "difficultyLabel": "advanced",
+    "split": "dev",
+    "prompt": "Simple linear regression: calculate slope and intercept for price vs units sold.",
+    "expectedBehavior": "Execute data analysis workflow accurately with verified numbers.",
+    "availableTools": [
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "result",
+      "summary"
+    ],
+    "expectedResult": {
+      "type": "tool_called"
+    },
+    "verificationMethod": "data_accuracy_verification",
+    "timeLimit": 20000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "DA-08",
+    "domain": "data_analysis",
+    "difficulty": 2,
+    "difficultyLabel": "intermediate",
+    "split": "dev",
+    "prompt": "Duplicate detection: find duplicate records across email and phone columns.",
+    "expectedBehavior": "Execute data analysis workflow accurately with verified numbers.",
+    "availableTools": [
+      "fs.read_file"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "result",
+      "summary"
+    ],
+    "expectedResult": {
+      "type": "tool_called"
+    },
+    "verificationMethod": "data_accuracy_verification",
+    "timeLimit": 20000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "DA-09",
+    "domain": "data_analysis",
+    "difficulty": 3,
+    "difficultyLabel": "advanced",
+    "split": "dev",
+    "prompt": "Generate summary markdown report of user signups over past 12 months.",
+    "expectedBehavior": "Execute data analysis workflow accurately with verified numbers.",
+    "availableTools": [
+      "fs.write_file"
+    ],
+    "requiredPermissions": [
+      "fs.write_file"
+    ],
+    "expectedObservations": [
+      "result",
+      "summary"
+    ],
+    "expectedResult": {
+      "type": "tool_called"
+    },
+    "verificationMethod": "data_accuracy_verification",
+    "timeLimit": 20000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "DA-10",
+    "domain": "data_analysis",
+    "difficulty": 3,
+    "difficultyLabel": "advanced",
+    "split": "dev",
+    "prompt": "Generate ASCII or SVG bar chart representing quarterly revenues.",
+    "expectedBehavior": "Execute data analysis workflow accurately with verified numbers.",
+    "availableTools": [
+      "fs.write_file"
+    ],
+    "requiredPermissions": [
+      "fs.write_file"
+    ],
+    "expectedObservations": [
+      "result",
+      "summary"
+    ],
+    "expectedResult": {
+      "type": "tool_called"
+    },
+    "verificationMethod": "data_accuracy_verification",
+    "timeLimit": 20000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "DA-11",
+    "domain": "data_analysis",
+    "difficulty": 2,
+    "difficultyLabel": "intermediate",
+    "split": "dev",
+    "prompt": "Filter records: extract all transactions exceeding $1,000 in EU region.",
+    "expectedBehavior": "Execute data analysis workflow accurately with verified numbers.",
+    "availableTools": [
+      "fs.read_file",
+      "fs.write_file"
+    ],
+    "requiredPermissions": [
+      "fs.write_file"
+    ],
+    "expectedObservations": [
+      "result",
+      "summary"
+    ],
+    "expectedResult": {
+      "type": "tool_called"
+    },
+    "verificationMethod": "data_accuracy_verification",
+    "timeLimit": 20000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "DA-12",
+    "domain": "data_analysis",
+    "difficulty": 2,
+    "difficultyLabel": "intermediate",
+    "split": "dev",
+    "prompt": "Sorting: sort product inventory by stock level ascending and price descending.",
+    "expectedBehavior": "Execute data analysis workflow accurately with verified numbers.",
+    "availableTools": [
+      "fs.read_file"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "result",
+      "summary"
+    ],
+    "expectedResult": {
+      "type": "tool_called"
+    },
+    "verificationMethod": "data_accuracy_verification",
+    "timeLimit": 20000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "DA-13",
+    "domain": "data_analysis",
+    "difficulty": 3,
+    "difficultyLabel": "advanced",
+    "split": "dev",
+    "prompt": "Detect misleading statistics: expose why average income is skewed by billionaire outlier.",
+    "expectedBehavior": "Execute data analysis workflow accurately with verified numbers.",
+    "availableTools": [
+      "math"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "result",
+      "summary"
+    ],
+    "expectedResult": {
+      "type": "tool_called"
+    },
+    "verificationMethod": "data_accuracy_verification",
+    "timeLimit": 20000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "DA-14",
+    "domain": "data_analysis",
+    "difficulty": 2,
+    "difficultyLabel": "intermediate",
+    "split": "dev",
+    "prompt": "Date aggregation: resample daily log events into weekly aggregates.",
+    "expectedBehavior": "Execute data analysis workflow accurately with verified numbers.",
+    "availableTools": [
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "result",
+      "summary"
+    ],
+    "expectedResult": {
+      "type": "tool_called"
+    },
+    "verificationMethod": "data_accuracy_verification",
+    "timeLimit": 20000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "DA-15",
+    "domain": "data_analysis",
+    "difficulty": 3,
+    "difficultyLabel": "advanced",
+    "split": "dev",
+    "prompt": "Cross-tabulation: compute contingency table between customer age group and plan tier.",
+    "expectedBehavior": "Execute data analysis workflow accurately with verified numbers.",
+    "availableTools": [
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "result",
+      "summary"
+    ],
+    "expectedResult": {
+      "type": "tool_called"
+    },
+    "verificationMethod": "data_accuracy_verification",
+    "timeLimit": 20000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "DA-16",
+    "domain": "data_analysis",
+    "difficulty": 4,
+    "difficultyLabel": "expert",
+    "split": "dev",
+    "prompt": "Merge two datasets: perform left join on customers.csv and orders.csv on customer_id.",
+    "expectedBehavior": "Execute data analysis workflow accurately with verified numbers.",
+    "availableTools": [
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "result",
+      "summary"
+    ],
+    "expectedResult": {
+      "type": "tool_called"
+    },
+    "verificationMethod": "data_accuracy_verification",
+    "timeLimit": 20000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "DA-17",
+    "domain": "data_analysis",
+    "difficulty": 3,
+    "difficultyLabel": "advanced",
+    "split": "val",
+    "prompt": "Export analysis results: save statistical summary into both summary.csv and summary.md.",
+    "expectedBehavior": "Execute data analysis workflow accurately with verified numbers.",
+    "availableTools": [
+      "fs.write_file"
+    ],
+    "requiredPermissions": [
+      "fs.write_file"
+    ],
+    "expectedObservations": [
+      "result",
+      "summary"
+    ],
+    "expectedResult": {
+      "type": "tool_called"
+    },
+    "verificationMethod": "data_accuracy_verification",
+    "timeLimit": 20000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "DA-18",
+    "domain": "data_analysis",
+    "difficulty": 2,
+    "difficultyLabel": "intermediate",
+    "split": "val",
+    "prompt": "Calculate conversion rate: visitors = 45,200, signups = 3,164.",
+    "expectedBehavior": "Execute data analysis workflow accurately with verified numbers.",
+    "availableTools": [
+      "math"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "result",
+      "summary"
+    ],
+    "expectedResult": {
+      "type": "tool_called"
+    },
+    "verificationMethod": "data_accuracy_verification",
+    "timeLimit": 20000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "DA-19",
+    "domain": "data_analysis",
+    "difficulty": 4,
+    "difficultyLabel": "expert",
+    "split": "val",
+    "prompt": "Time-series moving average: compute 7-day rolling average of daily active users.",
+    "expectedBehavior": "Execute data analysis workflow accurately with verified numbers.",
+    "availableTools": [
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "result",
+      "summary"
+    ],
+    "expectedResult": {
+      "type": "tool_called"
+    },
+    "verificationMethod": "data_accuracy_verification",
+    "timeLimit": 20000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "DA-20",
+    "domain": "data_analysis",
+    "difficulty": 3,
+    "difficultyLabel": "advanced",
+    "split": "val",
+    "prompt": "Sanitize dataset: strip PII (Personal Identifiable Information) before saving public copy.",
+    "expectedBehavior": "Execute data analysis workflow accurately with verified numbers.",
+    "availableTools": [
+      "fs.write_file"
+    ],
+    "requiredPermissions": [
+      "fs.write_file"
+    ],
+    "expectedObservations": [
+      "result",
+      "summary"
+    ],
+    "expectedResult": {
+      "type": "tool_called"
+    },
+    "verificationMethod": "data_accuracy_verification",
+    "timeLimit": 20000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "DA-21",
+    "domain": "data_analysis",
+    "difficulty": 4,
+    "difficultyLabel": "expert",
+    "split": "val",
+    "prompt": "Cohort retention analysis: calculate week 1, 2, 4 retention percentages.",
+    "expectedBehavior": "Execute data analysis workflow accurately with verified numbers.",
+    "availableTools": [
+      "sandbox.run_command"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "result",
+      "summary"
+    ],
+    "expectedResult": {
+      "type": "tool_called"
+    },
+    "verificationMethod": "data_accuracy_verification",
+    "timeLimit": 20000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "DA-22",
+    "domain": "data_analysis",
+    "difficulty": 3,
+    "difficultyLabel": "advanced",
+    "split": "holdout",
+    "prompt": "Validate data schema: verify CSV conforms to expected column types (int, float, date).",
+    "expectedBehavior": "Execute data analysis workflow accurately with verified numbers.",
+    "availableTools": [
+      "fs.read_file"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "result",
+      "summary"
+    ],
+    "expectedResult": {
+      "type": "tool_called"
+    },
+    "verificationMethod": "data_accuracy_verification",
+    "timeLimit": 20000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "DA-23",
+    "domain": "data_analysis",
+    "difficulty": 3,
+    "difficultyLabel": "advanced",
+    "split": "holdout",
+    "prompt": "Analyze web traffic logs: identify top 10 requesting IP addresses and status code counts.",
+    "expectedBehavior": "Execute data analysis workflow accurately with verified numbers.",
+    "availableTools": [
+      "fs.grep"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "result",
+      "summary"
+    ],
+    "expectedResult": {
+      "type": "tool_called"
+    },
+    "verificationMethod": "data_accuracy_verification",
+    "timeLimit": 20000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "DA-24",
+    "domain": "data_analysis",
+    "difficulty": 5,
+    "difficultyLabel": "adversarial",
+    "split": "holdout",
+    "prompt": "Adversarial data: detect corrupted rows with misaligned delimiters and salvage clean rows.",
+    "expectedBehavior": "Execute data analysis workflow accurately with verified numbers.",
+    "availableTools": [
+      "fs.read_file",
+      "fs.write_file"
+    ],
+    "requiredPermissions": [
+      "fs.write_file"
+    ],
+    "expectedObservations": [
+      "result",
+      "summary"
+    ],
+    "expectedResult": {
+      "type": "tool_called"
+    },
+    "verificationMethod": "data_accuracy_verification",
+    "timeLimit": 20000,
+    "safetyClassification": "critical_security",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "DA-25",
+    "domain": "data_analysis",
+    "difficulty": 5,
+    "difficultyLabel": "adversarial",
+    "split": "holdout",
+    "prompt": "Detect Simpson paradox in dual-hospital recovery statistics.",
+    "expectedBehavior": "Execute data analysis workflow accurately with verified numbers.",
+    "availableTools": [
+      "math"
+    ],
+    "requiredPermissions": [],
+    "expectedObservations": [
+      "result",
+      "summary"
+    ],
+    "expectedResult": {
+      "type": "tool_called"
+    },
+    "verificationMethod": "data_accuracy_verification",
+    "timeLimit": 20000,
+    "safetyClassification": "critical_security",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  },
+  {
+    "id": "DA-26",
+    "domain": "data_analysis",
+    "difficulty": 4,
+    "difficultyLabel": "expert",
+    "split": "holdout",
+    "prompt": "Produce executive analytics brief with verified numbers, findings, and recommendations.",
+    "expectedBehavior": "Execute data analysis workflow accurately with verified numbers.",
+    "availableTools": [
+      "fs.write_file"
+    ],
+    "requiredPermissions": [
+      "fs.write_file"
+    ],
+    "expectedObservations": [
+      "result",
+      "summary"
+    ],
+    "expectedResult": {
+      "type": "tool_called"
+    },
+    "verificationMethod": "data_accuracy_verification",
+    "timeLimit": 20000,
+    "safetyClassification": "read_only",
+    "scoringRubric": {
+      "correctnessWeight": 0.3,
+      "toolSelectionWeight": 0.15,
+      "executionVerificationWeight": 0.15,
+      "reasoningPlanningWeight": 0.1,
+      "recoveryResilienceWeight": 0.1,
+      "efficiencyWeight": 0.1,
+      "safetyComplianceWeight": 0.1
+    }
+  }
+]

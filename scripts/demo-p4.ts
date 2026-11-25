@@ -28,7 +28,7 @@ async function main() {
 
     const blobStore = new BlobStore({ blobsDir: tmpBlobs, thresholdChars: 1500 });
     const manager = new ContextManager({
-      modelId: 'ollama:llama3.1:8b', // 8192 context, 2500 history limit
+      modelId: 'ollama:qwen3.5:4b', // 4096 context
       blobStore,
     });
 
@@ -91,7 +91,7 @@ async function main() {
     console.log('\n[2/4] Executing context preparation ladder (offload -> stub -> compact -> truncate)...');
 
     const builtPrompt = builder.build({
-      modelId: 'ollama:llama3.1:8b',
+      modelId: 'ollama:qwen3.5:4b',
       role: 'assistant',
       dynamicContext: { date: '2026-11-22T20:10:00Z', cwd: '/workspace' },
     });

@@ -18,9 +18,9 @@ export class ModelScheduler {
     this.ollamaBaseUrl = options.ollamaBaseUrl || process.env['OLLAMA_BASE_URL'] || 'http://127.0.0.1:11434';
     this.gpuModels = new Set(
       options.gpuModels || [
-        'llama3.1:8b',
+        'qwen3.5:4b',
         'qwen2.5-coder:7b',
-        'ollama:llama3.1:8b',
+        'ollama:qwen3.5:4b',
         'ollama:qwen2.5-coder:7b',
       ]
     );

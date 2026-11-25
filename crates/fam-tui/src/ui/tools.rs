@@ -71,11 +71,8 @@ impl<'a> Widget for ToolsWidget<'a> {
 
             // Short Result
             if let Some(res) = &tool.result {
-                let short_res = if res.len() > 60 {
-                    format!("{}...", &res[..57])
-                } else {
-                    res.clone()
-                };
+                let single_line = res.replace(['\r', '\n'], " ");
+                let short_res = truncate_chars(&single_line, 60);
 
                 let res_color = if tool.status == ToolStatus::Error {
                     Color::Red
@@ -117,5 +114,17 @@ fn format_args_summary(args: &serde_json::Value) -> String {
             .join(", ")
     } else {
         args.to_string()
+    }
+}
+
+fn truncate_chars(s: &str, max_chars: usize) -> String {
+    let mut chars = s.chars();
+    let prefix: String = chars.by_ref().take(max_chars).collect();
+    if chars.next().is_some() {
+        let keep = max_chars.saturating_sub(3);
+        let truncated: String = prefix.chars().take(keep).collect();
+        format!("{}...", truncated)
+    } else {
+        s.to_string()
     }
 }

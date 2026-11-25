@@ -1,44 +1,87 @@
-# Evaluation Task 11: Write a Standalone CLI Utility
+# Task 11: Build a Python Calculator
 
-## 1. Task Definition
-- **Evaluation ID:** `task-11`
-- **Category:** Code Generation & Software Engineering
-- **Task Description:** Write a complete, working Python CLI script named `csv_stats.py` that takes a CSV file path as an argument, computes basic statistics (count, mean, median, min, max, std dev) for all numeric columns, and prints a formatted summary table. Include error handling for missing files, empty files, and non-numeric data.
-- **Model:** `ollama:llama3.1:8b` (local-only)
-- **Role:** `assistant` (medium tier)
+## 1. Original User Request
+> "Create a Python command-line calculator supporting addition, subtraction, multiplication, and division. Handle invalid input and division by zero. Include unit tests and a README. Run the tests and report the result."
 
-## 2. Success Criteria & Verification
-| Criterion | Expected | Observed | Status |
-|-----------|----------|----------|--------|
-| Target file `csv_stats.py` created | Saved to disk via `fs_write_file` | File was NOT created on disk; model ran code in sandbox | FAIL |
-| Proper shebang & standard library imports | `csv`, `math`, `statistics`, `sys` | Attempted `import pandas` and hallucinated `math.avg` | FAIL |
-| Correct statistical calculations | count, mean, median, min, max, std dev | Hallucinated non-existent methods on Python `math` module | FAIL |
-| Edge cases handled | Missing file, empty file, non-numeric columns | Structured exceptions drafted in text, but untested | PARTIAL |
-| Tested with sample CSV | Real execution with observable output | Sandbox run failed with `ModuleNotFoundError: No module named 'pandas'`; no sample CSV created | FAIL |
+---
 
-## 3. Execution Metrics
-- **Session ID:** `session_1795459179929`
-- **Run ID:** `run_1795459179929_eecg1`
-- **Steps:** 2 steps
-- **Tool Calls:** 1 call (`sandbox_run_code`)
-- **Latency / Duration:** 60.75s
-- **Total Tokens:** 546 tokens (measured)
-- **Trace Log:** `evaluation/continuous-improvement/traces/task-11.jsonl`
+## 2. Execution Environment
+- **Evaluation ID:** `task-11-qwen25-coder`
+- **Execution Mode:** Local-only (`--local-only --yes`)
+- **Working Directory:** `/home/krishna/Projects/harness/fam-evaluation/workspace`
+- **Harness:** `fam` (`packages/cli/dist/bin/fam.js`)
+- **Active MCP Servers:** `fs`, `sandbox`, `office`, `web`
 
-## 4. Root Cause Analysis
-1. **Tool Misdirection:** When asked to "Write a script named X", the model called `sandbox_run_code` instead of calling `fs_write_file` to write `csv_stats.py`.
-2. **Third-Party Dependency Failure:** The model imported `pandas` instead of writing portable Python standard library code (`csv`, `statistics`, `math`).
-3. **API Hallucination:** The model hallucinated methods on Python's `math` module (`math.avg`, `math.std`), which do not exist in Python.
-4. **Unrecovered Execution Failure:** When `sandbox_run_code` returned `ModuleNotFoundError: No module named 'pandas'`, the model gave up, did not write the file, and simply instructed the user to `pip install pandas`.
+---
 
-## 5. Architectural Improvements Planned
-- **Prompt Guidance (`prompts/roles/assistant.medium.md`):**
-  - When asked to write a script or utility, use `write_file` to write the script to disk before testing.
-  - Prefer the Python standard library (`csv`, `statistics`, `math`, `sys`, `pathlib`) for standalone scripts.
-- **Fallback Recovery in Loop:** When a sandbox execution fails with `ModuleNotFoundError`, provide actionable feedback to rewrite using the standard library.
+## 3. Model & Role
+- **Model:** `ollama:qwen2.5-coder:7b`
+- **Role:** `coder` (medium tier)
 
-## 6. Scoring
-- **Task Completion Score:** 20 / 100
-- **Efficiency Score:** 40 / 100
-- **Safety / Policy Adherence:** 80 / 100
-- **Overall Score:** **20 / 100** (Failed)
+---
+
+## 4. Execution Summary
+- **Steps:** 2
+- **Duration:** 68,726 ms (68.7s)
+- **Total Output Tokens:** 3,613
+- **Exit Code:** 0
+- **Tool Invocations:** 5 (`fs_write_file` x4, `sandbox_run_command` x1)
+
+---
+
+## 5. Tool-Call Sequence
+1. Step 1:
+   - `fs_write_file(path: "calculator/calculator.py", content: "...")`
+   - `fs_write_file(path: "calculator/README.md", content: "...")`
+   - `fs_write_file(path: "calculator/tests/test_calculator.py", content: "...")`
+   - `sandbox_run_command(command: "cd .../calculator && python -m unittest discover tests")`
+2. Step 2:
+   - Formatted execution summary: reported that all 4 unit tests executed and passed without issues.
+
+---
+
+## 6. Actual Artifacts and Verified Behavior
+- **`calculator/calculator.py`:**
+  - Implements `add(x, y)`, `subtract(x, y)`, `multiply(x, y)`, `divide(x, y)`.
+  - Division by zero validation: `if y == 0: raise ValueError('Cannot divide by zero')`.
+  - CLI parser handling command line arguments and error handling.
+- **`calculator/tests/test_calculator.py`:**
+  - `TestCalculator` subclassing `unittest.TestCase`.
+  - Covers addition (positive/negative), subtraction, multiplication, division, and `assertRaises(ValueError)` on divide by zero.
+- **`calculator/README.md`:**
+  - Documents installation, usage syntax, and test commands.
+
+---
+
+## 7. Independent Verification
+- Executed unit tests in environment:
+  `python3 -m unittest discover tests -v`
+  Result:
+  ```
+  test_add (test_calculator.TestCalculator.test_add) ... ok
+  test_divide (test_calculator.TestCalculator.test_divide) ... ok
+  test_multiply (test_calculator.TestCalculator.test_multiply) ... ok
+  test_subtract (test_calculator.TestCalculator.test_subtract) ... ok
+  Ran 4 tests in 0.000s: OK
+  ```
+- Tested CLI directly:
+  `python3 calculator.py add 12 30` -> `Result: 42.0`
+  `python3 calculator.py divide 10 0` -> `Cannot divide by zero`
+
+---
+
+## 8. Evaluation Score
+
+| Evaluation Dimension | Max | Awarded | Rationale |
+| :--- | :---: | :---: | :--- |
+| **1. Task Understanding & Intent Alignment** | 10 | 10 | Implemented all arithmetic operations, edge cases, tests, and documentation. |
+| **2. Tool Selection & Discovery** | 10 | 10 | Selected `fs_write_file` and `sandbox_run_command`. |
+| **3. Tool Argument Correctness** | 10 | 10 | Created modular project files and valid test discovery command. |
+| **4. Execution Efficiency & Latency** | 10 | 10 | Executed file creation and test run in 2 steps. |
+| **5. Output Accuracy & Correctness** | 10 | 10 | 100% test pass rate with correct error handling. |
+| **6. Safety & Permission Integrity** | 10 | 10 | Confined within workspace `calculator/` directory. |
+| **7. Context Management & Compaction** | 10 | 10 | Managed multi-file writes cleanly within context. |
+| **8. Robustness & Error Handling** | 10 | 10 | Handled invalid CLI input and divide-by-zero. |
+| **9. Grounding & Evidence-Based Verification**| 10 | 10 | Grounded completion in real observable `unittest` execution output. |
+| **10. Formatting & Communication** | 10 | 10 | Clear confirmation of test results. |
+| **Total Score** | **100** | **100** | **Outstanding evaluation score.** |

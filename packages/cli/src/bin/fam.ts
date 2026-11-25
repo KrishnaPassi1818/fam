@@ -99,7 +99,7 @@ program
   .description('Run evaluation suite against models and score performance')
   .option('--suite <name>', 'Suite filter (e.g. smoke)', 'smoke')
   .option('--task <id>', 'Run a specific task ID')
-  .option('--model <model>', 'Model to evaluate (e.g. llama3.1:8b)')
+  .option('--model <model>', 'Model to evaluate (e.g. qwen3.5:4b)')
   .option('--json', 'Output raw JSON report')
   .action(async (options: {
     suite?: string;
@@ -113,7 +113,7 @@ program
         options.model ||
         (program.opts()['model'] as string | undefined) ||
         config.general.defaultModel ||
-        'llama3.1:8b';
+        'qwen3.5:4b';
       const adapter = createAdapter({ modelId, config, localOnly: false });
 
       let tasks = loadAllTasks();
@@ -320,7 +320,7 @@ memoryCmd
 
 program
   .argument('[prompt]', 'One-shot prompt to execute')
-  .option('--model <model>', 'Force a specific model (e.g. llama3.1:8b)')
+  .option('--model <model>', 'Force a specific model (e.g. qwen3.5:4b)')
   .option('--role <role>', 'Role selection (assistant, coder, router)', 'assistant')
   .option('--system <system>', 'Replace role layer with custom system prompt')
   .option('--append-system <text>', 'Append custom instructions to the prompt')
@@ -389,7 +389,7 @@ program
           }
         }
 
-        modelId = modelId || config.general.defaultModel || 'llama3.1:8b';
+        modelId = modelId || config.general.defaultModel || 'qwen3.5:4b';
         role = role || 'assistant';
 
         const adapter = createAdapter({
@@ -419,15 +419,39 @@ program
 
         const memoryService = new MemoryService();
         const permissionGate = new PermissionGate();
-        if (options.yes || isOneShot) {
+        if (options.yes) {
           permissionGate.grantSession('*');
         }
+
+        const onPermissionRequired = async (
+          toolCall: { name: string; args: Record<string, unknown> },
+          check: { tier: number; reason?: string },
+        ): Promise<boolean> => {
+          if (options.yes) return true;
+          if (process.stdin.isTTY) {
+            process.stderr.write(
+              `\n[PERMISSION] Tool '${toolCall.name}' (Tier ${check.tier}) requires approval.\n` +
+                `Reason: ${check.reason || 'Protected operation'}\n` +
+                `Allow execution? [y/N]: `,
+            );
+            try {
+              const buf = Buffer.alloc(16);
+              const bytesRead = fs.readSync(process.stdin.fd, buf, 0, 16, null);
+              const answer = buf.toString('utf-8', 0, bytesRead).trim().toLowerCase();
+              return answer === 'y' || answer === 'yes';
+            } catch {
+              return false;
+            }
+          }
+          return false;
+        };
 
         const loop = new AgentLoop({
           adapter,
           tracer: new Tracer(),
           memoryService,
           permissionGate,
+          onPermissionRequired,
           role,
           tier: tier as 'full' | 'medium' | 'min',
           userGlobalPrompt: systemOverride,
@@ -441,6 +465,8 @@ program
             process.stdout.write(event.delta);
           } else if (event.type === 'tool_call') {
             process.stderr.write(`[tool: ${event.toolCall.name}]\n`);
+          } else if (event.type === 'state_change') {
+            // Optional state change logging
           } else if (event.type === 'finish') {
             process.stdout.write('\n');
           }

@@ -16,7 +16,9 @@ export type TraceEventType =
   | 'escalate'
   | 'compact'
   | 'error'
-  | 'loop_warning';
+  | 'loop_warning'
+  | 'state_change'
+  | 'plan';
 
 export interface TraceEvent {
   id: string;

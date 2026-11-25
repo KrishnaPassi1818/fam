@@ -13,9 +13,9 @@ fn test_status_bar_rendering() {
 
     let mut app = App::new();
     app.status = StatusInfo {
-        model: "llama3.1:8b".to_string(),
+        model: "qwen3.5:4b".to_string(),
         used_tokens: 2400,
-        max_ctx: 8192,
+        max_ctx: 4096,
         tier: "medium".to_string(),
         is_local: true,
         cwd: "/home/user/project".to_string(),
@@ -26,8 +26,8 @@ fn test_status_bar_rendering() {
     terminal.draw(|f| ui::render_app(f, &app)).unwrap();
     let view = terminal.backend().to_string();
 
-    assert!(view.contains("llama3.1:8b"), "Expected model in status bar");
-    assert!(view.contains("ctx 2.4k/8k"), "Expected ctx in status bar");
+    assert!(view.contains("qwen3.5:4b"), "Expected model in status bar");
+    assert!(view.contains("ctx 2.4k/4k"), "Expected ctx in status bar");
     assert!(view.contains("medium"), "Expected tier in status bar");
     assert!(view.contains("35.5 tok/s"), "Expected tok/s in status bar");
     assert!(view.contains("LOCAL"), "Expected LOCAL badge in status bar");

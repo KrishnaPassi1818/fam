@@ -41,7 +41,7 @@ export class SessionDriver {
     onExit?: () => void,
   ) {
     this.config = options.config;
-    this.model = options.initialModel || options.config.general.defaultModel || 'llama3.1:8b';
+    this.model = options.initialModel || options.config.general.defaultModel || 'qwen3.5:4b';
     this.role = options.initialRole || 'assistant';
     this.localOnly = options.localOnly || false;
     this.systemOverride = options.systemOverride;
@@ -54,8 +54,10 @@ export class SessionDriver {
   }
 
   public init(): void {
-    const profile = this.config.models.models[this.model] as ModelProfile | undefined;
-    const maxCtx = profile?.numCtx || this.adapter?.caps.maxCtx || 8192;
+    const profile = (this.config.models.models[this.model] ||
+      this.config.models.models[`ollama:${this.model}`] ||
+      this.config.models.models[this.model.replace(/^ollama:/, '')]) as ModelProfile | undefined;
+    const maxCtx = profile?.numCtx || this.adapter?.caps.maxCtx || 4096;
     const isLocal = !this.model.startsWith('gemini') && !this.model.includes('gemini');
     const tier = this.getTier();
 
@@ -109,7 +111,9 @@ export class SessionDriver {
   }
 
   public getTier(): string {
-    const profile = this.config.models.models[this.model] as ModelProfile | undefined;
+    const profile = (this.config.models.models[this.model] ||
+      this.config.models.models[`ollama:${this.model}`] ||
+      this.config.models.models[this.model.replace(/^ollama:/, '')]) as ModelProfile | undefined;
     return (
       (profile as unknown as { tier?: string })?.tier ||
       (this.model.includes('gemini') ? 'full' : this.model.includes('1.5b') ? 'min' : 'medium')
@@ -219,6 +223,10 @@ export class SessionDriver {
             type: 'warning',
             message: event.message,
           });
+        } else if (event.type === 'state_change') {
+          // Internal lifecycle state transitions are traced by AgentLoop; do not flood TUI with warnings.
+        } else if (event.type === 'plan') {
+          // Internal plan events are traced by AgentLoop; do not flood TUI with warnings.
         } else if (event.type === 'finish') {
           this.usedTokens = event.totalTokens;
           this.history.push({ role: 'assistant', content: event.response });
@@ -280,7 +288,7 @@ export class SessionDriver {
             '  /undo         - Restore last pre-write change set\n' +
             '  /memory       - List/search/forget long-term memory\n' +
             '  /system       - Inspect active system prompt and layers\n' +
-            '  /model <name> - Switch active model (e.g. /model llama3.1:8b)\n' +
+            '  /model <name> - Switch active model (e.g. /model qwen3.5:4b)\n' +
             '  /models       - List configured models and placement\n' +
             '  /role <role>  - Set active role (assistant, coder, router)\n' +
             '  /clear        - Clear message history\n' +

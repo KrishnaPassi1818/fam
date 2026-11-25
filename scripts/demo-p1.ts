@@ -49,21 +49,21 @@ async function main() {
   }
   console.log('\n✓ Coder model conversation verified.');
 
-  // STEP 3: Verify Tool-call round trip & Trace emission on llama3.1:8b
-  console.log('\n[3/4] Verifying tool call round-trip & tracing on llama3.1:8b...');
+  // STEP 3: Verify Tool-call round trip & Trace emission on qwen3.5:4b
+  console.log('\n[3/4] Verifying tool call round-trip & tracing on qwen3.5:4b...');
   const tracer = new Tracer({
     traceDir: tracesDir,
     sessionId: `gate_p1_${Date.now()}`,
     runId: 'demo_run',
   });
 
-  const llamaAdapter = new OllamaAdapter({
-    model: 'llama3.1:8b',
-    numCtx: 8192,
+  const qwenAdapter = new OllamaAdapter({
+    model: 'qwen3.5:4b',
+    numCtx: 4096,
   });
 
   const loop = new AgentLoop({
-    adapter: llamaAdapter,
+    adapter: qwenAdapter,
     tracer,
     role: 'assistant',
     tier: 'medium',
@@ -146,7 +146,7 @@ async function main() {
   console.log('\n[5/5] Verifying models configuration...');
   const configuredModels = Object.keys(config.models.models);
   console.log(`  Configured models: ${configuredModels.join(', ')}`);
-  if (!configuredModels.includes('ollama:llama3.1:8b') || !configuredModels.includes('ollama:qwen2.5:1.5b')) {
+  if (!configuredModels.includes('ollama:qwen3.5:4b') || !configuredModels.includes('ollama:qwen2.5:1.5b')) {
     throw new Error('models.toml missing required models!');
   }
   console.log('✓ Models configuration verified.');

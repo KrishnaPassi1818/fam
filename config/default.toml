@@ -1,7 +1,7 @@
 # Default general configuration for fam
 
 [general]
-defaultModel = "ollama:llama3.1:8b"
+defaultModel = "ollama:qwen3.5:4b"
 defaultRole = "assistant"
 fallbackModel = "gemini:gemini-2.5-flash"
 logLevel = "info"

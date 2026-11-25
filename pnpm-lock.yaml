@@ -194,6 +194,28 @@ importers:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@22.20.5)(supports-color@7.2.0)
 
+  packages/browser:
+    dependencies:
+      '@fam/core':
+        specifier: workspace:*
+        version: link:../core
+      '@fam/mcp-host':
+        specifier: workspace:*
+        version: link:../mcp-host
+      '@fam/shared':
+        specifier: workspace:*
+        version: link:../shared
+    devDependencies:
+      '@types/node':
+        specifier: ^22.10.2
+        version: 22.20.5
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@22.20.5)(supports-color@7.2.0)
+
   packages/cli:
     dependencies:
       '@fam/core':
@@ -227,6 +249,9 @@ importers:
 
   packages/core:
     dependencies:
+      '@fam/mcp-host':
+        specifier: workspace:*
+        version: link:../mcp-host
       '@fam/shared':
         specifier: workspace:*
         version: link:../shared
@@ -258,12 +283,18 @@ importers:
 
   packages/evals:
     dependencies:
+      '@fam/browser':
+        specifier: workspace:*
+        version: link:../browser
       '@fam/core':
         specifier: workspace:*
         version: link:../core
       '@fam/shared':
         specifier: workspace:*
         version: link:../shared
+      commander:
+        specifier: ^13.1.0
+        version: 13.1.0
       yaml:
         specifier: ^2.9.1
         version: 2.9.1

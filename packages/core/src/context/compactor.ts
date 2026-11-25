@@ -40,6 +40,10 @@ export class TurnCompactor {
       }
     }
 
+    if (splitIndex <= 1 && nonSystem.length > 6) {
+      splitIndex = messages.length - 4;
+    }
+
     if (splitIndex <= 1) {
       return { messages, compacted: false };
     }

@@ -10,7 +10,7 @@ export class ToolResultStubber {
   private readonly maxStubLength: number;
 
   constructor(options: StubbingOptions = {}) {
-    this.recentToKeep = options.recentToKeep ?? 2;
+    this.recentToKeep = options.recentToKeep ?? 4;
     this.maxStubLength = options.maxStubLength ?? 120;
   }
 

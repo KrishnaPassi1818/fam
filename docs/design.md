@@ -9,7 +9,7 @@ Covers UX, prompt system, tool design, and per-subsystem behavior. Architecture 
 fam                         interactive session (default role: assistant)
 fam "do X"                  one-shot
 fam --role coder            role selection
-fam --model llama3.1:8b     force a model (disables routing)
+fam --model qwen3.5:4b     force a model (disables routing)
 fam --system "..."          replace role layer
 fam --append-system "..."   append to the prompt
 fam --system-file f.md
@@ -45,7 +45,7 @@ fam serve                   expose harness as an MCP server (P3)
 | Tier | Models | Budget |
 |---|---|---|
 | full | Gemini | ≤ 4000 |
-| medium | llama3.1:8b, qwen2.5-coder:7b | ≤ 600 |
+| medium | qwen3.5:4b, qwen2.5-coder:7b | ≤ 600 |
 | min | qwen2.5:1.5b | ≤ 150 |
 
 Identity line is neutral: "You are the assistant inside a local CLI harness." The prompts never claim to be any specific vendor's model.

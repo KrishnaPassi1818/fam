@@ -1,6 +1,6 @@
 # Routing Policy Configuration
 [routing]
-default_chain = ["ollama:llama3.1:8b", "gemini:gemini-2.5-flash"]
+default_chain = ["ollama:qwen3.5:4b", "gemini:gemini-2.5-flash"]
 
 # Small-to-medium coding requests -> qwen2.5-coder:7b
 [[routing.rules]]
@@ -16,32 +16,32 @@ min_complexity = 4
 privacy = "normal"
 chain = ["gemini:gemini-2.5-flash", "ollama:qwen2.5-coder:7b"]
 
-# Office documents -> llama3.1:8b
+# Office documents -> qwen3.5:4b
 [[routing.rules]]
 intent = "office"
 privacy = "normal"
-chain = ["ollama:llama3.1:8b", "gemini:gemini-2.5-flash"]
+chain = ["ollama:qwen3.5:4b", "gemini:gemini-2.5-flash"]
 
-# Web research -> Gemini (or llama3.1 fallback)
+# Web research -> Gemini (or qwen3.5:4b fallback)
 [[routing.rules]]
 intent = "web"
 privacy = "normal"
-chain = ["gemini:gemini-2.5-flash", "ollama:llama3.1:8b"]
+chain = ["gemini:gemini-2.5-flash", "ollama:qwen3.5:4b"]
 
-# System commands -> llama3.1:8b local
+# System commands -> qwen3.5:4b local
 [[routing.rules]]
 intent = "system"
 privacy = "normal"
-chain = ["ollama:llama3.1:8b"]
+chain = ["ollama:qwen3.5:4b"]
 
-# Simple general conversation -> llama3.1:8b
+# Simple general conversation -> qwen3.5:4b
 [[routing.rules]]
 intent = "general"
 max_complexity = 2
 privacy = "normal"
-chain = ["ollama:llama3.1:8b"]
+chain = ["ollama:qwen3.5:4b"]
 
 # Local-only privacy rule: NEVER ROUTE TO GEMINI OR CLOUD
 [[routing.rules]]
 privacy = "local_only"
-chain = ["ollama:llama3.1:8b", "ollama:qwen2.5-coder:7b"]
+chain = ["ollama:qwen3.5:4b", "ollama:qwen2.5-coder:7b"]

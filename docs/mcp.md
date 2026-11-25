@@ -44,7 +44,7 @@ In `fam`, **MCP is the non-negotiable architectural boundary**:
 
 ## 🏷️ Tool Naming & Small-Model Aliasing
 
-Small local models (e.g. `llama3.1:8b`, `qwen2.5-coder:7b`) struggle with complex tool namespaces containing dots or special characters. `fam` implements a two-tier identifier system:
+Small local models (e.g. `qwen3.5:4b`, `qwen2.5-coder:7b`) struggle with complex tool namespaces containing dots or special characters. `fam` implements a two-tier identifier system:
 
 ### 1. Canonical Name
 

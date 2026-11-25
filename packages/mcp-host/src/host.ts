@@ -127,6 +127,7 @@ export class McpHost {
   public async callTool(
     nameOrAlias: string,
     args: Record<string, unknown> = {},
+    signal?: AbortSignal,
   ): Promise<McpToolCallOutput> {
     let resolved = this.registry.resolve(nameOrAlias);
 
@@ -149,7 +150,37 @@ export class McpHost {
     }
 
     const conn = await this.ensureServer(resolved.serverName);
-    return await conn.callTool(resolved.originalName, args);
+    return await conn.callTool(resolved.originalName, args, signal);
+  }
+
+  public async healthCheck(serverName?: string): Promise<Record<string, { healthy: boolean; toolsCount: number; error?: string }>> {
+    const targets = serverName ? [serverName] : Array.from(this.connections.keys());
+    const results: Record<string, { healthy: boolean; toolsCount: number; error?: string }> = {};
+
+    for (const name of targets) {
+      const conn = this.connections.get(name);
+      if (!conn) {
+        results[name] = { healthy: false, toolsCount: 0, error: `Server '${name}' not found` };
+        continue;
+      }
+      try {
+        await this.ensureServer(name);
+        const isPingOk = await conn.ping();
+        const tools = await conn.listTools();
+        results[name] = {
+          healthy: isPingOk,
+          toolsCount: tools.length,
+          error: isPingOk ? undefined : 'Ping check failed',
+        };
+      } catch (err) {
+        results[name] = {
+          healthy: false,
+          toolsCount: 0,
+          error: err instanceof Error ? err.message : String(err),
+        };
+      }
+    }
+    return results;
   }
 
   public async shutdown(): Promise<void> {

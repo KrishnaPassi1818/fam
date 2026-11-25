@@ -23,7 +23,7 @@ describe('Rust <-> TypeScript Module & Protocol Bridge', () => {
     expect(emitted.some((m) => m.type === 'message')).toBe(true);
 
     // 3. status
-    void driver.handleSlashCommand('/model llama3.1:8b');
+    void driver.handleSlashCommand('/model qwen3.5:4b');
     expect(emitted.some((m) => m.type === 'status')).toBe(true);
 
     // 4. clear
@@ -82,8 +82,8 @@ describe('Rust <-> TypeScript Module & Protocol Bridge', () => {
     const driver = new SessionDriver({ config: testConfig }, (msg) => emitted.push(msg));
 
     // Special characters, emojis, newlines in slash command or text
-    await driver.handleSlashCommand('/model llama3.1:8b\n');
-    expect(driver.getModel()).toBe('llama3.1:8b');
+    await driver.handleSlashCommand('/model qwen3.5:4b\n');
+    expect(driver.getModel()).toBe('qwen3.5:4b');
 
     // Unknown slash commands
     await driver.handleSlashCommand('/unknown_xyz');

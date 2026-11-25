@@ -4,7 +4,7 @@ import { FamConfigSchema } from '../types/config.js';
 describe('FamConfigSchema', () => {
   it('parses empty object with complete defaults', () => {
     const config = FamConfigSchema.parse({});
-    expect(config.general.defaultModel).toBe('ollama:llama3.1:8b');
+    expect(config.general.defaultModel).toBe('ollama:qwen3.5:4b');
     expect(config.general.defaultRole).toBe('assistant');
     expect(config.policy.commandPrefixAllowlist).toContain('pnpm test');
     expect(config.privacy.localOnlyPaths).toContain('**/.env*');

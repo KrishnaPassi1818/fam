@@ -24,15 +24,15 @@ describe('Context Manager (Phase 4: T4.1 - T4.5)', () => {
   });
 
   describe('ContextBudgeter (T4.1)', () => {
-    it('resolves correct budget table for 8b local model', () => {
-      const budgeter = new ContextBudgeter('ollama:llama3.1:8b');
+    it('resolves correct budget table for 4b local model', () => {
+      const budgeter = new ContextBudgeter('ollama:qwen3.5:4b');
       const b = budgeter.getBudget();
 
-      expect(b.numCtx).toBe(8192);
-      expect(b.system).toBe(500);
-      expect(b.tools).toBe(4000);
-      expect(b.history).toBe(2192);
-      expect(b.reserve).toBe(1000);
+      expect(b.numCtx).toBe(4096);
+      expect(b.system).toBe(400);
+      expect(b.tools).toBe(1800);
+      expect(b.history).toBe(996);
+      expect(b.reserve).toBe(500);
     });
 
     it('accounts tokens across components and detects budget overflow', () => {

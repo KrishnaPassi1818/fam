@@ -93,11 +93,7 @@ impl<'a> Widget for ApprovalModalWidget<'a> {
                 .or_else(|| obj.get("replacement"))
             {
                 let content_str = content.to_string();
-                let preview = if content_str.len() > 100 {
-                    format!("{}...", &content_str[..97])
-                } else {
-                    content_str
-                };
+                let preview = truncate_chars(&content_str, 100);
                 lines.push(Line::from(vec![
                     Span::styled("Content: ", Style::default().fg(Color::Green)),
                     Span::styled(preview, Style::default().fg(Color::DarkGray)),
@@ -170,5 +166,17 @@ impl<'a> Widget for ApprovalModalWidget<'a> {
             .alignment(Alignment::Left);
 
         paragraph.render(area, buf);
+    }
+}
+
+fn truncate_chars(s: &str, max_chars: usize) -> String {
+    let mut chars = s.chars();
+    let prefix: String = chars.by_ref().take(max_chars).collect();
+    if chars.next().is_some() {
+        let keep = max_chars.saturating_sub(3);
+        let truncated: String = prefix.chars().take(keep).collect();
+        format!("{}...", truncated)
+    } else {
+        s.to_string()
     }
 }

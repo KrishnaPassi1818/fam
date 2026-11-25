@@ -23,82 +23,69 @@ impl<'a> Widget for MessagesWidget<'a> {
 
         // 1. Existing Messages
         for msg in &self.app.messages {
-            match msg.role.as_str() {
-                "user" => {
-                    lines.push(Line::from(vec![
-                        Span::styled(
-                            "User > ",
-                            Style::default()
-                                .fg(Color::Blue)
-                                .add_modifier(Modifier::BOLD),
-                        ),
-                        Span::styled(&msg.content, Style::default().fg(Color::White)),
-                    ]));
-                    lines.push(Line::raw(""));
-                }
-                "assistant" => {
-                    let model_label = msg
-                        .model
+            let (prefix, prefix_style, content_style) = match msg.role.as_str() {
+                "user" => (
+                    "User > ".to_string(),
+                    Style::default()
+                        .fg(Color::Blue)
+                        .add_modifier(Modifier::BOLD),
+                    Style::default().fg(Color::White),
+                ),
+                "assistant" => (
+                    msg.model
                         .as_deref()
                         .map(|m| format!("fam ({}) > ", m))
-                        .unwrap_or_else(|| "fam > ".to_string());
+                        .unwrap_or_else(|| "fam > ".to_string()),
+                    Style::default()
+                        .fg(Color::Green)
+                        .add_modifier(Modifier::BOLD),
+                    Style::default().fg(Color::White),
+                ),
+                "system" => (
+                    "ℹ System: ".to_string(),
+                    Style::default()
+                        .fg(Color::Yellow)
+                        .add_modifier(Modifier::BOLD),
+                    Style::default().fg(Color::Yellow),
+                ),
+                _ => (
+                    format!("{}: ", msg.role),
+                    Style::default()
+                        .fg(Color::Magenta)
+                        .add_modifier(Modifier::BOLD),
+                    Style::default().fg(Color::White),
+                ),
+            };
 
-                    lines.push(Line::from(vec![
-                        Span::styled(
-                            model_label,
-                            Style::default()
-                                .fg(Color::Green)
-                                .add_modifier(Modifier::BOLD),
-                        ),
-                        Span::styled(&msg.content, Style::default().fg(Color::White)),
-                    ]));
-                    lines.push(Line::raw(""));
-                }
-                "system" => {
-                    lines.push(Line::from(vec![
-                        Span::styled(
-                            "ℹ System: ",
-                            Style::default()
-                                .fg(Color::Yellow)
-                                .add_modifier(Modifier::BOLD),
-                        ),
-                        Span::styled(&msg.content, Style::default().fg(Color::Yellow)),
-                    ]));
-                    lines.push(Line::raw(""));
-                }
-                _ => {
-                    lines.push(Line::from(vec![
-                        Span::styled(
-                            format!("{}: ", msg.role),
-                            Style::default()
-                                .fg(Color::Magenta)
-                                .add_modifier(Modifier::BOLD),
-                        ),
-                        Span::styled(&msg.content, Style::default().fg(Color::White)),
-                    ]));
-                    lines.push(Line::raw(""));
-                }
-            }
+            push_multiline_message(
+                &mut lines,
+                prefix,
+                prefix_style,
+                &msg.content,
+                content_style,
+            );
+            lines.push(Line::raw(""));
         }
 
         // 2. Active Streaming Delta
         if let Some(delta) = &self.app.active_delta {
             let model_label = format!("fam ({}) > ", self.app.status.model);
-            lines.push(Line::from(vec![
-                Span::styled(
-                    model_label,
-                    Style::default()
-                        .fg(Color::Green)
-                        .add_modifier(Modifier::BOLD),
-                ),
-                Span::styled(delta, Style::default().fg(Color::White)),
-                Span::styled(
-                    "▌",
-                    Style::default()
-                        .fg(Color::Green)
-                        .add_modifier(Modifier::SLOW_BLINK),
-                ),
-            ]));
+            let prefix_style = Style::default()
+                .fg(Color::Green)
+                .add_modifier(Modifier::BOLD);
+            let content_style = Style::default().fg(Color::White);
+            let start_idx = lines.len();
+            push_multiline_message(&mut lines, model_label, prefix_style, delta, content_style);
+            if lines.len() > start_idx {
+                if let Some(last_line) = lines.last_mut() {
+                    last_line.spans.push(Span::styled(
+                        "▌",
+                        Style::default()
+                            .fg(Color::Green)
+                            .add_modifier(Modifier::SLOW_BLINK),
+                    ));
+                }
+            }
             lines.push(Line::raw(""));
         }
 
@@ -124,5 +111,23 @@ impl<'a> Widget for MessagesWidget<'a> {
             .scroll((scroll_y, 0));
 
         paragraph.render(area, buf);
+    }
+}
+
+fn push_multiline_message<'a>(
+    lines: &mut Vec<Line<'a>>,
+    prefix: String,
+    prefix_style: Style,
+    content: &'a str,
+    content_style: Style,
+) {
+    let mut split = content.split('\n');
+    let first = split.next().unwrap_or("");
+    lines.push(Line::from(vec![
+        Span::styled(prefix, prefix_style),
+        Span::styled(first, content_style),
+    ]));
+    for line in split {
+        lines.push(Line::from(Span::styled(line, content_style)));
     }
 }
