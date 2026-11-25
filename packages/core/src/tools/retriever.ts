@@ -112,12 +112,17 @@ export class ToolRetriever {
       return coreTools;
     }
 
-    // Embed the query
+    // Skip embedding call for empty queries or general conversational turns
+    const shouldEmbed =
+      query.trim().length > 0 && routerContext?.intent !== 'general';
+
     let queryEmbedding: number[] | null = null;
-    try {
-      queryEmbedding = await this.embeddingService.embedText(query);
-    } catch {
-      queryEmbedding = null;
+    if (shouldEmbed) {
+      try {
+        queryEmbedding = await this.embeddingService.embedText(query);
+      } catch {
+        queryEmbedding = null;
+      }
     }
 
     // Score all candidates

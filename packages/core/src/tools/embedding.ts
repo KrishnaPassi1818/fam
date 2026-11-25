@@ -40,6 +40,9 @@ export function cosineSimilarity(a: number[], b: number[]): number {
 }
 
 export class EmbeddingService {
+  private static readonly failureCooldownMs = 30_000;
+  private static readonly unavailableUntil = new Map<string, number>();
+
   private readonly baseUrl: string;
   private readonly model: string;
   private readonly cachePath: string;
@@ -52,7 +55,7 @@ export class EmbeddingService {
     const rawModel = options.model || 'nomic-embed-text';
     this.model = rawModel.replace(/^ollama:/, '');
     this.cachePath = options.cachePath || resolvePath('~/.fam/cache/tool_embeddings.json');
-    this.timeoutMs = options.timeoutMs ?? 5000;
+    this.timeoutMs = options.timeoutMs ?? 1500;
   }
 
   private loadCache(): void {
@@ -96,6 +99,12 @@ export class EmbeddingService {
   }
 
   public async embedText(text: string): Promise<number[]> {
+    const endpointKey = `${this.baseUrl}::${this.model}`;
+    const blockedUntil = EmbeddingService.unavailableUntil.get(endpointKey);
+    if (blockedUntil && Date.now() < blockedUntil) {
+      throw new Error(`Embedding endpoint ${endpointKey} is in cooldown after recent failure`);
+    }
+
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
 
@@ -119,7 +128,14 @@ export class EmbeddingService {
         throw new Error('Malformed embedding response from Ollama');
       }
 
+      EmbeddingService.unavailableUntil.delete(endpointKey);
       return data.embedding;
+    } catch (err) {
+      EmbeddingService.unavailableUntil.set(
+        endpointKey,
+        Date.now() + EmbeddingService.failureCooldownMs
+      );
+      throw err;
     } finally {
       clearTimeout(timeout);
     }
